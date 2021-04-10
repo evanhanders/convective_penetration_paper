@@ -38,6 +38,7 @@ Options:
     --label=<label>            Optional additional case name label
     --root_dir=<dir>           Root directory for output [default: ./]
 
+    --adiabatic_IC             If flagged, set the background profile as a pure adiabat (not thermal equilibrium in RZ)
     --predictive               If flagged, predict the evolved state using a 1D model.
     --plot_model               If flagged, create and plt.show() some plots of the 1D atmospheric structure.
 
@@ -237,6 +238,8 @@ def run_cartesian_instability(args):
     data_dir += "_Re{}_P{}_zeta{}_S{}_Lz{}_Pr{}_a{}_{}x{}".format(args['--Re'], args['--P'], args['--zeta'], args['--S'], args['--Lz'], args['--Pr'], args['--aspect'], args['--nx'], args['--nz'])
     if args['--predictive']:
         data_dir += '_predictive'
+    if args['--adiabatic_IC']:
+        data_dir += '_adiabaticIC'
     if args['--label'] is not None:
         data_dir += "_{}".format(args['--label'])
     data_dir += '/'
@@ -331,28 +334,33 @@ def run_cartesian_instability(args):
     T_ad_z['g'] = grad_ad
     T_rad_z0['g'] = T_rad_func(flux_of_z['g'], k0['g'])
 
+    max_brunt = reducer.global_max(T_rad_z0['g'] - T_ad_z['g'])
+    logger.info("Max brunt T: {:.3e}".format(max_brunt))
+
     #find match point
     zs = np.linspace(0, Lz, 1000)
     kmatch = k_func(zs)
     Tradmatch = T_rad_func(flux, kmatch)
     z_match = np.interp(grad_ad, Tradmatch, zs)
 
-    #Construct T0_zz so that it gets around the discontinuity.
-    w = 0.05
-    grad_rad_top = T_rad_z0.interpolate(z=Lz)['g'].max()
-    T_rad_z0.differentiate('z', out=T0_zz)
-    T0_zz['g'] *= zero_to_one(z_de.flatten(), z_match - w, width=w)
-    T0_zz.antidifferentiate('z', ('left', grad_ad), out=T0_z)
+    if args['--adiabatic_IC']:
+        T0_zz['g'] = 0
+        T0_zz.antidifferentiate('z', ('left', grad_ad), out=T0_z)
+        T0_z.antidifferentiate('z', ('right', 1), out=T0)
+    else:
+        #Construct T0_zz so that it gets around the discontinuity.
+        width = 0.05
+        grad_rad_top = T_rad_z0.interpolate(z=Lz)['g'].max()
+        T_rad_z0.differentiate('z', out=T0_zz)
+        T0_zz['g'] *= zero_to_one(z_de.flatten(), z_match - width, width=width)
+        T0_zz.antidifferentiate('z', ('left', grad_ad), out=T0_z)
 
-    #Erf has a width that messes up the transition; bump up T0_zz so it transitions to grad_rad at top.
-    deltaT0z_rad = grad_rad_top - grad_ad
-    deltaT0z_sim = T0_z.interpolate(z=Lz)['g'].max() - grad_ad
-    T0_zz['g'] *= deltaT0z_rad/deltaT0z_sim
-    T0_zz.antidifferentiate('z', ('left', grad_ad), out=T0_z)
-    T0_z.antidifferentiate('z', ('right', 1), out=T0)
-
-    max_brunt = reducer.global_max(T0_z['g'] - T_ad_z['g'])
-    logger.info("Max brunt T: {:.3e}".format(max_brunt))
+        #Erf has a width that messes up the transition; bump up T0_zz so it transitions to grad_rad at top.
+        deltaT0z_rad = grad_rad_top - grad_ad
+        deltaT0z_sim = T0_z.interpolate(z=Lz)['g'].max() - grad_ad
+        T0_zz['g'] *= deltaT0z_rad/deltaT0z_sim
+        T0_zz.antidifferentiate('z', ('left', grad_ad), out=T0_z)
+        T0_z.antidifferentiate('z', ('right', 1), out=T0)
 
     #Check that heating and cooling cancel each other out.
     fH = domain.new_field()
