@@ -268,6 +268,14 @@ def run_cartesian_instability(args):
     zeta = float(args['--zeta'])
     Fbot = zeta*Fconv
 
+    #Model values
+    k_rz = dH * P / S 
+    k_cz = k_rz * ( zeta / (1 + zeta + P) )
+    k_ad = k_rz * ( (1 + zeta) / (1 + zeta + P) )
+    delta_k = k_rz - k_cz
+    grad_ad = (Qmag * S / P) * (1 + zeta + P)
+    grad_rad_top = (Qmag * S / P) * (1 + zeta)
+
     #Adjust to account for expected velocities. and larger m = 0 diffusivities.
     Pe0 /= (np.sqrt(Qmag))
     Re0 /= (np.sqrt(Qmag)) 
@@ -310,13 +318,6 @@ def run_cartesian_instability(args):
 
     cz_mask['g'] = zero_to_one(z_de, 0.2, width=0.05)*one_to_zero(z_de, 1, width=0.05)
 
-
-
-    k_rz = dH * P / S 
-    k_cz = k_rz * ( zeta / (1 + zeta + P) )
-    k_ad = k_rz * ( (1 + f) / (1 + zeta + P) )
-    delta_k = k_rz - k_cz
-
     delta = 0.02
     k_shape = lambda z: zero_to_one(z, 1, width=0.075)
     k_func = lambda z: (k_cz + delta_k*k_shape(z))
@@ -329,9 +330,7 @@ def run_cartesian_instability(args):
     Q.antidifferentiate('z', ('left', Fbot), out=flux_of_z)
     flux = flux_of_z.interpolate(z=1)['g'].min()
 
-    grad_ad = -(Qmag * S / P) * (1 + zeta + P)
-    grad_rad_top = -(Qmag * S / P) * (1 + zeta)
-    T_ad_z['g'] = grad_ad
+    T_ad_z['g'] = -grad_ad
     T_rad_z0['g'] = T_rad_func(flux_of_z['g'], k0['g'])
 
     max_brunt = reducer.global_max(T_rad_z0['g'] - T_ad_z['g'])
@@ -341,25 +340,24 @@ def run_cartesian_instability(args):
     zs = np.linspace(0, Lz, 1000)
     kmatch = k_func(zs)
     Tradmatch = T_rad_func(flux, kmatch)
-    z_match = np.interp(grad_ad, Tradmatch, zs)
+    z_match = np.interp(-grad_ad, Tradmatch, zs)
 
     if args['--adiabatic_IC']:
         T0_zz['g'] = 0
-        T0_zz.antidifferentiate('z', ('left', grad_ad), out=T0_z)
+        T0_zz.antidifferentiate('z', ('left', -grad_ad), out=T0_z)
         T0_z.antidifferentiate('z', ('right', 1), out=T0)
     else:
         #Construct T0_zz so that it gets around the discontinuity.
         width = 0.05
-        grad_rad_top = T_rad_z0.interpolate(z=Lz)['g'].max()
         T_rad_z0.differentiate('z', out=T0_zz)
         T0_zz['g'] *= zero_to_one(z_de.flatten(), z_match - width, width=width)
-        T0_zz.antidifferentiate('z', ('left', grad_ad), out=T0_z)
+        T0_zz.antidifferentiate('z', ('left', -grad_ad), out=T0_z)
 
         #Erf has a width that messes up the transition; bump up T0_zz so it transitions to grad_rad at top.
-        deltaT0z_rad = grad_rad_top - grad_ad
-        deltaT0z_sim = T0_z.interpolate(z=Lz)['g'].max() - grad_ad
+        deltaT0z_rad = -grad_rad_top + grad_ad
+        deltaT0z_sim = T0_z.interpolate(z=Lz)['g'].max() + grad_ad
         T0_zz['g'] *= deltaT0z_rad/deltaT0z_sim
-        T0_zz.antidifferentiate('z', ('left', grad_ad), out=T0_z)
+        T0_zz.antidifferentiate('z', ('left', -grad_ad), out=T0_z)
         T0_z.antidifferentiate('z', ('right', 1), out=T0)
 
     #Check that heating and cooling cancel each other out.
@@ -375,10 +373,11 @@ def run_cartesian_instability(args):
         plt.plot(z_de.flatten(), -T_ad_z['g'][0,:], c='b', lw=0.5, label='-T_ad_z')
         plt.plot(z_de.flatten(), -T_rad_func(flux, k0['g'][0,:]), c='r', label='-T_rad_z_IH')
         plt.plot(z_de.flatten(), -T0_z['g'][0,:], c='k', label='-T0_z')
+        plt.axhline(grad_rad_top, c='r', lw=0.5)
         plt.xlabel('z')
         plt.ylabel('-T_z')
         T_rad_top = T_rad_z0.interpolate(z=Lz)['g'].min()
-        plt.ylim(-0.9*T_rad_top, -grad_ad - 0.1*(grad_ad - T_rad_top) )
+        plt.ylim(-0.9*T_rad_top, grad_ad - 0.1*(-grad_ad - T_rad_top) )
         plt.legend()
         plt.savefig('{:s}/T0_z_structure.png'.format(data_dir), dpi=400)
 
@@ -431,7 +430,7 @@ def run_cartesian_instability(args):
                 d_ov = (2/3) * (S/1e2)**(-1/2)
             logger.info('using predictive 1D ICs with zp: {:.2f} and dov: {:.2e}'.format(z_p, d_ov))
 
-            T_z = grad_ad + (T_rad_z0['g'] - grad_ad)*zero_to_one(z_de, z_p + d_ov/2, width=d_ov)
+            T_z = -grad_ad + (T_rad_z0['g'] + grad_ad)*zero_to_one(z_de, z_p + d_ov/2, width=d_ov)
             T1_z['g'] = T_z - T0_z['g']
             T1_z.antidifferentiate('z', ('right', 0), out=T1)
 
