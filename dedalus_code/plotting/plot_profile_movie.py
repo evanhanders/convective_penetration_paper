@@ -109,9 +109,9 @@ roller = RollingProfileAverager(start_file, n_files)
 
 
 bases_names = ['z',]
-fields = ['T', 'T_z', 'bruntN2', 'bruntN2_structure', 'F_rad', 'F_conv', 'T_rad_z', 'advection', 'vel_rms', 'effective_heating', 'T1', 'T1_z', 'heat_fluc_rad', 'heat_fluc_conv', 'T1_fluc', 'enstrophy']
+fields = ['T', 'T_z', 'bruntN2', 'bruntN2_structure', 'F_rad', 'F_conv', 'T_rad_z', 'T_rad_z_IH', 'advection', 'vel_rms', 'effective_heating', 'T1', 'T1_z', 'heat_fluc_rad', 'heat_fluc_conv', 'T1_fluc', 'enstrophy']
 if not plotter.idle:
-    init_fields = ['T_rad_z', 'F_rad', 'T', 'T_ad_z', 'flux_of_z', 'T_z']
+    init_fields = ['T_rad_z', 'T_rad_z_IH', 'F_rad', 'T', 'T_ad_z', 'flux_of_z', 'T_z']
     plotterOne.set_read_fields(bases_names, init_fields)
     first = plotterOne.read_next_file()
     first_tasks = first[1]
@@ -123,6 +123,7 @@ if not plotter.idle:
         z = bases['z'].squeeze()
 
         Tz_rad0 = first_tasks['T_rad_z'][0,:].squeeze()
+        Tz_rad_IH0 = first_tasks['T_rad_z_IH'][0,:].squeeze()
         grad_ad = first_tasks['T_ad_z'][0,:].squeeze()
         system_flux = first_tasks['flux_of_z'][0,:].squeeze()[-1] #get flux at top of domain
         system_flux_prof = first_tasks['flux_of_z'][0,:].squeeze() / system_flux
@@ -158,7 +159,7 @@ if not plotter.idle:
 
 
             ax2.plot(z, -roller.rolled_averages['T_z'], label='T_z', c='k')
-            ax2.plot(z, -roller.rolled_averages['T_rad_z'], label='T_rad_z', c='r')
+            ax2.plot(z, -roller.rolled_averages['T_rad_z_IH'], label='T_rad_z', c='r')
             ax2.plot(z, -grad_ad, lw=0.5, c='b', label='T_ad_z')
             y_min = np.abs(roller.rolled_averages['T_rad_z']).min()
             deltay = np.abs(grad_ad).max() - y_min

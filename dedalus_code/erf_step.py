@@ -176,6 +176,7 @@ def set_subs(problem):
     #Fluxes
     problem.substitutions['F_rad']       = '-k0*T_z'
     problem.substitutions['T_rad_z']     = '-flux_of_z/k0'
+    problem.substitutions['T_rad_z_IH']  = '-right(flux_of_z)/k0'
     problem.substitutions['F_conv']      = 'w*T'
     problem.substitutions['tot_flux']    = '(F_conv + F_rad)'
     return problem
@@ -205,6 +206,7 @@ def initialize_output(solver, data_dir, mode='overwrite', output_dt=2, iter=np.i
     profiles.add_task("plane_avg(flux_of_z)", name="flux_of_z")
     profiles.add_task("plane_avg((Q + dz(k0)*T0_z + k0*T0_zz))", name="effective_heating")
     profiles.add_task("plane_avg(T_rad_z)", name="T_rad_z")
+    profiles.add_task("plane_avg(T_rad_z)", name="T_rad_z_IH")
     profiles.add_task("plane_avg(T_ad_z)", name="T_ad_z")
     profiles.add_task("plane_avg(F_rad)", name="F_rad")
     profiles.add_task("plane_avg(F_conv)", name="F_conv")
@@ -312,8 +314,8 @@ def run_cartesian_instability(args):
     k_ad = k_rz * ( (1 + f) / (1 + zeta + P) )
     delta_k = k_rz - k_cz
 
-    delta = 0.01
-    k_shape = lambda z: zero_to_one(z, 1, width=0.05)
+    delta = 0.02
+    k_shape = lambda z: zero_to_one(z, 1, width=0.075)
     k_func = lambda z: (k_cz + delta_k*k_shape(z))
     Q_func  = lambda z: Qmag*zero_to_one(z, 0.1, delta)*one_to_zero(z, 0.1+dH, delta)
     T_rad_func = lambda flux, k: -flux / k
@@ -339,7 +341,7 @@ def run_cartesian_instability(args):
     w = 0.05
     grad_rad_top = T_rad_z0.interpolate(z=Lz)['g'].max()
     T_rad_z0.differentiate('z', out=T0_zz)
-    T0_zz['g'] *= zero_to_one(z_de.flatten(), z_match - w*0.75, width=w)
+    T0_zz['g'] *= zero_to_one(z_de.flatten(), z_match - w, width=w)
     T0_zz.antidifferentiate('z', ('left', grad_ad), out=T0_z)
 
     #Erf has a width that messes up the transition; bump up T0_zz so it transitions to grad_rad at top.
@@ -362,11 +364,24 @@ def run_cartesian_instability(args):
 
     if args['--plot_model']:
         import matplotlib.pyplot as plt
-        plt.plot(z_de.flatten(), -T_ad_z['g'][0,:], c='b', lw=0.5)
-        plt.plot(z_de.flatten(), -T_rad_z0['g'][0,:], c='r')
-        plt.plot(z_de.flatten(), -T0_z['g'][0,:], c='k')
+        plt.plot(z_de.flatten(), -T_ad_z['g'][0,:], c='b', lw=0.5, label='-T_ad_z')
+        plt.plot(z_de.flatten(), -T_rad_func(flux, k0['g'][0,:]), c='r', label='-T_rad_z_IH')
+        plt.plot(z_de.flatten(), -T0_z['g'][0,:], c='k', label='-T0_z')
+        plt.xlabel('z')
+        plt.ylabel('-T_z')
+        T_rad_top = T_rad_z0.interpolate(z=Lz)['g'].min()
+        plt.ylim(-0.9*T_rad_top, -grad_ad - 0.1*(grad_ad - T_rad_top) )
+        plt.legend()
+        plt.savefig('{:s}/T0_z_structure.png'.format(data_dir), dpi=400)
 
-   
+        plt.figure()
+        plt.plot(z_de.flatten(), k0['g'][0,:], c='k', label='k0')
+        plt.plot(z_de.flatten(), k0_z['g'][0,:], c='b', label='k0_z')
+        plt.xlabel('z')
+        plt.ylabel('k0')
+        plt.legend()
+        plt.savefig('{:s}/k0_structure.png'.format(data_dir), dpi=400)
+        plt.show()
 
     #Plug in default parameters
     problem.parameters['Pe0']    = Pe0
