@@ -1,0 +1,11 @@
+[parameters]
+Re = 1e3
+S = 1e2
+P = 1e-1
+Lz = 6
+nz = 512
+nx = 256
+run_time_wall = 119
+run_time_ff = 1e5
+
+adiabatic_IC=true

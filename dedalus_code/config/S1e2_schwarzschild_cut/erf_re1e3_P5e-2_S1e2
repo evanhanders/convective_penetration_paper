@@ -1,0 +1,9 @@
+[parameters]
+Re = 1e3
+S = 1e2
+P = 5e-2
+Lz = 12
+nz = 1024
+nx = 512
+run_time_wall = 119
+run_time_ff = 1e5

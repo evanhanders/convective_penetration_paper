@@ -13,8 +13,8 @@ There are 6 control parameters:
     aspect  - The aspect ratio (Lx = aspect * Lz)
 
 Usage:
-    erf_noY_heating_cartesian_2D_instability.py [options] 
-    erf_noY_heating_cartesian_2D_instability.py <config> [options] 
+    erf_step.py [options] 
+    erf_step.py <config> [options] 
 
 Options:
     --Re=<Reynolds>            Freefall reynolds number [default: 1e2]
