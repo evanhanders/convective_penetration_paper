@@ -153,12 +153,17 @@ if not plotter.idle:
             brunt_sub_enstrophy = roller.rolled_averages['bruntN2'] - roller.rolled_averages['enstrophy']
             brunt_sub_vel2 = roller.rolled_averages['bruntN2'] - roller.rolled_averages['vel_rms']**2
             cz_sign = np.mean(brunt_sub_enstrophy[(z > 0.1)*(z < 0.9)])
-            cross_guess = z[(z > 0.5)*(brunt_sub_enstrophy/cz_sign < 0)][0]
+            if np.sum((z > 0.5)*(brunt_sub_enstrophy/cz_sign < 0)) > 0:
+                cross_guess = z[(z > 0.5)*(brunt_sub_enstrophy/cz_sign < 0)][0]
+                x1 = 1
+            else:
+                cross_guess = 1
+                x1 = 1.1
 
-            func_bse = interp1d(z, brunt_sub_enstrophy)
-            func_bsv2 = interp1d(z, brunt_sub_vel2)
-            root = sop.root_scalar(func_bse, x0=cross_guess, x1=1).root
-            root_vel2 = sop.root_scalar(func_bsv2, x0=cross_guess, x1=1).root
+            func_bse = interp1d(z, brunt_sub_enstrophy, bounds_error=False, fill_value='extrapolate')
+            func_bsv2 = interp1d(z, brunt_sub_vel2, bounds_error=False, fill_value='extrapolate')
+            root = sop.root_scalar(func_bse, x0=cross_guess, x1=x1).root
+            root_vel2 = sop.root_scalar(func_bsv2, x0=cross_guess, x1=x1).root
             logger.info('cross guess and root find: {:.3f}/{:.3f}'.format(cross_guess, root))
             
             times.append(sim_time[i])
