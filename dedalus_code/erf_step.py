@@ -24,6 +24,7 @@ Options:
     --zeta=<frac>              Fbot = zeta * F_conv [default: 1e-3]
     --Lz=<L>                   Depth of domain [default: 2]
     --aspect=<aspect>          Aspect ratio of domain [default: 2]
+    --L_cz=<L>                 Height of cz-rz erf step [default: 1]
 
     --nz=<nz>                  Vertical resolution   [default: 256]
     --nx=<nx>                  Horizontal resolution [default: 64]
@@ -235,7 +236,7 @@ def run_cartesian_instability(args):
     #############################################################################################
     ### 1. Read in command-line args, set up data directory
     data_dir = args['--root_dir'] + '/' + sys.argv[0].split('.py')[0]
-    data_dir += "_Re{}_P{}_zeta{}_S{}_Lz{}_Pr{}_a{}_{}x{}".format(args['--Re'], args['--P'], args['--zeta'], args['--S'], args['--Lz'], args['--Pr'], args['--aspect'], args['--nx'], args['--nz'])
+    data_dir += "_Re{}_P{}_zeta{}_S{}_Lz{}_Lcz{}_Pr{}_a{}_{}x{}".format(args['--Re'], args['--P'], args['--zeta'], args['--S'], args['--Lz'], args['--L_cz'], args['--Pr'], args['--aspect'], args['--nx'], args['--nz'])
     if args['--predictive']:
         data_dir += '_predictive'
     if args['--adiabatic_IC']:
@@ -260,6 +261,7 @@ def run_cartesian_instability(args):
     invP = 1/P
 
     Pe0   = Pr*Re0
+    L_cz  = float(args['--L_cz'])
     Lz    = float(args['--Lz'])
     Lx    = aspect * Lz
 
@@ -317,10 +319,10 @@ def run_cartesian_instability(args):
     for f in [T_ad_z, k0]:
         f.meta['x']['constant'] = True
 
-    cz_mask['g'] = zero_to_one(z_de, 0.2, width=0.05)*one_to_zero(z_de, 1, width=0.05)
+    cz_mask['g'] = zero_to_one(z_de, 0.2, width=0.05)*one_to_zero(z_de, L_cz, width=0.05)
 
     delta = 0.02
-    k_shape = lambda z: zero_to_one(z, 1, width=0.075)
+    k_shape = lambda z: zero_to_one(z, L_cz, width=0.075)
     k_func = lambda z: (k_cz + delta_k*k_shape(z))
     Q_func  = lambda z: Qmag*zero_to_one(z, 0.1, delta)*one_to_zero(z, 0.1+dH, delta)
     T_rad_func = lambda flux, k: -flux / k
@@ -329,7 +331,7 @@ def run_cartesian_instability(args):
     k0.differentiate('z', out=k0_z)
     Q['g'] = Q_func(z_de)
     Q.antidifferentiate('z', ('left', Fbot), out=flux_of_z)
-    flux = flux_of_z.interpolate(z=1)['g'].min()
+    flux = flux_of_z.interpolate(z=L_cz)['g'].min()
 
     T_ad_z['g'] = -grad_ad
     T_rad_z0['g'] = T_rad_func(flux_of_z['g'], k0['g'])
