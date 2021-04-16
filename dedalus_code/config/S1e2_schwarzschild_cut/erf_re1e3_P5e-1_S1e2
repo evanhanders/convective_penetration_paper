@@ -2,8 +2,8 @@
 Re = 1e3
 S = 1e2
 P = 5e-1
-Lz = 2.5
-nz = 384
-nx = 192
+Lz = 2
+nz = 256
+nx = 128
 run_time_wall = 119
 run_time_ff = 1e5

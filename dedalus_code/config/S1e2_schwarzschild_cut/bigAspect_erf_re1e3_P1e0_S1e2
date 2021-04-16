@@ -1,9 +1,10 @@
 [parameters]
 Re = 1e3
 S = 1e2
-P = 1e-1
-Lz = 6
-nz = 512
+P = 1e0
+Lz = 2
+aspect = 4
+nz = 256
 nx = 256
 run_time_wall = 119
 run_time_ff = 1e5

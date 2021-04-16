@@ -1,0 +1,11 @@
+[parameters]
+Re = 1e3
+S = 1e2
+P = 1e1
+Lz = 6
+nz = 512
+nx = 256
+run_time_wall = 119
+run_time_ff = 1e5
+
+restart = unequilibrated_simulations_invPform/erf_step_Re1e3_P1e-1_zeta1e-3_S1e2_Lz6_Pr0.5_a2_256x512/checkpoint/checkpoint_s60.h5

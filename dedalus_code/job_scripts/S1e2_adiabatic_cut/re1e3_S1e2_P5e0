@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N erf_step_2D_re1e3_P1e-1_S_1e2
+#PBS -N erf_step_2D_re1e3_P5e0_S_1e2_adiabatic
 #PBS -l select=4:ncpus=40:mpiprocs=40:model=sky_ele
 #PBS -l walltime=120:00:00
 #PBS -j oe
@@ -11,10 +11,10 @@ conda activate dedalus
 cd $PBS_O_WORKDIR
 
 RE=1e3
-PEN=1e-1
+PEN=5e0
 STIFF=1e2
-CONF=config/S1e2_schwarzschild_cut/erf_re1e3_P1e-1_S1e2
+CONF=config/S1e2_adiabatic_cut/erf_re1e3_P5e0_S1e2
 
 date
-mpiexec_mpt -n 128 python3 erf_step.py  $CONF  > out.erf.schwarzschildIC.re$RE.P$PEN.S$STIFF.$PBS_JOBID
+mpiexec_mpt -n 128 python3 erf_step.py  $CONF  > out.erf.adiabaticIC.re$RE.P$PEN.S$STIFF.$PBS_JOBID
 date

@@ -10,7 +10,7 @@ NCORE=""
 while getopts ":d:n:h?:" opt; do
     case "$opt" in
     h|\?)
-        echo "secify dir with -d and core number with -n" 
+        echo "specify dir with -d and core number with -n" 
         exit 0
         ;;
     d)  DIR=$OPTARG
