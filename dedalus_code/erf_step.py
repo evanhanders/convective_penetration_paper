@@ -6,7 +6,7 @@ The lower part of the domain is stable; the domain is Schwarzschild stable above
 There are 6 control parameters:
     Re      - The approximate reynolds number = (u / diffusivity) of the evolved flows
     Pr      - The Prandtl number = (viscous diffusivity / thermal diffusivity)
-    P       - The penetration parameter; When P << 1 there is lots of convective penetration (of order 1/P); when P -> infty there is none.
+    P       - The penetration parameter; When P >> 1 there is lots of convective penetration (of order P); when P -> 0 there is none.
     S       - The stiffness: the characteristic ratio of N^2 (above the penetration region) compared to the square convective frequency.
     zeta    - The fraction of the convective flux carried by the adiabatic gradient at z = 0 (below the heating layer)
     Lz      - The height of the box
@@ -19,7 +19,7 @@ Usage:
 Options:
     --Re=<Reynolds>            Freefall reynolds number [default: 1e2]
     --Pr=<Prandtl>             Prandtl number = nu/kappa [default: 0.5]
-    --P=<penetration>          ratio of RZ convective flux / CZ convective flux [default: 1]
+    --P=<penetration>          ratio of CZ convective flux / RZ convective flux [default: 1]
     --S=<stiffness>            The stiffness [default: 1e2]
     --zeta=<frac>              Fbot = zeta * F_conv [default: 1e-3]
     --Lz=<L>                   Depth of domain [default: 2]
@@ -257,6 +257,7 @@ def run_cartesian_instability(args):
     S  = float(args['--S'])
     Pr = float(args['--Pr'])
     P = float(args['--P'])
+    invP = 1/P
 
     Pe0   = Pr*Re0
     Lz    = float(args['--Lz'])
@@ -269,12 +270,12 @@ def run_cartesian_instability(args):
     Fbot = zeta*Fconv
 
     #Model values
-    k_rz = dH * P / S 
-    k_cz = k_rz * ( zeta / (1 + zeta + P) )
-    k_ad = k_rz * ( (1 + zeta) / (1 + zeta + P) )
+    k_rz = dH * invP / S 
+    k_cz = k_rz * ( zeta / (1 + zeta + invP) )
+    k_ad = k_rz * ( (1 + zeta) / (1 + zeta + invP) )
     delta_k = k_rz - k_cz
-    grad_ad = (Qmag * S / P) * (1 + zeta + P)
-    grad_rad_top = (Qmag * S / P) * (1 + zeta)
+    grad_ad = (Qmag * S / invP) * (1 + zeta + invP)
+    grad_rad_top = (Qmag * S / invP) * (1 + zeta)
 
     #Adjust to account for expected velocities. and larger m = 0 diffusivities.
     Pe0 /= (np.sqrt(Qmag))
@@ -423,9 +424,9 @@ def run_cartesian_instability(args):
             f.set_scales(domain.dealias, keep_data=True)
 
         if args['--predictive']:
-            z_p = z_match + 0.25*P**(-1)
+            z_p = z_match + 0.25*P
             if P > 0.2:
-                d_ov = (S/1e2)**(-1/2) * 0.15 * P**(-1)
+                d_ov = (S/1e2)**(-1/2) * 0.15 * P
             else:
                 d_ov = (2/3) * (S/1e2)**(-1/2)
             logger.info('using predictive 1D ICs with zp: {:.2f} and dov: {:.2e}'.format(z_p, d_ov))
