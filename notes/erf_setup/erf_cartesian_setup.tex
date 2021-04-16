@@ -88,11 +88,12 @@ $k$ may be a larger or smaller diffusivity than $\rm{Pe}_0^{-1}$, and its magnit
 We will study a two-layer model in $z = [0, L_z]$ in which the conductivity, $k(z)$ is a step function such that
 \begin{equation}
 k(z) = \begin{cases}
-k_b & z < 1 \\
-k_t & z \geq 1
+k_b & z < L_{\rm{cz}} \\
+k_t & z \geq L_{\rm{cz}}
 \end{cases}
 \end{equation}
 where subscript ``t'' refers to the top layer and ``b'' refers to the bottom.
+Generally, we will set $L_{\rm{cz}} = 1$.
 (These won't be true discontinuities, but will be smooth step-like functions achieved with erfs.)
 
 There will be two important input parameters in this system:
@@ -102,8 +103,9 @@ There will be two important input parameters in this system:
 \mathcal{S} = \frac{N_{t}^2}{f_{\mathrm{conv}}^2},
 \end{equation}
 which is the ratio of the buoyancy frequency (in the stable layer) to the square convective frequency.
-\item $\mathcal{P}$, a parameter which determines what the magnitude of the \emph{negative} convective flux would be in an adiabatic penetrative layer with $k = k_t$.
-We will define $\mathcal{P} = -F_{\rm{conv, rz}}/F_{\rm{conv}}$, and our expectation is that we get a lot of convective penetration when $\mathcal{P} \ll 1$ and none when $\mathcal{P} \gg 1$.
+\item $\mathcal{P}$, a parameter which sets the penetration depth.
+$\mathcal{P}$ determines what the magnitude of the \emph{negative} convective flux would be in an adiabatic penetrative layer with $k = k_t$.
+We will define $\mathcal{P} = -F_{\rm{conv}}/F_{\rm{conv, rz}}$, and our expectation is that we get a lot of convective penetration when $\mathcal{P} \gg 1$ and none when $\mathcal{P} \ll 1$.
 \end{enumerate}
 In addition to these parameters, the magnitude of the heating, $Q$ and the vertical extent of the heating layer, $\delta_H$, must be specified as they set $F_{\rm{conv}} = Q \delta_H$.
 We will choose $Q = 1$ and $\delta_H = 0.2$ so that $F_{\rm{conv}} = 0.2$; we will furthermore choose and $F_{\rm{bot}} = \zeta F_{\rm{conv}}$, where $\zeta$ is some arbitrary scalar that sets how much smaller $k$ is in the cz than the RZ; we'll set $\zeta = 10^{-3}$ for now.
@@ -125,7 +127,7 @@ k_{t} \grad_{\rm{rad,t}} = F_{\rm{tot}}
 \item Assuming $\grad T = -\grad_{\rm{ad}}$ everywhere, the convective flux in the top layer is $F_{\rm{conv,t}} = F_{\rm{conv}} - \Delta k \grad_{\rm{ad}}$, where $F_{\rm{conv}} = Q \delta_H$ and $\Delta k = k_t - k_b$.
 Thus, definitionally,
 \begin{equation}
-\mathcal{P} = -\frac{F_{\rm{conv,t}}}{F_{\rm{conv}}} = \left(\frac{\Delta k \grad_{\rm{ad}}}{Q \delta_H} - 1\right).
+\mathcal{P} = -\frac{F_{\rm{conv}}}{F_{\rm{conv,t}}} = \left(\frac{\Delta k \grad_{\rm{ad}}}{Q \delta_H} - 1\right)^{-1}.
 \end{equation}
 \item Defining $f_{\rm{conv}}^2 \approx Q$ and $N^2 \approx -(\grad_{\rm{rad,t}} - \grad_{\rm{ad}})$, the stiffness gives
 \begin{equation}
@@ -136,11 +138,11 @@ Thus, definitionally,
 
 Solving this system of equations gives
 \begin{align}
-k_t = \frac{\delta_H \mathcal{P}}{\mathcal{S}},\qquad
-k_b = k_t \frac{\zeta}{1 + \zeta + \mathcal{P}},\qquad
-k_{\rm{ad}} = k_t \frac{1 + \zeta}{1 + \zeta + \mathcal{P}},\\
-\grad_{\rm{ad}} = \frac{Q \mathcal{S}}{\mathcal{P}}(1 + \zeta + \mathcal{P}),\qquad
-\grad_{\rm{rad}} = \frac{Q \mathcal{S}}{\mathcal{P}}(1 + \zeta).
+k_t = \frac{\delta_H}{\mathcal{S} \mathcal{P}},\qquad
+k_b = k_t \frac{\zeta}{1 + \zeta + \mathcal{P}^{-1}},\qquad
+k_{\rm{ad}} = k_t \frac{1 + \zeta}{1 + \zeta + \mathcal{P}^{-1}},\\
+\grad_{\rm{ad}} = Q \mathcal{S}\mathcal{P}(1 + \zeta + \mathcal{P}^{-1}),\qquad
+\grad_{\rm{rad}} = Q \mathcal{S}\mathcal{P}(1 + \zeta).
 \end{align}
 
 Just to be safe, I'm going to offset the internal heating from the bottom boundary.
