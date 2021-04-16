@@ -165,6 +165,10 @@ if not plotter.idle:
             root = sop.root_scalar(func_bse, x0=cross_guess, x1=x1).root
             root_vel2 = sop.root_scalar(func_bsv2, x0=cross_guess, x1=x1).root
             logger.info('cross guess and root find: {:.3f}/{:.3f}'.format(cross_guess, root))
+            if root > z.max():
+                root = z.max()
+            if root_vel2 > z.max():
+                root_vel2 = z.max()
             
             times.append(sim_time[i])
             write_nums.append(write_num[i])
