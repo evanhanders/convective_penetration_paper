@@ -272,12 +272,12 @@ def run_cartesian_instability(args):
     Fbot = zeta*Fconv
 
     #Model values
-    k_rz = dH * invP / S 
+    k_rz = dH / (P * S) 
     k_cz = k_rz * ( zeta / (1 + zeta + invP) )
     k_ad = k_rz * ( (1 + zeta) / (1 + zeta + invP) )
     delta_k = k_rz - k_cz
-    grad_ad = (Qmag * S / invP) * (1 + zeta + invP)
-    grad_rad_top = (Qmag * S / invP) * (1 + zeta)
+    grad_ad = (Qmag * S * P) * (1 + zeta + invP)
+    grad_rad_top = (Qmag * S * P) * (1 + zeta)
 
     #Adjust to account for expected velocities. and larger m = 0 diffusivities.
     Pe0 /= (np.sqrt(Qmag))
