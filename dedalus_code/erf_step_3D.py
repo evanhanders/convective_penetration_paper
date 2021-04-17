@@ -13,8 +13,8 @@ There are 6 control parameters:
     aspect  - The aspect ratio (Lx = aspect * Lz)
 
 Usage:
-    erf_step.py [options] 
-    erf_step.py <config> [options] 
+    erf_step_3D.py [options] 
+    erf_step_3D.py <config> [options] 
 
 Options:
     --Re=<Reynolds>            Freefall reynolds number [default: 1e2]
@@ -27,7 +27,8 @@ Options:
     --L_cz=<L>                 Height of cz-rz erf step [default: 1]
 
     --nz=<nz>                  Vertical resolution   [default: 256]
-    --nx=<nx>                  Horizontal resolution [default: 64]
+    --nx=<nx>                  Horizontal (x) resolution [default: 64]
+    --ny=<ny>                  Horizontal (y) resolution (sets to nx by default)
     --safety=<s>               CFL safety factor (timestepper: RK443) [default: 0.75]
 
     --run_time_wall=<time>     Run time, in hours [default: 119.5]
@@ -121,13 +122,16 @@ def zero_to_one(*args, **kwargs):
     return -(one_to_zero(*args, **kwargs) - 1)
 
 def set_equations(problem):
-    kx_0  = "(nx == 0)"
-    kx_n0 = "(nx != 0)"
+    kx_0  = "(nx == 0) and (ny == 0)"
+    kx_n0 = "(nx != 0) or  (ny != 0)"
     equations = ( (True, "True", "T1_z - dz(T1) = 0"),
+                  (True, "True", "ωx - dy(w) + dz(v) = 0"),
                   (True, "True", "ωy - dz(u) + dx(w) = 0"),
+                  (True, "True", "ωz - dx(v) + dy(u) = 0"),
                   (True, kx_n0,  "dx(u) + dy(v) + dz(w) = 0"), #Incompressibility
                   (True, kx_0,   "p = 0"), #Incompressibility
                   (True, "True", "dt(u) + (dy(ωz) - dz(ωy))/Re0  + dx(p)        = v*ωz - w*ωy "), #momentum-x
+                  (True, "True", "dt(v) + (dz(ωx) - dx(ωz))/Re0  + dy(p)        = w*ωx - u*ωz "), #momentum-x
                   (True, kx_n0,  "dt(w) + (dx(ωy) - dy(ωx))/Re0  + dz(p) - T1   = u*ωy - v*ωx "), #momentum-z
                   (True, kx_0,   "w = 0"), #momentum-z
                   (True, kx_n0, "dt(T1) - Lap(T1, T1_z)/Pe0  = -UdotGrad(T1, T1_z) - w*(T0_z - T_ad_z)"), #energy eqn
@@ -142,6 +146,8 @@ def set_equations(problem):
                    (True, "right(T1) = 0", "True"),
                    (True, " left(u) = 0", "True"),
                    (True, "right(u) = 0", "True"),
+                   (True, " left(v) = 0", "True"),
+                   (True, "right(v) = 0", "True"),
                    (True, " left(w) = 0", kx_n0),
                    (True, "right(w) = 0", kx_n0),
                  )
@@ -157,12 +163,8 @@ def set_subs(problem):
     problem.substitutions['Lap(A, A_z)']                   = '(dx(dx(A)) + dy(dy(A)) + dz(A_z))'
     problem.substitutions['UdotGrad(A, A_z)']              = '(u*dx(A) + v*dy(A) + w*A_z)'
     problem.substitutions['GradAdotGradB(A, B, A_z, B_z)'] = '(dx(A)*dx(B) + dy(A)*dy(B) + A_z*B_z)'
-    problem.substitutions['dy(A)'] = '0'
-    problem.substitutions['ωx'] = '0'
-    problem.substitutions['ωz'] = '0'
-    problem.substitutions['v'] = '0'
-    problem.substitutions['plane_avg(A)'] = 'integ(A, "x")/Lx'
-    problem.substitutions['vol_avg(A)']   = 'integ(A)/Lx/Lz'
+    problem.substitutions['plane_avg(A)'] = 'integ(A, "x", "y")/Lx/Ly'
+    problem.substitutions['vol_avg(A)']   = 'integ(A)/Lx/Lz/Ly'
     problem.substitutions['plane_std(A)'] = 'sqrt(plane_avg((A - plane_avg(A))**2))'
     problem.substitutions['enstrophy'] = '(ωx**2 + ωy**2 + ωz**2)'
     problem.substitutions['vel_rms']   = 'sqrt(u**2 + v**2 + w**2)'
@@ -186,10 +188,22 @@ def set_subs(problem):
 def initialize_output(solver, data_dir, mode='overwrite', output_dt=2, iter=np.inf):
     analysis_tasks = OrderedDict()
     slices = solver.evaluator.add_file_handler(data_dir+'slices', sim_dt=output_dt, max_writes=40, mode=mode, iter=iter)
-    slices.add_task("T1")
-    slices.add_task("u")
-    slices.add_task("w")
-    slices.add_task("enstrophy")
+    slices.add_task("interp(T1, y=Ly/2)", name="T1(y=Ly/2)")
+    slices.add_task("interp(T1, x=Lx/2)", name="T1(x=Lx/2)")
+    slices.add_task("interp(T1, z=0.2)",  name="T1(z=0.2)")
+    slices.add_task("interp(T1, z=0.5)",  name="T1(z=0.5)")
+    slices.add_task("interp(T1, z=1)",    name="T1(z=1)")
+    slices.add_task("interp(T1, z=1.2)",  name="T1(z=1.2)")
+    slices.add_task("interp(T1, z=1.5)",  name="T1(z=1.5)")
+    slices.add_task("interp(T1, z=1.8)",  name="T1(z=1.8)")
+    slices.add_task("interp(w, y=Ly/2)",  name="w(y=Ly/2)")
+    slices.add_task("interp(w, x=Lx/2)",  name="w(x=Lx/2)")
+    slices.add_task("interp(w, z=0.2)",   name="w(z=0.2)")
+    slices.add_task("interp(w, z=0.5)",   name="w(z=0.5)")
+    slices.add_task("interp(w, z=1)",     name="w(z=1)")
+    slices.add_task("interp(w, z=1.2)",   name="w(z=1.2)")
+    slices.add_task("interp(w, z=1.5)",   name="w(z=1.5)")
+    slices.add_task("interp(w, z=1.8)",   name="w(z=1.8)")
     analysis_tasks['slices'] = slices
 
     profiles = solver.evaluator.add_file_handler(data_dir+'profiles', sim_dt=output_dt, max_writes=40, mode=mode)
@@ -217,7 +231,6 @@ def initialize_output(solver, data_dir, mode='overwrite', output_dt=2, iter=np.i
     profiles.add_task("plane_avg(-dz(F_conv))", name="heat_fluc_conv")
     analysis_tasks['profiles'] = profiles
 
-
     scalars = solver.evaluator.add_file_handler(data_dir+'scalars', sim_dt=output_dt*5, max_writes=np.inf, mode=mode)
     scalars.add_task("vol_avg(cz_mask*vel_rms**2)/vol_avg(cz_mask)", name="cz_vel_squared")
     scalars.add_task("vol_avg((1-cz_mask)*bruntN2)/vol_avg(1-cz_mask)", name="rz_brunt_squared")
@@ -228,9 +241,12 @@ def initialize_output(solver, data_dir, mode='overwrite', output_dt=2, iter=np.i
     checkpoint.add_system(solver.state, layout = 'c')
     analysis_tasks['checkpoint'] = checkpoint
 
+    volumes = solver.evaluator.add_file_handler(data_dir+'volumes', sim_dt=100*output_dt, max_writes=5, mode=mode, iter=iter)
+    volumes.add_task("w")
+    volumes.add_task("T1")
+    analysis_tasks['volumes'] = volumes
+
     return analysis_tasks
-
-
 
 def run_cartesian_instability(args):
     #############################################################################################
@@ -248,11 +264,13 @@ def run_cartesian_instability(args):
         if not os.path.exists('{:s}'.format(data_dir)):
             os.makedirs('{:s}'.format(data_dir))
     logger.info("saving run in: {}".format(data_dir))
+    if args['--ny'] is None: args['--ny'] = args['--nx']
 
     ########################################################################################
     ### 2. Organize simulation parameters
     aspect   = float(args['--aspect'])
     nx = int(args['--nx'])
+    ny = int(args['--ny'])
     nz = int(args['--nz'])
     Re0 = float(args['--Re'])
     S  = float(args['--S'])
@@ -264,6 +282,7 @@ def run_cartesian_instability(args):
     L_cz  = float(args['--L_cz'])
     Lz    = float(args['--Lz'])
     Lx    = aspect * Lz
+    Ly    = Lx
 
     dH = 0.2
     Qmag = 1
@@ -292,15 +311,16 @@ def run_cartesian_instability(args):
     ###########################################################################################################3
     ### 3. Setup Dedalus domain, problem, and substitutions/parameters
     x_basis = de.Fourier('x', nx, interval=(0, Lx), dealias=3/2)
+    y_basis = de.Fourier('y', ny, interval=(0, Ly), dealias=3/2)
     z_basis = de.Chebyshev('z', nz, interval=(0,Lz), dealias=3/2)
-    bases = [x_basis, z_basis]
+    bases = [x_basis, y_basis, z_basis]
     domain = de.Domain(bases, grid_dtype=np.float64, mesh=None)
     reducer = flow_tools.GlobalArrayReducer(domain.distributor.comm_cart)
     z = domain.grid(-1)
     z_de = domain.grid(-1, scales=domain.dealias)
 
     #Establish variables and setup problem
-    variables = ['T1', 'T1_z', 'p', 'u', 'w', 'ωy']
+    variables = ['T1', 'T1_z', 'p', 'u', 'v', 'w', 'ωx', 'ωy', 'ωz']
     problem = de.IVP(domain, variables=variables, ncc_cutoff=1e-10)
 
     # Set up background / initial state vs z.
@@ -317,7 +337,7 @@ def run_cartesian_instability(args):
     for f in [T0, T0_z, T_ad_z, k0, Q, flux_of_z, T_rad_z0, cz_mask]:
         f.set_scales(domain.dealias)
     for f in [T_ad_z, k0]:
-        f.meta['x']['constant'] = True
+        f.meta['x', 'y']['constant'] = True
 
     cz_mask['g'] = zero_to_one(z_de, 0.2, width=0.05)*one_to_zero(z_de, L_cz, width=0.05)
 
@@ -373,9 +393,9 @@ def run_cartesian_instability(args):
 
     if args['--plot_model']:
         import matplotlib.pyplot as plt
-        plt.plot(z_de.flatten(), -T_ad_z['g'][0,:], c='b', lw=0.5, label='-T_ad_z')
-        plt.plot(z_de.flatten(), -T_rad_func(flux, k0['g'][0,:]), c='r', label='-T_rad_z_IH')
-        plt.plot(z_de.flatten(), -T0_z['g'][0,:], c='k', label='-T0_z')
+        plt.plot(z_de.flatten(), -T_ad_z['g'][0,0,:], c='b', lw=0.5, label='-T_ad_z')
+        plt.plot(z_de.flatten(), -T_rad_func(flux, k0['g'][0,0,:]), c='r', label='-T_rad_z_IH')
+        plt.plot(z_de.flatten(), -T0_z['g'][0,0,:], c='k', label='-T0_z')
         plt.axhline(grad_rad_top, c='r', lw=0.5)
         plt.xlabel('z')
         plt.ylabel('-T_z')
@@ -385,8 +405,8 @@ def run_cartesian_instability(args):
         plt.savefig('{:s}/T0_z_structure.png'.format(data_dir), dpi=400)
 
         plt.figure()
-        plt.plot(z_de.flatten(), k0['g'][0,:], c='k', label='k0')
-        plt.plot(z_de.flatten(), k0_z['g'][0,:], c='b', label='k0_z')
+        plt.plot(z_de.flatten(), k0['g'][0,0,:], c='k', label='k0')
+        plt.plot(z_de.flatten(), k0_z['g'][0,0,:], c='b', label='k0_z')
         plt.xlabel('z')
         plt.ylabel('k0')
         plt.legend()
@@ -396,7 +416,8 @@ def run_cartesian_instability(args):
     #Plug in default parameters
     problem.parameters['Pe0']    = Pe0
     problem.parameters['Re0']    = Re0
-    problem.parameters['Lx']     = problem.parameters['Ly'] = Lx
+    problem.parameters['Lx']     = Lx
+    problem.parameters['Ly']     = Ly
     problem.parameters['Lz']     = Lz
     problem.parameters['k0']     = k0
     problem.parameters['T0']     = T0
