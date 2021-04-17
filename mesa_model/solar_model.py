@@ -34,10 +34,11 @@ rho = 10**p.logRho[::-1] * u.g / u.cm**3
 P = 10**p.logP[::-1] * u.g / u.cm / u.s**2
 T = 10**p.logT[::-1] * u.K
 g = p.grav[::-1] * (u.cm / u.s**2)
+bruntN2 = p.brunt_N2[::-1] * (1 / u.s**2)
 opacity = p.opacity[::-1] * (u.cm**2 / u.g)
 Luminosity = p.luminosity[::-1] * u.L_sun
 Luminosity = Luminosity.cgs
-mlt_conv_vel = p.conv_vel * u.cm / u.s
+mlt_conv_vel = p.conv_vel[::-1] * u.cm / u.s
 conv_lum = p.conv_L_div_L[::-1] * Luminosity
 rad_lum = 10**(p.log_Lrad[::-1])* u.L_sun
 rad_lum = rad_lum.cgs
@@ -66,6 +67,8 @@ bot_cz_Rsol = sop.brentq(interp1d(r_Rsol, grad_rad - grad_ad), 0.6, 0.8)
 bot_plot = bot_cz - (0.1*u.R_sun).cgs.value
 top_plot = bot_cz + (0.1*u.R_sun).cgs.value
 good = (r.value >= bot_plot)*(r.value <= top_plot)
+good_cz = (r.value >= bot_cz)*(r.value <= top_plot)
+good_rz = (r.value >= bot_plot)*(r.value <= bot_cz)
 
 bot_plot_Rsol = bot_cz_Rsol - 0.1
 top_plot_Rsol = bot_cz_Rsol + 0.1
@@ -130,6 +133,30 @@ plt.ylabel(r'$L (erg/s)$')
 plt.xlabel(r'$r/R_{\odot}$')
 plt.savefig('luminosity_plot.png', dpi=300, bbox_inches='tight')
 
+plt.figure()
+u_mlt = 3*np.sum((np.abs(mlt_conv_vel*r**2*np.gradient(r)))[good_cz])/(top_plot**3-bot_cz**3) / u.cm**3
+plt.plot(r_Rsol, mlt_conv_vel, c='k')
+plt.xlim(bot_plot_Rsol, top_plot_Rsol)
+plt.ylim(0, 1.5*avg_mag.value)
+plt.ylabel(r'$u_{MLT}$')
+plt.xlabel(r'$r/R_{\odot}$')
+plt.savefig('velocity_plot.png', dpi=300, bbox_inches='tight')
+
+
+brunt2_rz =  3*np.sum((np.abs(bruntN2*r**2*np.gradient(r)))[good_rz])/(bot_cz**3-bot_plot**3) / u.cm**3
+#Calculate L of simulated part of CZ
+L = (0.1*u.R_sun).cgs
+#Calculate rho and g at interface
+rho_int = rho[good_cz][0]
+T_int   = T[good_cz][0]
+g_int  = g[good_cz][0]
+#Calculate T' ~ rho * u^2 / (g * L)
+deltaT = T_int*u_mlt**2 / (g_int * L)
+print(deltaT)
+
+print("RCB properties: rho: {:.3e}, T: {:.3e}, g: {:.3e}, N2: {:.3e}".format(rho_int, T_int, g_int, brunt2_rz))
+print("Nondimensionalization: u: {:.3e}, L: {:.3e}, T': {:.3e}".format(u_mlt, L, deltaT))
+print("Approx Stiffness: {:.3e}".format(brunt2_rz / (u_mlt/L)**2))
 
 
 #plt.figure()
