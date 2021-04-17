@@ -53,9 +53,10 @@ logger.info("reading data from {}".format(root_dir))
 plotter = SFP(root_dir, file_dir='profiles', fig_name=fig_name, start_file=start_file, n_files=n_files, distribution='even')
 MPI.COMM_WORLD.barrier()
 plotterOne = SFP(root_dir, file_dir='profiles', fig_name=fig_name, start_file=start_file, n_files=n_files, distribution='single', comm=MPI.COMM_SELF)
-fig = plt.figure(figsize=(8,3))
-ax1 = fig.add_subplot(1,1,1)
-axs = [ax1,]
+fig = plt.figure(figsize=(8,4))
+ax1 = fig.add_subplot(2,1,1)
+ax2 = fig.add_subplot(2,1,2)
+axs = [ax1, ax2]
 
 class RollingProfileAverager:
     
@@ -109,6 +110,7 @@ write_nums = []
 times = []
 cross_z = []
 vel_cross_z = []
+z_departure = []
 
 
 bases_names = ['z',]
@@ -127,7 +129,9 @@ if not plotter.idle:
 
         Tz_rad0 = first_tasks['T_rad_z'][0,:].squeeze()
         Tz_rad_IH0 = first_tasks['T_rad_z_IH'][0,:].squeeze()
-        grad_ad = first_tasks['T_ad_z'][0,:].squeeze()
+        grad_ad = -first_tasks['T_ad_z'][0,:].squeeze()
+        grad_rad = -Tz_rad_IH0
+        delta_grad = grad_ad[-1] - grad_rad[-1]
         system_flux = first_tasks['flux_of_z'][0,:].squeeze()[-1] #get flux at top of domain
         system_flux_prof = first_tasks['flux_of_z'][0,:].squeeze() / system_flux
         fluxrange = np.abs(first_tasks['F_rad'][0,:].squeeze()/system_flux - system_flux_prof).max() * 1.5
@@ -150,6 +154,20 @@ if not plotter.idle:
             T_z = tasks['T_z'][i]
             T1 = T - first_tasks['T'][0]
 
+            #Find top of CZ according to different measures
+
+            #departure from grad_ad
+            departure_factor = 0.2
+            T_z_departure = (z > 0.9)*(-T_z < grad_ad - departure_factor*delta_grad)
+            if np.sum(T_z_departure) > 0:
+                z_T_departure_guess = z[T_z_departure].min()
+                x1 = z_T_departure_guess * 0.9
+                func_zd = interp1d(z, -T_z - (grad_ad - departure_factor*delta_grad), bounds_error=False, fill_value='extrapolate')
+                root_zd = sop.root_scalar(func_zd, x0=z_T_departure_guess, x1=x1).root
+            else:
+                z_T_departure_guess = root_zd = z.max()
+
+            #brunt minus measures of f_conv
             brunt_sub_enstrophy = roller.rolled_averages['bruntN2'] - roller.rolled_averages['enstrophy']
             brunt_sub_vel2 = roller.rolled_averages['bruntN2'] - roller.rolled_averages['vel_rms']**2
             cz_sign = np.mean(brunt_sub_enstrophy[(z > 0.1)*(z < 0.9)])
@@ -164,16 +182,20 @@ if not plotter.idle:
             func_bsv2 = interp1d(z, brunt_sub_vel2, bounds_error=False, fill_value='extrapolate')
             root = sop.root_scalar(func_bse, x0=cross_guess, x1=x1).root
             root_vel2 = sop.root_scalar(func_bsv2, x0=cross_guess, x1=x1).root
-            logger.info('cross guess and root find: {:.3f}/{:.3f}'.format(cross_guess, root))
-            if root > z.max():
-                root = z.max()
-            if root_vel2 > z.max():
-                root_vel2 = z.max()
+            
+            #If the root finder broke, just use the grid-based guess
+            if root_zd > z.max() or root_zd < 0:
+                root_zd = z_T_departure_guess
+            if root > z.max() or root < 0:
+                root = cross_guess
+            if root_vel2 > z.max() or root_vel2 < 0:
+                root_vel2 = cross_guess
             
             times.append(sim_time[i])
             write_nums.append(write_num[i])
             cross_z.append(root)
             vel_cross_z.append(root_vel2)
+            z_departure.append(root_zd)
 
             ax1.plot(z, roller.rolled_averages['bruntN2'],             c='k', label=r'$N^2$')
             ax1.plot(z, -roller.rolled_averages['bruntN2'],             c='k', ls='--')
@@ -185,6 +207,17 @@ if not plotter.idle:
             ax1.legend(loc='upper left')
             ax1.set_ylabel(r'$N^2$')
             ax1.set_ylim(1e-2, np.max(roller.rolled_averages['bruntN2'])*2)
+
+            ax2.plot(z, -roller.rolled_averages['T_z'], label='T_z', c='k')
+            ax2.plot(z, -roller.rolled_averages['T_rad_z_IH'], label='T_rad_z', c='r')
+            ax2.plot(z, grad_ad, lw=0.5, c='b', label='T_ad_z')
+            y_min = np.abs(roller.rolled_averages['T_rad_z']).min()
+            deltay = np.abs(grad_ad).max() - y_min
+            ax2.set_ylim(np.abs(grad_ad).max() - deltay*1.25, np.abs(grad_ad).max() + deltay*1.25)
+            ax2.legend(loc='upper right')
+            ax2.set_ylabel('-dz(T)')
+            ax2.axvline(z_T_departure_guess, c='pink')
+            ax2.axvline(root_zd, c='purple')
 
             for ax in axs:
                 ax.set_xlabel('z')
@@ -200,6 +233,7 @@ if not plotter.idle:
     times = np.array(times)
     cross_z = np.array(cross_z)
     vel_cross_z = np.array(vel_cross_z)
+    z_departure = np.array(z_departure)
 buffer = np.zeros(1, dtype=int)
 if plotter.idle:
     buffer[0] = 0
@@ -213,23 +247,26 @@ else:
     buffer[0] = int(write_nums.min())
 plotter.reader.comm.Allreduce(MPI.IN_PLACE, buffer, op=MPI.MIN)
 global_min_write = buffer[0]
-data = np.zeros((4, int(global_max_write - global_min_write + 1)))
+data = np.zeros((5, int(global_max_write - global_min_write + 1)))
 if not plotter.idle:
     write_nums -= int(global_min_write)
     data[0, write_nums] = write_nums
     data[1, write_nums] = times
     data[2, write_nums] = cross_z
     data[3, write_nums] = vel_cross_z
+    data[4, write_nums] = z_departure
 plotter.reader.comm.Allreduce(MPI.IN_PLACE, data, op=MPI.SUM)
 write_nums = data[0,:]
 times   = data[1,:]
 cross_z = data[2,:]
 vel_cross_z = data[3,:]
+z_departure = data[4,:]
 
 if plotter.reader.comm.rank == 0:
     fig = plt.figure()
     plt.plot(times, cross_z, c='indigo', label=r'zero of $N^2 - \omega^2$')
     plt.plot(times, vel_cross_z, c='green', label=r'zero of $N^2 - u^2$')
+    plt.plot(times, z_departure, c='red', label=r'departure from grad_ad')
     plt.legend(loc='best')
     plt.xlabel('time')
     plt.ylabel('z (top cz)')
@@ -239,3 +276,4 @@ if plotter.reader.comm.rank == 0:
         f['times'] = times
         f['cross_z'] = cross_z
         f['vel_cross_z'] = vel_cross_z
+        f['z_departure'] = z_departure
