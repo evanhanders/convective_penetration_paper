@@ -27,9 +27,10 @@ Options:
     --L_cz=<L>                 Height of cz-rz erf step [default: 1]
 
     --nz=<nz>                  Vertical resolution   [default: 256]
-    --nx=<nx>                  Horizontal (x) resolution [default: 64]
+    --nx=<nx>                  Horizontal (x) resolution [default: 32]
     --ny=<ny>                  Horizontal (y) resolution (sets to nx by default)
     --safety=<s>               CFL safety factor (timestepper: RK443) [default: 0.75]
+    --mesh=<m>                 Processor distribution mesh (e.g., "4,4")
 
     --run_time_wall=<time>     Run time, in hours [default: 119.5]
     --run_time_ff=<time>       Run time, in freefall times [default: 1e5]
@@ -186,18 +187,20 @@ def set_subs(problem):
     return problem
 
 def initialize_output(solver, data_dir, mode='overwrite', output_dt=2, iter=np.inf):
+    Lx = solver.problem.parameters['Lx']
+    Ly = solver.problem.parameters['Ly']
     analysis_tasks = OrderedDict()
     slices = solver.evaluator.add_file_handler(data_dir+'slices', sim_dt=output_dt, max_writes=40, mode=mode, iter=iter)
-    slices.add_task("interp(T1, y=Ly/2)", name="T1(y=Ly/2)")
-    slices.add_task("interp(T1, x=Lx/2)", name="T1(x=Lx/2)")
+    slices.add_task("interp(T1, y={})".format(Ly/2), name="T1(y=Ly/2)")
+    slices.add_task("interp(T1, x={})".format(Lx/2), name="T1(x=Lx/2)")
     slices.add_task("interp(T1, z=0.2)",  name="T1(z=0.2)")
     slices.add_task("interp(T1, z=0.5)",  name="T1(z=0.5)")
     slices.add_task("interp(T1, z=1)",    name="T1(z=1)")
     slices.add_task("interp(T1, z=1.2)",  name="T1(z=1.2)")
     slices.add_task("interp(T1, z=1.5)",  name="T1(z=1.5)")
     slices.add_task("interp(T1, z=1.8)",  name="T1(z=1.8)")
-    slices.add_task("interp(w, y=Ly/2)",  name="w(y=Ly/2)")
-    slices.add_task("interp(w, x=Lx/2)",  name="w(x=Lx/2)")
+    slices.add_task("interp(w, y={})".format(Ly/2), name="w(y=Ly/2)")
+    slices.add_task("interp(w, x={})".format(Lx/2), name="w(x=Lx/2)")
     slices.add_task("interp(w, z=0.2)",   name="w(z=0.2)")
     slices.add_task("interp(w, z=0.5)",   name="w(z=0.5)")
     slices.add_task("interp(w, z=1)",     name="w(z=1)")
@@ -251,8 +254,9 @@ def initialize_output(solver, data_dir, mode='overwrite', output_dt=2, iter=np.i
 def run_cartesian_instability(args):
     #############################################################################################
     ### 1. Read in command-line args, set up data directory
+    if args['--ny'] is None: args['--ny'] = args['--nx']
     data_dir = args['--root_dir'] + '/' + sys.argv[0].split('.py')[0]
-    data_dir += "_Re{}_P{}_zeta{}_S{}_Lz{}_Lcz{}_Pr{}_a{}_{}x{}".format(args['--Re'], args['--P'], args['--zeta'], args['--S'], args['--Lz'], args['--L_cz'], args['--Pr'], args['--aspect'], args['--nx'], args['--nz'])
+    data_dir += "_Re{}_P{}_zeta{}_S{}_Lz{}_Lcz{}_Pr{}_a{}_{}x{}x{}".format(args['--Re'], args['--P'], args['--zeta'], args['--S'], args['--Lz'], args['--L_cz'], args['--Pr'], args['--aspect'], args['--nx'], args['--ny'], args['--nz'])
     if args['--predictive']:
         data_dir += '_predictive'
     if args['--adiabatic_IC']:
@@ -264,7 +268,17 @@ def run_cartesian_instability(args):
         if not os.path.exists('{:s}'.format(data_dir)):
             os.makedirs('{:s}'.format(data_dir))
     logger.info("saving run in: {}".format(data_dir))
-    if args['--ny'] is None: args['--ny'] = args['--nx']
+
+    mesh = args['--mesh']
+    ncpu = MPI.COMM_WORLD.size
+    if mesh is not None:
+        mesh = mesh.split(',')
+        mesh = [int(mesh[0]), int(mesh[1])]
+    else:
+        log2 = np.log2(ncpu)
+        if log2 == int(log2):
+            mesh = [int(2**np.ceil(log2/2)),int(2**np.floor(log2/2))]
+        logger.info("running on processor mesh={}".format(mesh))
 
     ########################################################################################
     ### 2. Organize simulation parameters
@@ -303,7 +317,7 @@ def run_cartesian_instability(args):
     Re0 /= (np.sqrt(Qmag)) 
 
     logger.info("Running two-layer instability with the following parameters:")
-    logger.info("   Re = {:.3e}, S = {:.3e}, resolution = {}x{}, aspect = {}".format(Re0, S, nx, nz, aspect))
+    logger.info("   Re = {:.3e}, S = {:.3e}, resolution = {}x{}x{}, aspect = {}".format(Re0, S, nx, ny, nz, aspect))
     logger.info("   Pr = {:2g}".format(Pr))
     logger.info("   Re0 = {:.3e}, Pe0 = {:.3e}, Qmag ~ u^2 = {:.3e}".format(Re0, Pe0, Qmag))
 
@@ -314,7 +328,7 @@ def run_cartesian_instability(args):
     y_basis = de.Fourier('y', ny, interval=(0, Ly), dealias=3/2)
     z_basis = de.Chebyshev('z', nz, interval=(0,Lz), dealias=3/2)
     bases = [x_basis, y_basis, z_basis]
-    domain = de.Domain(bases, grid_dtype=np.float64, mesh=None)
+    domain = de.Domain(bases, grid_dtype=np.float64, mesh=mesh)
     reducer = flow_tools.GlobalArrayReducer(domain.distributor.comm_cart)
     z = domain.grid(-1)
     z_de = domain.grid(-1, scales=domain.dealias)
@@ -523,7 +537,7 @@ def run_cartesian_instability(args):
     cfl_safety = float(args['--safety'])
     CFL = flow_tools.CFL(solver, initial_dt=dt, cadence=1, safety=cfl_safety,
                          max_change=1.5, min_change=0.25, max_dt=max_dt, threshold=0.2)
-    CFL.add_velocities(('u', 'w'))
+    CFL.add_velocities(('u', 'v', 'w'))
 
     run_time_ff   = float(args['--run_time_ff'])
     run_time_wall = float(args['--run_time_wall'])
@@ -540,6 +554,8 @@ def run_cartesian_instability(args):
     flow.properties.add_task("plane_avg(enstrophy - bruntN2)", name='CZ_border')
     flow.properties.add_task("vol_avg(cz_mask*vel_rms**2/max_brunt)**(-1)", name='stiffness')
 
+    Hermitian_cadence = 100
+
     def main_loop(dt):
         Re_avg = 0
         try:
@@ -552,8 +568,12 @@ def run_cartesian_instability(args):
                 solver.step(dt)
                 dt = CFL.compute_dt()
 
+                if effective_iter % Hermitian_cadence == 0:
+                    for f in solver.state.fields:
+                        f.require_grid_space()
+
                 if effective_iter % 10 == 0:
-                    cz_border_prof = flow.properties['CZ_border']['g'][0,:]
+                    cz_border_prof = flow.properties['CZ_border']['g'][0,0,:]
                     cz_points = cz_border_prof > 0
                     if np.sum(cz_points) > 0:
                         zmax = z.flatten()[cz_points].max()
