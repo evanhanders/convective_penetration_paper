@@ -89,6 +89,8 @@ class RollingProfileAverager:
         with h5py.File(file_name, 'r') as f:
             for k in tasks:
                 self.current_tasks[k] = f['tasks'][k][()].squeeze()
+                if len(self.current_tasks[k].shape) == 1:
+                    self.current_tasks[k] = np.expand_dims(self.current_tasks[k], axis=0)
 
     def calculate_rolling_average(self, index, tasks, avg_num=10):
         for k in tasks:
@@ -157,7 +159,7 @@ if not plotter.idle:
             #Find top of CZ according to different measures
 
             #departure from grad_ad
-            departure_factor = 0.2
+            departure_factor = 0.5
             T_z_departure = (z > 0.9)*(-T_z < grad_ad - departure_factor*delta_grad)
             if np.sum(T_z_departure) > 0:
                 z_T_departure_guess = z[T_z_departure].min()
