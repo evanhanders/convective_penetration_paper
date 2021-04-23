@@ -624,7 +624,7 @@ def run_cartesian_instability(args):
                                 avg_dLz_dt = np.median(dLz_dt)
 
                     if np.sum(good_times) == N and np.abs(avg_dLz_dt) > tol:
-                        L_cz1 = L_cz0 + avg_dLz_dt*(top_cz_times[-1] - top_cz_times[0])*2
+                        L_cz1 = L_cz0 + 2*N*avg_dLz_dt
                         mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad)
                         mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
                         T1_z['g'] -= flow.properties['mean_T1_z']['g']
