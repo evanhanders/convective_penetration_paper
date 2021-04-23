@@ -312,6 +312,7 @@ def run_cartesian_instability(args):
     delta_k = k_rz - k_cz
     grad_ad = (Qmag * S * P) * (1 + zeta + invP)
     grad_rad_top = (Qmag * S * P) * (1 + zeta)
+    delta_grad = grad_ad - grad_rad_top
 
     #Adjust to account for expected velocities. and larger m = 0 diffusivities.
     Pe0 /= (np.sqrt(Qmag))
@@ -552,13 +553,30 @@ def run_cartesian_instability(args):
     flow = flow_tools.GlobalFlowProperty(solver, cadence=1)
     flow.add_property("Re", name='Re')
     flow.add_property("Pe", name='Pe')
-    flow.properties.add_task("plane_avg(enstrophy - bruntN2)", name='CZ_border')
+    flow.properties.add_task("plane_avg(-T_z)", name='grad', scales=domain.dealias, layout='g')
+    flow.properties.add_task("plane_avg(T1_z)", name='mean_T1_z', scales=domain.dealias, layout='g')
     flow.properties.add_task("vol_avg(cz_mask*vel_rms**2/max_brunt)**(-1)", name='stiffness')
+
+    grad_departure_frac = 0.5
 
     Hermitian_cadence = 100
 
     def main_loop(dt):
         Re_avg = 0
+
+        N = 100
+        avg_dLz_dt = 0
+        top_cz_times = np.zeros(N)
+        top_cz_z = np.zeros(N)
+        good_times = np.zeros(N, dtype=bool)
+        current_cz_z_integ = 0
+        current_t_integ = 0
+        current_top_cz = 0
+        last_t_record = 0
+
+        L_cz0 = None
+        tol = 1e-8 #tolerance on magnitude of dLcz/dt
+
         try:
             logger.info('Starting loop')
             start_iter = solver.iteration
@@ -567,28 +585,66 @@ def run_cartesian_instability(args):
             while solver.ok and np.isfinite(Re_avg):
                 effective_iter = solver.iteration - start_iter
                 solver.step(dt)
-                dt = CFL.compute_dt()
 
                 if effective_iter % Hermitian_cadence == 0:
                     for f in solver.state.fields:
                         f.require_grid_space()
 
                 if effective_iter % 10 == 0:
-                    cz_border_prof = flow.properties['CZ_border']['g'][0,0,:]
-                    cz_points = cz_border_prof > 0
+                    Re_avg = flow.grid_average('Re')
+
+                    #Get departure point from grad_ad
+                    grad = flow.properties['grad']['g'][0,0,:]
+                    cz_points = grad > grad_ad - grad_departure_frac*delta_grad
                     if np.sum(cz_points) > 0:
-                        zmax = z.flatten()[cz_points].max()
+                        zmax = z_de.flatten()[cz_points].max()
                     else:
                         zmax = 0
                     zmax = reducer.reduce_scalar(zmax, MPI.MAX)
+
+                    #Track trajectory of departure over time
+                    if Re_avg > 1:
+                        current_cz_z_integ += dt*zmax
+                        current_t_integ += dt
+                        current_top_cz = current_cz_z_integ/current_t_integ
+                        if solver.sim_time > last_t_record + 1:
+                            last_t_record = solver.sim_time
+                            top_cz_z[:-1] = top_cz_z[1:]
+                            top_cz_times[:-1] = top_cz_times[1:]
+                            good_times[:-1] = good_times[1:]
+                            top_cz_z[-1] = current_top_cz
+                            top_cz_times[-1] = solver.sim_time
+                            good_times[-1] = True
+                            current_cz_z_integ = current_t_integ = 0
+                            if L_cz0 is None:
+                                L_cz0 = top_cz_z[-1]
+
+                            if good_times[-2] == True:
+                                dLz_dt = np.gradient(top_cz_z[good_times], top_cz_times[good_times])
+                                avg_dLz_dt = np.median(dLz_dt)
+
+                    if np.sum(good_times) == N and np.abs(avg_dLz_dt) > tol:
+                        L_cz1 = L_cz0 + avg_dLz_dt*(top_cz_times[-1] - top_cz_times[0])*2
+                        mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad)
+                        mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
+                        T1_z['g'] -= flow.properties['mean_T1_z']['g']
+                        T1_z['g'] += mean_T1_z
+                        T1_z.antidifferentiate('z', ('right', 0), out=T1)
+
+                        logger.info('Adjusting mean state to have L_cz = {:.4f}'.format(L_cz1))
+                        L_cz0 = L_cz1
+                        good_times[:] = False
                     
-                    Re_avg = flow.grid_average('Re')
-                    log_string =  'Iteration: {:5d}, '.format(solver.iteration)
+                    log_string =  'Iteration: {:7d}, '.format(solver.iteration)
                     log_string += 'Time: {:8.3e} ({:8.3e} therm), dt: {:8.3e}, '.format(solver.sim_time/t_ff, solver.sim_time/Pe0,  dt/t_ff)
                     log_string += 'Pe: {:8.3e}/{:8.3e}, '.format(flow.grid_average('Pe'), flow.max('Pe'))
                     log_string += 'CZ_zmax: {:.03f}, '.format(zmax)
-                    log_string += 'stiffness: {:.03e}'.format(flow.grid_average('stiffness'))
+                    log_string += 'avg_dLz_dt: {:.01e}, '.format(avg_dLz_dt)
+                    log_string += 'stiffness: {:.01e}'.format(flow.grid_average('stiffness'))
                     logger.info(log_string)
+
+                dt = CFL.compute_dt()
+                    
         except:
             raise
             logger.error('Exception raised, triggering end of main loop.')
