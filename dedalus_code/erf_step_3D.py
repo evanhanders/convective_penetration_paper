@@ -621,7 +621,7 @@ def run_cartesian_instability(args):
 
                             if good_times[-2] == True:
                                 dLz_dt = np.gradient(top_cz_z[good_times], top_cz_times[good_times])
-                                avg_dLz_dt = np.median(dLz_dt)
+                                avg_dLz_dt = np.mean(dLz_dt)
 
                     if np.sum(good_times) == N and np.abs(avg_dLz_dt) > tol:
                         L_cz1 = L_cz0 + 2*N*avg_dLz_dt
