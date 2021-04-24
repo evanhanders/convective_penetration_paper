@@ -24,6 +24,8 @@ echo $NCORE
 echo "Processing $DIR on $NCORE cores"
 
 mpiexec_mpt -n $NCORE python3 plot_profile_movie.py $DIR
+mpiexec_mpt -n $NCORE python3 find_top_cz.py $DIR
+mpiexec_mpt -n $NCORE python3 threeD_plot_slices.py $DIR
 mpiexec_mpt -n $NCORE python3 plot_slices.py $DIR
 mpiexec_mpt -n $NCORE python3 plot_avg_profiles.py $DIR
 
