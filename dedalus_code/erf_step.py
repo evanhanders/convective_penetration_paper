@@ -40,7 +40,8 @@ Options:
     --root_dir=<dir>           Root directory for output [default: ./]
 
     --adiabatic_IC             If flagged, set the background profile as a pure adiabat (not thermal equilibrium in RZ)
-    --predictive               If flagged, predict the evolved state using a 1D model.
+    --predictive=<delta>       A guess for delta_P the penetration depth. The initial state grad(T) will be an erf from grad(T_ad) to grad(T_rad) centered at L_cz + delta_P
+    --T_iters=<N>              Number of times to iterate background profile before pure timestepping [default: 10]
     --plot_model               If flagged, create and plt.show() some plots of the 1D atmospheric structure.
 
 """
@@ -236,9 +237,9 @@ def run_cartesian_instability(args):
     #############################################################################################
     ### 1. Read in command-line args, set up data directory
     data_dir = args['--root_dir'] + '/' + sys.argv[0].split('.py')[0]
-    data_dir += "_Re{}_P{}_zeta{}_S{}_Lz{}_Lcz{}_Pr{}_a{}_{}x{}".format(args['--Re'], args['--P'], args['--zeta'], args['--S'], args['--Lz'], args['--L_cz'], args['--Pr'], args['--aspect'], args['--nx'], args['--nz'])
-    if args['--predictive']:
-        data_dir += '_predictive'
+    data_dir += "_Re{}_P{}_zeta{}_S{}_Lz{}_Lcz{}_Pr{}_a{}_Titer{}_{}x{}".format(args['--Re'], args['--P'], args['--zeta'], args['--S'], args['--Lz'], args['--L_cz'], args['--Pr'], args['--aspect'], args['--T_iters'], args['--nx'], args['--nz'])
+    if args['--predictive'] is not None:
+        data_dir += '_predictive{}'.format(args['--predictive'])
     if args['--adiabatic_IC']:
         data_dir += '_adiabaticIC'
     if args['--label'] is not None:
@@ -278,6 +279,7 @@ def run_cartesian_instability(args):
     delta_k = k_rz - k_cz
     grad_ad = (Qmag * S * P) * (1 + zeta + invP)
     grad_rad_top = (Qmag * S * P) * (1 + zeta)
+    delta_grad = grad_ad - grad_rad_top
 
     #Adjust to account for expected velocities. and larger m = 0 diffusivities.
     Pe0 /= (np.sqrt(Qmag))
@@ -425,18 +427,13 @@ def run_cartesian_instability(args):
         for f in [T1, T1_z]:
             f.set_scales(domain.dealias, keep_data=True)
 
-        if args['--predictive']:
-            z_p = z_match + 0.25*P
-            if P > 0.2:
-                d_ov = (S/1e2)**(-1/2) * 0.15 * P
-            else:
-                d_ov = (2/3) * (S/1e2)**(-1/2)
-            logger.info('using predictive 1D ICs with zp: {:.2f} and dov: {:.2e}'.format(z_p, d_ov))
+        if args['--predictive'] is not None:
+            z_p = L_cz + float(args['--predictive'])
+            logger.info('using predictive 1D ICs with zp: {:.2f}'.format(z_p))
 
-            T_z = -grad_ad + (T_rad_z0['g'] + grad_ad)*zero_to_one(z_de, z_p + d_ov/2, width=d_ov)
+            T_z = -grad_ad + (T_rad_z0['g'] + grad_ad)*zero_to_one(z_de, z_p, width=0.05)
             T1_z['g'] = T_z - T0_z['g']
             T1_z.antidifferentiate('z', ('right', 0), out=T1)
-
 
         noise = global_noise(domain, int(args['--seed']))
         T1['g'] += 1e-3*np.sin(np.pi*(z_de))*noise['g']
@@ -513,14 +510,37 @@ def run_cartesian_instability(args):
     ### 6. Setup output tasks; run main loop.
     analysis_tasks = initialize_output(solver, data_dir, mode=mode, output_dt=t_ff)
 
+    dense_scales = 20
+    z_dense = domain.grid(-1, scales=dense_scales)
+    dense_handler = solver.evaluator.add_dictionary_handler(sim_dt=1, iter=np.inf)
+    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=dense_scales, layout='g')
+
     flow = flow_tools.GlobalFlowProperty(solver, cadence=1)
     flow.add_property("Re", name='Re')
     flow.add_property("Pe", name='Pe')
-    flow.properties.add_task("plane_avg(enstrophy - bruntN2)", name='CZ_border')
+    flow.properties.add_task("plane_avg(T1_z)", name='mean_T1_z', scales=domain.dealias, layout='g')
     flow.properties.add_task("vol_avg(cz_mask*vel_rms**2/max_brunt)**(-1)", name='stiffness')
+
+    grad_departure_frac = 0.5
 
     def main_loop(dt):
         Re_avg = 0
+        max_T_iters = int(args['--T_iters'])
+        done_T_iters = 0
+
+        transient_wait = 20
+        transient_start = None
+        N = 80
+        avg_dLz_dt = 0
+        top_cz_times = np.zeros(N)
+        top_cz_z = np.zeros(N)
+        good_times = np.zeros(N, dtype=bool)
+        last_height_t = 0
+
+        L_cz0 = None
+        zmax = 0
+        tol = 1e-8 #tolerance on magnitude of dLcz/dt
+
         try:
             logger.info('Starting loop')
             start_iter = solver.iteration
@@ -529,24 +549,64 @@ def run_cartesian_instability(args):
             while solver.ok and np.isfinite(Re_avg):
                 effective_iter = solver.iteration - start_iter
                 solver.step(dt)
-                dt = CFL.compute_dt()
 
-                if effective_iter % 10 == 0:
-                    cz_border_prof = flow.properties['CZ_border']['g'][0,:]
-                    cz_points = cz_border_prof > 0
+                if solver.sim_time > last_height_t + 1:
+                    last_height_t = int(solver.sim_time)
+                    #Get departure point from grad_ad
+                    grad = dense_handler['grad']['g'][0,:]
+                    cz_points = grad > grad_ad - grad_departure_frac*delta_grad
                     if np.sum(cz_points) > 0:
-                        zmax = z.flatten()[cz_points].max()
+                        zmax = z_dense.flatten()[cz_points].max()
                     else:
                         zmax = 0
                     zmax = reducer.reduce_scalar(zmax, MPI.MAX)
-                    
+                    #Track trajectory of grad_ad->grad_rad departure over time
+                    if Re_avg > 1:
+                        if transient_start is None:
+                            transient_start = int(solver.sim_time)
+                        if solver.sim_time > transient_start + transient_wait:
+                            top_cz_z[:-1] = top_cz_z[1:]
+                            top_cz_times[:-1] = top_cz_times[1:]
+                            good_times[:-1] = good_times[1:]
+                            top_cz_z[-1] = zmax
+                            top_cz_times[-1] = solver.sim_time
+                            good_times[-1] = True
+                            if L_cz0 is None:
+                                L_cz0 = top_cz_z[-1]
+
+                            if good_times[-2] == True:
+                                dLz_dt = np.gradient(top_cz_z[good_times], top_cz_times[good_times])
+                                avg_dLz_dt = np.mean(dLz_dt)
+
+                    #Adjust background thermal profile
+                    if done_T_iters < max_T_iters and np.sum(good_times) == N and np.abs(avg_dLz_dt) > tol:
+                        L_cz1 = L_cz0 + 2*(N + transient_wait)*avg_dLz_dt
+                        mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad)
+                        mean_T1_z = mean_T_z - T0_z['g'][0,:]
+                        T1_z['g'] -= flow.properties['mean_T1_z']['g']
+                        T1_z['g'] += mean_T1_z
+                        T1_z.antidifferentiate('z', ('right', 0), out=T1)
+
+                        L_cz0 = L_cz1
+                        good_times[:] = False
+                        transient_start = None
+                        done_T_iters += 1
+                        logger.info('T_adjust {}/{}: Adjusting mean state to have L_cz = {:.4f}'.format(done_T_iters, max_T_iters, L_cz1))
+
+
+                if effective_iter % 10 == 0:
                     Re_avg = flow.grid_average('Re')
-                    log_string =  'Iteration: {:5d}, '.format(solver.iteration)
+
+                    log_string =  'Iteration: {:7d}, '.format(solver.iteration)
                     log_string += 'Time: {:8.3e} ({:8.3e} therm), dt: {:8.3e}, '.format(solver.sim_time/t_ff, solver.sim_time/Pe0,  dt/t_ff)
                     log_string += 'Pe: {:8.3e}/{:8.3e}, '.format(flow.grid_average('Pe'), flow.max('Pe'))
                     log_string += 'CZ_zmax: {:.03f}, '.format(zmax)
-                    log_string += 'stiffness: {:.03e}'.format(flow.grid_average('stiffness'))
+                    log_string += 'avg_dLz_dt: {:.01e}, '.format(avg_dLz_dt)
+                    log_string += 'stiffness: {:.01e}'.format(flow.grid_average('stiffness'))
                     logger.info(log_string)
+
+                dt = CFL.compute_dt()
+
         except:
             raise
             logger.error('Exception raised, triggering end of main loop.')
