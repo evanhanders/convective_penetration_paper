@@ -1,0 +1,12 @@
+[parameters]
+Re = 1e3
+S = 1e3
+P = 1e0
+Lz = 4
+nz = 512
+nx = 256
+run_time_wall = 119
+run_time_ff = 3e3
+
+predictive=1.8
+T_iters=5
