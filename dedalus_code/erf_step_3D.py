@@ -33,7 +33,7 @@ Options:
     --mesh=<m>                 Processor distribution mesh (e.g., "4,4")
 
     --run_time_wall=<time>     Run time, in hours [default: 119.5]
-    --run_time_ff=<time>       Run time, in freefall times [default: 1e5]
+    --run_time_ff=<time>       Run time, in freefall times [default: 1.6e3]
 
     --restart=<restart_file>   Restart from checkpoint
     --seed=<seed>              RNG seed for initial conditoins [default: 42]
@@ -42,7 +42,8 @@ Options:
     --root_dir=<dir>           Root directory for output [default: ./]
 
     --adiabatic_IC             If flagged, set the background profile as a pure adiabat (not thermal equilibrium in RZ)
-    --predictive               If flagged, predict the evolved state using a 1D model.
+    --predictive=<delta>       A guess for delta_P the penetration depth. The initial state grad(T) will be an erf from grad(T_ad) to grad(T_rad) centered at L_cz + delta_P
+    --T_iters=<N>              Number of times to iterate background profile before pure timestepping [default: 10]
     --plot_model               If flagged, create and plt.show() some plots of the 1D atmospheric structure.
 
 """
@@ -257,9 +258,9 @@ def run_cartesian_instability(args):
     ### 1. Read in command-line args, set up data directory
     if args['--ny'] is None: args['--ny'] = args['--nx']
     data_dir = args['--root_dir'] + '/' + sys.argv[0].split('.py')[0]
-    data_dir += "_Re{}_P{}_zeta{}_S{}_Lz{}_Lcz{}_Pr{}_a{}_{}x{}x{}".format(args['--Re'], args['--P'], args['--zeta'], args['--S'], args['--Lz'], args['--L_cz'], args['--Pr'], args['--aspect'], args['--nx'], args['--ny'], args['--nz'])
-    if args['--predictive']:
-        data_dir += '_predictive'
+    data_dir += "_Re{}_P{}_zeta{}_S{}_Lz{}_Lcz{}_Pr{}_a{}_Titer{}_{}x{}x{}".format(args['--Re'], args['--P'], args['--zeta'], args['--S'], args['--Lz'], args['--L_cz'], args['--Pr'], args['--aspect'], args['--T_iters'], args['--nx'], args['--ny'], args['--nz'])
+    if args['--predictive'] is not None:
+        data_dir += '_predictive{}'.format(args['--predictive'])
     if args['--adiabatic_IC']:
         data_dir += '_adiabaticIC'
     if args['--label'] is not None:
@@ -462,15 +463,11 @@ def run_cartesian_instability(args):
         for f in [T1, T1_z]:
             f.set_scales(domain.dealias, keep_data=True)
 
-        if args['--predictive']:
-            z_p = z_match + 0.25*P
-            if P > 0.2:
-                d_ov = (S/1e2)**(-1/2) * 0.15 * P
-            else:
-                d_ov = (2/3) * (S/1e2)**(-1/2)
-            logger.info('using predictive 1D ICs with zp: {:.2f} and dov: {:.2e}'.format(z_p, d_ov))
+        if args['--predictive'] is not None:
+            z_p = L_cz + float(args['--predictive'])
+            logger.info('using predictive 1D ICs with zp: {:.2f}'.format(z_p))
 
-            T_z = -grad_ad + (T_rad_z0['g'] + grad_ad)*zero_to_one(z_de, z_p + d_ov/2, width=d_ov)
+            T_z = -grad_ad + (T_rad_z0['g'] + grad_ad)*zero_to_one(z_de, z_p, width=0.05)
             T1_z['g'] = T_z - T0_z['g']
             T1_z.antidifferentiate('z', ('right', 0), out=T1)
 
@@ -563,8 +560,12 @@ def run_cartesian_instability(args):
 
     def main_loop(dt):
         Re_avg = 0
+        max_T_iters = int(args['--T_iters'])
+        done_T_iters = 0
 
-        N = 100
+        transient_wait = 10
+        transient_start = None
+        N = 40
         avg_dLz_dt = 0
         top_cz_times = np.zeros(N)
         top_cz_z = np.zeros(N)
@@ -602,28 +603,32 @@ def run_cartesian_instability(args):
                         zmax = 0
                     zmax = reducer.reduce_scalar(zmax, MPI.MAX)
 
-                    #Track trajectory of departure over time
+                    #Track trajectory of grad_ad->grad_rad departure over time
                     if Re_avg > 1:
-                        current_cz_z_integ += dt*zmax
-                        current_t_integ += dt
-                        current_top_cz = current_cz_z_integ/current_t_integ
-                        if solver.sim_time > last_t_record + 1:
-                            last_t_record = solver.sim_time
-                            top_cz_z[:-1] = top_cz_z[1:]
-                            top_cz_times[:-1] = top_cz_times[1:]
-                            good_times[:-1] = good_times[1:]
-                            top_cz_z[-1] = current_top_cz
-                            top_cz_times[-1] = solver.sim_time
-                            good_times[-1] = True
-                            current_cz_z_integ = current_t_integ = 0
-                            if L_cz0 is None:
-                                L_cz0 = top_cz_z[-1]
+                        if transient_start is None:
+                            transient_start = solver.sim_time
+                        if solver.sim_time > transient_start + transient_wait:
+                            current_cz_z_integ += dt*zmax
+                            current_t_integ += dt
+                            current_top_cz = current_cz_z_integ/current_t_integ
+                            if solver.sim_time > last_t_record + 1:
+                                last_t_record = solver.sim_time
+                                top_cz_z[:-1] = top_cz_z[1:]
+                                top_cz_times[:-1] = top_cz_times[1:]
+                                good_times[:-1] = good_times[1:]
+                                top_cz_z[-1] = current_top_cz
+                                top_cz_times[-1] = solver.sim_time
+                                good_times[-1] = True
+                                current_cz_z_integ = current_t_integ = 0
+                                if L_cz0 is None:
+                                    L_cz0 = top_cz_z[-1]
 
-                            if good_times[-2] == True:
-                                dLz_dt = np.gradient(top_cz_z[good_times], top_cz_times[good_times])
-                                avg_dLz_dt = np.mean(dLz_dt)
+                                if good_times[-2] == True:
+                                    dLz_dt = np.gradient(top_cz_z[good_times], top_cz_times[good_times])
+                                    avg_dLz_dt = np.mean(dLz_dt)
 
-                    if np.sum(good_times) == N and np.abs(avg_dLz_dt) > tol:
+                    #Adjust background thermal profile
+                    if done_T_iters < max_T_iters and np.sum(good_times) == N and np.abs(avg_dLz_dt) > tol:
                         L_cz1 = L_cz0 + 2*N*avg_dLz_dt
                         mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad)
                         mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
@@ -631,10 +636,13 @@ def run_cartesian_instability(args):
                         T1_z['g'] += mean_T1_z
                         T1_z.antidifferentiate('z', ('right', 0), out=T1)
 
-                        logger.info('Adjusting mean state to have L_cz = {:.4f}'.format(L_cz1))
                         L_cz0 = L_cz1
                         good_times[:] = False
-                    
+                        transient_start = None
+                        done_T_iters += 1
+                        logger.info('T_adjust {}/{}: Adjusting mean state to have L_cz = {:.4f}'.format(done_T_iters, max_T_iters, L_cz1))
+
+                   
                     log_string =  'Iteration: {:7d}, '.format(solver.iteration)
                     log_string += 'Time: {:8.3e} ({:8.3e} therm), dt: {:8.3e}, '.format(solver.sim_time/t_ff, solver.sim_time/Pe0,  dt/t_ff)
                     log_string += 'Pe: {:8.3e}/{:8.3e}, '.format(flow.grid_average('Pe'), flow.max('Pe'))
