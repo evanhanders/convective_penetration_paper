@@ -547,10 +547,14 @@ def run_cartesian_instability(args):
     ### 6. Setup output tasks; run main loop.
     analysis_tasks = initialize_output(solver, data_dir, mode=mode, output_dt=t_ff)
 
+    dense_scales = 20
+    z_dense = domain.grid(-1, scales=dense_scales)
+    dense_handler = solver.evaluator.add_dictionary_handler(sim_dt=1, iter=np.inf)
+    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=dense_scales, layout='g')
+
     flow = flow_tools.GlobalFlowProperty(solver, cadence=1)
     flow.add_property("Re", name='Re')
     flow.add_property("Pe", name='Pe')
-    flow.properties.add_task("plane_avg(-T_z)", name='grad', scales=domain.dealias, layout='g')
     flow.properties.add_task("plane_avg(T1_z)", name='mean_T1_z', scales=domain.dealias, layout='g')
     flow.properties.add_task("vol_avg(cz_mask*vel_rms**2/max_brunt)**(-1)", name='stiffness')
 
@@ -563,19 +567,17 @@ def run_cartesian_instability(args):
         max_T_iters = int(args['--T_iters'])
         done_T_iters = 0
 
-        transient_wait = 10
+        transient_wait = 20
         transient_start = None
-        N = 40
+        N = 30
         avg_dLz_dt = 0
         top_cz_times = np.zeros(N)
         top_cz_z = np.zeros(N)
         good_times = np.zeros(N, dtype=bool)
-        current_cz_z_integ = 0
-        current_t_integ = 0
-        current_top_cz = 0
-        last_t_record = 0
+        last_height_t = 0
 
         L_cz0 = None
+        zmax = 0
         tol = 1e-8 #tolerance on magnitude of dLcz/dt
 
         try:
@@ -591,45 +593,37 @@ def run_cartesian_instability(args):
                     for f in solver.state.fields:
                         f.require_grid_space()
 
-                if effective_iter % 10 == 0:
-                    Re_avg = flow.grid_average('Re')
-
+                if solver.sim_time > last_height_t + 1:
+                    last_height_t = int(solver.sim_time)
                     #Get departure point from grad_ad
-                    grad = flow.properties['grad']['g'][0,0,:]
+                    grad = dense_handler['grad']['g'][0,0,:]
                     cz_points = grad > grad_ad - grad_departure_frac*delta_grad
                     if np.sum(cz_points) > 0:
-                        zmax = z_de.flatten()[cz_points].max()
+                        zmax = z_dense.flatten()[cz_points].max()
                     else:
                         zmax = 0
                     zmax = reducer.reduce_scalar(zmax, MPI.MAX)
-
                     #Track trajectory of grad_ad->grad_rad departure over time
                     if Re_avg > 1:
                         if transient_start is None:
-                            transient_start = solver.sim_time
+                            transient_start = int(solver.sim_time)
                         if solver.sim_time > transient_start + transient_wait:
-                            current_cz_z_integ += dt*zmax
-                            current_t_integ += dt
-                            current_top_cz = current_cz_z_integ/current_t_integ
-                            if solver.sim_time > last_t_record + 1:
-                                last_t_record = solver.sim_time
-                                top_cz_z[:-1] = top_cz_z[1:]
-                                top_cz_times[:-1] = top_cz_times[1:]
-                                good_times[:-1] = good_times[1:]
-                                top_cz_z[-1] = current_top_cz
-                                top_cz_times[-1] = solver.sim_time
-                                good_times[-1] = True
-                                current_cz_z_integ = current_t_integ = 0
-                                if L_cz0 is None:
-                                    L_cz0 = top_cz_z[-1]
+                            top_cz_z[:-1] = top_cz_z[1:]
+                            top_cz_times[:-1] = top_cz_times[1:]
+                            good_times[:-1] = good_times[1:]
+                            top_cz_z[-1] = zmax
+                            top_cz_times[-1] = solver.sim_time
+                            good_times[-1] = True
+                            if L_cz0 is None:
+                                L_cz0 = top_cz_z[-1]
 
-                                if good_times[-2] == True:
-                                    dLz_dt = np.gradient(top_cz_z[good_times], top_cz_times[good_times])
-                                    avg_dLz_dt = np.mean(dLz_dt)
+                            if good_times[-2] == True:
+                                dLz_dt = np.gradient(top_cz_z[good_times], top_cz_times[good_times])
+                                avg_dLz_dt = np.mean(dLz_dt)
 
                     #Adjust background thermal profile
                     if done_T_iters < max_T_iters and np.sum(good_times) == N and np.abs(avg_dLz_dt) > tol:
-                        L_cz1 = L_cz0 + 2*N*avg_dLz_dt
+                        L_cz1 = L_cz0 + 2*(N + transient_wait)*avg_dLz_dt
                         mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad)
                         mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
                         T1_z['g'] -= flow.properties['mean_T1_z']['g']
@@ -642,7 +636,12 @@ def run_cartesian_instability(args):
                         done_T_iters += 1
                         logger.info('T_adjust {}/{}: Adjusting mean state to have L_cz = {:.4f}'.format(done_T_iters, max_T_iters, L_cz1))
 
-                   
+
+
+
+                if effective_iter % 10 == 0:
+                    Re_avg = flow.grid_average('Re')
+
                     log_string =  'Iteration: {:7d}, '.format(solver.iteration)
                     log_string += 'Time: {:8.3e} ({:8.3e} therm), dt: {:8.3e}, '.format(solver.sim_time/t_ff, solver.sim_time/Pe0,  dt/t_ff)
                     log_string += 'Pe: {:8.3e}/{:8.3e}, '.format(flow.grid_average('Pe'), flow.max('Pe'))
