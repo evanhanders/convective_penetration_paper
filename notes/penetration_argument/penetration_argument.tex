@@ -1,0 +1,128 @@
+\documentclass[12pt,preprint]{article}
+\usepackage{natbib}
+\bibliographystyle{plain}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+
+\usepackage{pb-diagram}
+
+\parindent = 0.0 in
+\parskip = 0.15 in
+
+\newcommand\Beq{\begin{align}} 
+\newcommand\Eeq{\end{align}}
+
+\newcommand\Bfig{\begin{figure}} 
+\newcommand\Efig{\end{figure}}
+
+\newcommand\Ra{\mathrm{Ra}}
+\newcommand\Pran{\mathrm{Pr}}
+\newcommand\Rac{\mathrm{Ra}_{\mathrm{c}}}
+\newcommand\Ek{\mathrm{Ek}}
+\newcommand\Ro{\mathrm{Ro}}
+\newcommand\Nu{\mathrm{Nu}}
+\newcommand\Sc{\mathrm{Sc}}
+
+\newcommand\eps{\varepsilon}
+\renewcommand\L {\mathcal{L}}
+
+\newcommand{\n}{\\ \nonumber \\ }
+\newcommand{\nn}{\nonumber}
+\newcommand{\nnn}{\\ \nonumber \\ \nonumber}
+
+\newcommand\ie{\textit{i.e.},~}
+\newcommand\eg{\textit{e.g.},~}
+\newcommand{\omicron}{o}
+
+\newcommand{\pd}[1]{\partial_{#1}}
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+\newcommand{\M}[1]{\mathbf{#1}}
+\renewcommand{\dot}{\vec{\cdot}}
+\newcommand{\grad}{\vec{\nabla}}
+\newcommand{\cross}{\vec{\times}}
+\newcommand{\laplacian}{\nabla^2}
+
+\newcommand{\sump}[2]{\sideset{}{'}\sum_{{#1}=0}^{#2}}
+
+\newcommand{\eq}[1]{eq.~(\ref{#1})}
+\newcommand{\eqs}[2]{eqs.~(\ref{#1})~\&~(\ref{#2})}
+\newcommand{\eqss}[2]{eqs.~(\ref{#1})--(\ref{#2})}
+
+\newcommand{\Eq}[1]{Eq.~(\ref{#1})}
+\newcommand{\Eqs}[2]{Eqs.~(\ref{#1})~\&~(\ref{#2})}
+\newcommand{\Eqss}[2]{Eqs.~(\ref{#1})--(\ref{#2})}
+
+\newcommand{\fig}[1]{Fig.~(\ref{#1})}
+\newcommand{\figs}[2]{Figs.~(\ref{#1})~\&~(\ref{#2})}
+
+\newcommand{\tbl}[1]{Table~(#1)}
+
+\begin{document}
+
+%\section{Nondimensional equations}
+%The nondimensional system of equations we solve is
+%\begin{align}
+%&\grad\dot\vec{u} = 0 \\
+%&\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\grad \varpi + T \hat{z} + \rm{Re}_0^{-1}\grad^2 \vec{u} \\
+%&\partial_t T + \vec{u}\dot\grad T + w \grad_{\rm{ad}} = \rm{Pe}_0^{-1}\grad^2 T' + \grad\dot[k \grad \overline{T}] + Q
+%\end{align}
+
+\section{Convective Penetration argument}
+First some definitions:
+\begin{enumerate}
+\item $z=L_s$ is the the top of the convection zone according to the Schwarzschild criterion; it's the height where $\grad_{\rm{ad}} = \grad_{\rm{rad}}$.
+\item $L_{\rm{cz}}$ is the top of the convection zone; it's roughly the top of the region where convection flattens $\grad \rightarrow \grad_{\rm{ad}}$.
+We generally get $L_{\rm{cz}} > L_s$.
+\item The penetration depth is $\delta_p = L_{\rm{cz}} - L_s$.
+\item The flux carried by convection for $z < L_s$ is $F_{\rm{conv,cz}} = Q \delta_H$, where $Q$ is the magnitude of the internal heating and $\delta_H$ is the depth of the heating layer.
+\item $\overline{w}$ is the vertical profile of the characteristic (vertical) convective velocity, which is a constant $w_{\rm{cz}}$ for $z \leq L_{\rm{cz}}$.
+\item Similarly, $\overline{\delta T}$ is the vertical profile of the characteristic temperature perturbation.
+\end{enumerate}
+
+And some key assumptions.
+\begin{enumerate}
+\item Convection flattens $\grad \rightarrow \grad_{\rm{ad}}$ for $z \leq L_{\rm{cz}}$ (baked into our definitions).
+\item We assume a system in thermal equilibrium, at least in (adiabatic) convection zone with $z \leq L_{\rm{cz}}$.
+Therefore $F_{\rm{conv}}(z) = F_{\rm{tot}}(z) - F_{\rm{rad, ad}}(z)$, where $F$ is a flux and $F_{\rm{rad, ad}}$ is the radiative flux along the adiabatic gradient.
+\item We assume $F_{\rm{conv}} = \overline{w T} \approx \overline{w}\overline{\delta T}$.
+Combined with our previous assumption, we get
+\begin{equation}
+\overline{\delta T} \approx \frac{F_{\rm{tot}}(z) - F_{\rm{rad, ad}}(z)}{\overline{w}}.
+\end{equation}
+\end{enumerate}
+As we increase in height, the conductivity and thus $F_{\rm{rad, ad}}(z)$ also increases.
+This means that $\overline{\delta T}$ has the opposite sign of $\overline{w}$ for $z > L_s$.
+We presume that buoyancy breaking is the dominant mechanism which brings convective motions to a stop in this adiabatic layer,
+\begin{equation}
+\frac{d \overline{w}}{dt} = \overline{\delta T} = \frac{F_{\rm{tot}}(z) - F_{\rm{rad, ad}}(z)}{\overline{w}}.
+\end{equation}
+If we multiply both sides by $\overline{w}$ and absorb it into the the derivative, then apply the chain rule with $d/dt = d/dz (dz/dt) = d/dz \overline{w}$, we retrieve,
+\begin{equation}
+\frac{1}{2} d\overline{w}^3 = \left[F_{\rm{tot}}(z) - F_{\rm{rad, ad}}(z)\right]dz.
+\end{equation}
+We now replace $F_{\rm{rad, ad}}(z) = k_0(z) \grad_{\rm{ad}}$, and we assume that $k(z)$ instantaneously jumps from a low value $k_{\rm{cz}}$ to a high value $k_{\rm{rz}}$ at $z = L_s$.
+Per this assumption, the convective flux is a negative constant for $z \geq L_s$.
+We integrate from $z = L_s$ with $\overline{w} = w_{\rm{cz}}$ to $z = L_{s}$ with $\overline{w} = 0$, and get
+\begin{equation}
+-\frac{w_{\rm{cz}}^3}{2} = F_{\rm{conv,p}} \delta_p.
+\end{equation}
+By definition, the convective flux in the penetrative layer with $z > L_s$ is related to $\mathcal{P}$,
+\begin{equation}
+F_{\rm{conv,t}} = -\frac{F_{\rm{conv,cz}}}{\mathcal{P}},
+\end{equation}
+so we retrieve
+\begin{equation}
+\delta_p = \frac{w_{\rm{cz}}^3 \mathcal{P}}{2 F_{\rm{conv, cz}}},
+\end{equation}
+and the penetration depth scales with the cube of the velocity and linearly with $\mathcal{P}$.
+This prediction does not exactly line up with the simulation results (this overpredicts the magnitude of $\delta_p$).
+The important thing we need to determine is if it scales with $w_{\rm{cz}}$, $\mathcal{P}$, and $F_{\rm{conv,cz}}$ in the appropriate way.
+So far, it seems to scale linearly with $\mathcal{P}$ at fixed other parameters.
+
+
+\bibliography{biblio.bib}
+\end{document} 
