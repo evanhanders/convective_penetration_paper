@@ -569,7 +569,8 @@ def run_cartesian_instability(args):
 
         transient_wait = 20
         transient_start = None
-        N = 30
+        N = 40
+        halfN = int(N/2)
         avg_dLz_dt = 0
         top_cz_times = np.zeros(N)
         top_cz_z = np.zeros(N)
@@ -623,20 +624,28 @@ def run_cartesian_instability(args):
 
                     #Adjust background thermal profile
                     if done_T_iters < max_T_iters and np.sum(good_times) == N and np.abs(avg_dLz_dt) > tol:
-                        L_cz1 = L_cz0 + 2*(N + transient_wait)*avg_dLz_dt
-                        mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad)
-                        mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
-                        T1_z['g'] -= flow.properties['mean_T1_z']['g']
-                        T1_z['g'] += mean_T1_z
-                        T1_z.antidifferentiate('z', ('right', 0), out=T1)
+                        dLz_dt_beg = np.mean(dLz_dt[:halfN])
+                        dLz_dt_end = np.mean(dLz_dt[halfN:])
+                        Lz_beg = np.mean(top_cz_z[:halfN])
+                        Lz_end = np.mean(top_cz_z[halfN:])
+                        delta_Lz = Lz_end - Lz_beg
+                        delta_dLz_dt = dLz_dt_end - dLz_dt_beg
+                        logger.info('Lz: {:.3f}/{:.3f}, deltaLz: {:.3e}'.format(Lz_beg, Lz_end, delta_Lz))
+                        logger.info("dLz/dt: {:.3e}/{:.3e}, deltadLz/dt: {:.3e}".format(dLz_dt_beg, dLz_dt_end, delta_dLz_dt))
+                        if delta_Lz != 0 and delta_dLz_dt != 0:
+                            L_cz1 = Lz_beg - delta_Lz * (dLz_dt_beg/delta_dLz_dt)
+    #                        L_cz1 = L_cz0 + 2*(N + transient_wait)*avg_dLz_dt
+                            mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad)
+                            mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
+                            T1_z['g'] -= flow.properties['mean_T1_z']['g']
+                            T1_z['g'] += mean_T1_z
+                            T1_z.antidifferentiate('z', ('right', 0), out=T1)
 
-                        L_cz0 = L_cz1
-                        good_times[:] = False
-                        transient_start = None
-                        done_T_iters += 1
-                        logger.info('T_adjust {}/{}: Adjusting mean state to have L_cz = {:.4f}'.format(done_T_iters, max_T_iters, L_cz1))
-
-
+                            L_cz0 = L_cz1
+                            good_times[:] = False
+                            transient_start = None
+                            done_T_iters += 1
+                            logger.info('T_adjust {}/{}: Adjusting mean state to have L_cz = {:.4f}'.format(done_T_iters, max_T_iters, L_cz1))
 
 
                 if effective_iter % 10 == 0:
