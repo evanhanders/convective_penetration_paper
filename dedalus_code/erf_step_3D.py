@@ -567,15 +567,16 @@ def run_cartesian_instability(args):
         max_T_iters = int(args['--T_iters'])
         done_T_iters = 0
 
-        transient_wait = 20
+        transient_wait = 30
         transient_start = None
-        N = 40
+        N = 70
         halfN = int(N/2)
         avg_dLz_dt = 0
         top_cz_times = np.zeros(N)
         top_cz_z = np.zeros(N)
         good_times = np.zeros(N, dtype=bool)
         last_height_t = 0
+        completion_checks = np.zeros(5, dtype=bool)
 
         L_cz0 = None
         zmax = 0
@@ -630,16 +631,34 @@ def run_cartesian_instability(args):
                         Lz_end = np.mean(top_cz_z[halfN:])
                         delta_Lz = Lz_end - Lz_beg
                         delta_dLz_dt = dLz_dt_end - dLz_dt_beg
+                        avg_Lz = Lz_beg + delta_Lz/2
                         logger.info('Lz: {:.3f}/{:.3f}, deltaLz: {:.3e}'.format(Lz_beg, Lz_end, delta_Lz))
                         logger.info("dLz/dt: {:.3e}/{:.3e}, deltadLz/dt: {:.3e}".format(dLz_dt_beg, dLz_dt_end, delta_dLz_dt))
-                        if delta_Lz != 0 and delta_dLz_dt != 0:
-                            L_cz1 = Lz_beg - delta_Lz * (dLz_dt_beg/delta_dLz_dt)
+
+                        if dLz_dt_beg / dLz_dt_end <= 0:
+                            completion_checks[int(np.sum(completion_checks))] = True
+                            logger.info("{} completion checks done".format(np.sum(completion_checks)))
+                            good_times[:halfN] = False
+                            if np.sum(completion_checks) == completion_checks.shape[0]:
+                                logger.info("{} completion checks done; finishing AE.".format(completion_checks.shape[0]))
+                                done_T_iters = max_T_iters
+                        elif delta_Lz != 0 and delta_dLz_dt != 0:
+                            delta_L_cz = avg_dLz_dt * np.abs(delta_Lz / delta_dLz_dt)
+                            max_delta_L_cz = np.abs(2*(transient_wait+N)*dLz_dt_beg)
+                            if np.abs(delta_L_cz) > max_delta_L_cz:
+                                delta_L_cz *= max_delta_L_cz/np.abs(delta_L_cz)
+                            L_cz1 = avg_Lz + delta_L_cz
     #                        L_cz1 = L_cz0 + 2*(N + transient_wait)*avg_dLz_dt
                             mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad)
                             mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
                             T1_z['g'] -= flow.properties['mean_T1_z']['g']
+                            T1_z['g'] *= one_to_zero(z_de, 1, width=0.05)
                             T1_z['g'] += mean_T1_z
                             T1_z.antidifferentiate('z', ('right', 0), out=T1)
+
+                            for fname in ['u', 'v', 'w', 'ωx', 'ωy', 'ωz', 'p']:
+                                solver.state[fname].set_scales(domain.dealias, keep_data=True)
+                                solver.state[fname]['g'] *= one_to_zero(z_de, 1, width=0.05)
 
                             L_cz0 = L_cz1
                             good_times[:] = False
