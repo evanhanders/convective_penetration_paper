@@ -13,8 +13,9 @@ Options:
     --static_cbar                       If flagged, don't evolve the cbar with time
     --dpi=<dpi>                         Image pixel density [default: 200]
 
-    --col_inch=<in>                     Number of inches / column [default: 4]
-    --row_inch=<in>                     Number of inches / row [default: 2]
+    --horiz_inch=<in>                   Number of inches / horizontal plot [default: 4]
+    --vert_inch=<in>                    Number of inches / vertical plot [default: 2]
+    --pad=<inch>                        Plot padding inches [default: 0.5]
 
     --fig_type=<fig_type>               Type of figure to plot
                                             1 - T - horiz_avg(T), w
@@ -23,6 +24,7 @@ Options:
 import numpy as np
 from docopt import docopt
 args = docopt(__doc__)
+from plotpal.plot_grid import CustomPlotGrid
 from plotpal.slices import SlicePlotter
 import logging
 logger = logging.getLogger(__name__)
@@ -41,14 +43,24 @@ if root_dir is None:
 fig_name   = args['--fig_name']
 
 plotter = SlicePlotter(root_dir, file_dir='slices', fig_name=fig_name, start_file=start_file, n_files=n_files)
-convergence_plotter = SlicePlotter(root_dir, file_dir='slices', fig_name=fig_name, start_file=start_file, n_files=n_files)
 
-plotter_kwargs = { 'col_in' : int(args['--col_inch']), 'row_in' : int(args['--row_inch']), 'padding' : 100 }
 if int(args['--fig_type']) == 1:
-    plotter.setup_grid(2, 2, **plotter_kwargs)
+    h_inch = float(args['--horiz_inch'])
+    v_inch = float(args['--vert_inch'])
+    pad = float(args['--pad'])
+    title_offset = 0.5
+    height = v_inch + h_inch
+    width  = 2*h_inch
+    plot_grid = CustomPlotGrid()
+    plot_grid.add_spec((0,0), (0,          title_offset),            (h_inch, v_inch), cbar=True)
+    plot_grid.add_spec((0,1), (h_inch+pad, title_offset),            (h_inch, v_inch), cbar=True)
+    plot_grid.add_spec((1,0), (0,          title_offset+v_inch+pad), (h_inch, h_inch), cbar=True)
+    plot_grid.add_spec((1,1), (h_inch+pad, title_offset+v_inch+pad), (h_inch, h_inch), cbar=True)
+    plot_grid.make_subplots()
+    plotter.use_custom_grid(plot_grid)
     fnames = [  (("T1_y_mid",), {'remove_x_mean' : True, 'label' : 'T(y=Ly/2) - horiz_avg(T)'}),
-                (('T1_z_0.5',),  {'remove_mean': True, 'label' : 'T(z=0.5) - horiz_avg(T)', 'y_basis' : 'y'}),
                 (("w_y_mid",), {'cmap': 'PuOr_r'}),
+                (('T1_z_0.5',),  {'remove_mean': True, 'label' : 'T(z=0.5) - horiz_avg(T)', 'y_basis' : 'y'}),
                 (('w_z_0.5',),  {'cmap': 'PuOr_r', 'y_basis' : 'y'})]
 
 for tup in fnames:
