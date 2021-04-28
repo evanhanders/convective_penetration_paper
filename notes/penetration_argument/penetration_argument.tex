@@ -63,13 +63,16 @@
 
 \begin{document}
 
-%\section{Nondimensional equations}
-%The nondimensional system of equations we solve is
-%\begin{align}
-%&\grad\dot\vec{u} = 0 \\
-%&\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\grad \varpi + T \hat{z} + \rm{Re}_0^{-1}\grad^2 \vec{u} \\
-%&\partial_t T + \vec{u}\dot\grad T + w \grad_{\rm{ad}} = \rm{Pe}_0^{-1}\grad^2 T' + \grad\dot[k \grad \overline{T}] + Q
-%\end{align}
+\section{Dimensional equations}
+The dimensional Boussinesq equations are
+\begin{align}
+&\grad\dot\vec{u} = 0 \label{eqn:continuity} \\
+&\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\frac{1}{\rho_0}\grad p + \frac{\rho'}{\rho_0}\vec{g} + \nu\grad^2 \vec{u} \label{eqn:momentum} \\
+&\partial_t T + \vec{u}\dot\grad T + w \grad_{\rm{ad}} = \chi\grad^2 T' + \grad\dot[k \grad \overline{T}] + Q \label{eqn:temperature} \\
+&\frac{\rho'}{\rho_0} = -|\alpha| T \label{eqn:boussinesq}
+\end{align}
+Where $\rho$ is the density, $T$ is the temperature, $\vec{g}$ is the gravitational acceleration, $\alpha$ is the coefficient of thermal expansion, $\nu$ and $\chi$ are the viscous and thermal diffusivity, $k$ is a radiative diffusivity, and $Q$ is a heating term.
+We have baked in an assumption that $\alpha < 0$ to make sign conventions more straightforward after substituting Eqn.~\ref{eqn:boussinesq} into Eqn.~\ref{eqn:momentum}.
 
 \section{Convective Penetration argument}
 First some definitions:
@@ -92,36 +95,51 @@ Therefore $F_{\rm{conv}}(z) = F_{\rm{tot}}(z) - F_{\rm{rad, ad}}(z)$, where $F$ 
 Combined with our previous assumption, we get
 \begin{equation}
 \overline{\delta T} \approx \frac{F_{\rm{tot}}(z) - F_{\rm{rad, ad}}(z)}{\overline{w}}.
+\label{eqn:dT_assumption}
 \end{equation}
 \end{enumerate}
 As we increase in height, the conductivity and thus $F_{\rm{rad, ad}}(z)$ also increases.
 This means that $\overline{\delta T}$ has the opposite sign of $\overline{w}$ for $z > L_s$.
-We presume that buoyancy breaking is the dominant mechanism which brings convective motions to a stop in this adiabatic layer,
+
+We presume that buoyancy breaking is the dominant mechanism which brings convective motions to a stop in this adiabatic layer.
+In other words, we assume that, if we drop the nonlinear, pressure, and viscous terms from Eqn.~\ref{eqn:momentum}, we describe the dynamics reasonably well,
 \begin{equation}
-\frac{d \overline{w}}{dt} = \overline{\delta T} = \frac{F_{\rm{tot}}(z) - F_{\rm{rad, ad}}(z)}{\overline{w}}.
+\frac{d \overline{w}}{dt} = \frac{\overline{\rho'}}{\rho_0}(-g\hat{z}) = \alpha g\, \overline{\delta T} = \alpha g \, \frac{F_{\rm{tot}}(z) - F_{\rm{rad, ad}}(z)}{\overline{w}}.
 \end{equation}
 If we multiply both sides by $\overline{w}$ and absorb it into the the derivative, then apply the chain rule with $d/dt = d/dz (dz/dt) = d/dz \overline{w}$, we retrieve,
 \begin{equation}
-\frac{1}{2} d\overline{w}^3 = \left[F_{\rm{tot}}(z) - F_{\rm{rad, ad}}(z)\right]dz.
+\frac{1}{2} d\overline{w}^3 = \alpha g\, \left[F_{\rm{tot}}(z) - F_{\rm{rad, ad}}(z)\right]dz.
 \end{equation}
 We now replace $F_{\rm{rad, ad}}(z) = k_0(z) \grad_{\rm{ad}}$, and we assume that $k(z)$ instantaneously jumps from a low value $k_{\rm{cz}}$ to a high value $k_{\rm{rz}}$ at $z = L_s$.
 Per this assumption, the convective flux is a negative constant for $z \geq L_s$.
 We integrate from $z = L_s$ with $\overline{w} = w_{\rm{cz}}$ to $z = L_{s}$ with $\overline{w} = 0$, and get
 \begin{equation}
--\frac{w_{\rm{cz}}^3}{2} = F_{\rm{conv,p}} \delta_p.
+-\frac{w_{\rm{cz}}^3}{2} = \alpha g\, F_{\rm{conv,p}}\,  \delta_p.
 \end{equation}
 By definition, the convective flux in the penetrative layer with $z > L_s$ is related to $\mathcal{P}$,
 \begin{equation}
-F_{\rm{conv,t}} = -\frac{F_{\rm{conv,cz}}}{\mathcal{P}},
+F_{\rm{conv,p}} = -\frac{F_{\rm{conv,cz}}}{\mathcal{P}},
 \end{equation}
 so we retrieve
 \begin{equation}
-\delta_p = \frac{w_{\rm{cz}}^3 \mathcal{P}}{2 F_{\rm{conv, cz}}},
+\delta_p = \frac{w_{\rm{cz}}^3}{2\alpha g\, F_{\rm{conv, cz}}}  \mathcal{P},
 \end{equation}
 and the penetration depth scales with the cube of the velocity and linearly with $\mathcal{P}$.
 This prediction does not exactly line up with the simulation results (this overpredicts the magnitude of $\delta_p$).
 The important thing we need to determine is if it scales with $w_{\rm{cz}}$, $\mathcal{P}$, and $F_{\rm{conv,cz}}$ in the appropriate way.
 So far, it seems to scale linearly with $\mathcal{P}$ at fixed other parameters.
+
+Finally, we note that for an ideal gas with $P = \mathcal{R} \rho T$,
+\begin{equation}
+\alpha = \frac{\partial \ln\rho}{\partial T} = \frac{1}{\rho}\frac{\partial\rho}{\partial T} \approx - T^{-1}.
+\end{equation}
+If we had assumed that the convective flux had the form $\rho c_p w \delta T$ during Eqn.~\ref{eqn:dT_assumption}, we would have retrieved
+\begin{equation}
+\delta_p = \frac{\rho\, c_p\, w_{\rm{cz}}^3}{2\alpha g\, F_{\rm{conv, cz}}}  \mathcal{P}
+\qquad \Rightarrow \qquad
+\frac{\delta_p}{H_P} = \frac{\rho\, w_{\rm{cz}}^3}{2 F_{\rm{conv, cz}}}  \mathcal{P},
+\end{equation}
+with $H_P = c_P T / g$ the rough pressure scale height.
 
 
 \bibliography{biblio.bib}
