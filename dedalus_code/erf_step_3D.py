@@ -46,6 +46,8 @@ Options:
     --predictive=<delta>       A guess for delta_P the penetration depth. The initial state grad(T) will be an erf from grad(T_ad) to grad(T_rad) centered at L_cz + delta_P
     --T_iters=<N>              Number of times to iterate background profile before pure timestepping [default: 10]
     --completion_checks=<N>    Number of times that dL_cz/dt signs have to differ to stop [default: 10]
+    --transient_wait=<t>       Number of sim times to wait for AE procedure after transient starts, an integer [default: 30]
+    --N_AE=<t>                 Number of sim times to calculate AE over, an integer. [default: 70]
     --plot_model               If flagged, create and plt.show() some plots of the 1D atmospheric structure.
 
 """
@@ -572,9 +574,9 @@ def run_cartesian_instability(args):
         max_T_iters = int(args['--T_iters'])
         done_T_iters = 0
 
-        transient_wait = 30
+        transient_wait = int(args['--transient_wait'])
         transient_start = None
-        N = 70
+        N = int(args['--N_AE'])
         halfN = int(N/2)
         avg_dLz_dt = 0
         top_cz_times = np.zeros(N)
