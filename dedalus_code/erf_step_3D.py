@@ -29,7 +29,8 @@ Options:
     --nz=<nz>                  Vertical resolution   [default: 256]
     --nx=<nx>                  Horizontal (x) resolution [default: 32]
     --ny=<ny>                  Horizontal (y) resolution (sets to nx by default)
-    --safety=<s>               CFL safety factor (timestepper: RK443) [default: 0.75]
+    --RK222                    Use RK222 timestepper (default: RK443)
+    --safety=<s>               CFL safety factor [default: 0.75]
     --mesh=<m>                 Processor distribution mesh (e.g., "4,4")
 
     --run_time_wall=<time>     Run time, in hours [default: 119.5]
@@ -44,6 +45,7 @@ Options:
     --adiabatic_IC             If flagged, set the background profile as a pure adiabat (not thermal equilibrium in RZ)
     --predictive=<delta>       A guess for delta_P the penetration depth. The initial state grad(T) will be an erf from grad(T_ad) to grad(T_rad) centered at L_cz + delta_P
     --T_iters=<N>              Number of times to iterate background profile before pure timestepping [default: 10]
+    --completion_checks=<N>    Number of times that dL_cz/dt signs have to differ to stop [default: 10]
     --plot_model               If flagged, create and plt.show() some plots of the 1D atmospheric structure.
 
 """
@@ -449,7 +451,10 @@ def run_cartesian_instability(args):
     problem = set_subs(problem)
     problem = set_equations(problem)
 
-    ts = de.timesteppers.RK443
+    if args['-RK222']:
+        ts = de.timesteppers.RK443
+    else:
+        ts = de.timesteppers.RK222
     solver = problem.build_solver(ts)
     logger.info('Solver built')
 
@@ -576,7 +581,7 @@ def run_cartesian_instability(args):
         top_cz_z = np.zeros(N)
         good_times = np.zeros(N, dtype=bool)
         last_height_t = 0
-        completion_checks = np.zeros(5, dtype=bool)
+        completion_checks = np.zeros(int(args['--completion_checks']), dtype=bool)
 
         L_cz0 = None
         zmax = 0
