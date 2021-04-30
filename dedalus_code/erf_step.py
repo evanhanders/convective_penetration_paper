@@ -513,7 +513,7 @@ def run_cartesian_instability(args):
     dense_scales = 20
     z_dense = domain.grid(-1, scales=dense_scales)
     dense_handler = solver.evaluator.add_dictionary_handler(sim_dt=1, iter=np.inf)
-    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=dense_scales, layout='g')
+    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=(0.25, dense_scales), layout='g')
 
     flow = flow_tools.GlobalFlowProperty(solver, cadence=1)
     flow.add_property("Re", name='Re')
@@ -528,9 +528,9 @@ def run_cartesian_instability(args):
         max_T_iters = int(args['--T_iters'])
         done_T_iters = 0
 
-        transient_wait = 20
+        transient_wait = 30
         transient_start = None
-        N = 80
+        N = 70
         halfN = int(N/2)
         avg_dLz_dt = 0
         top_cz_times = np.zeros(N)

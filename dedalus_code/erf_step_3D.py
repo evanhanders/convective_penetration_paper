@@ -30,6 +30,7 @@ Options:
     --nx=<nx>                  Horizontal (x) resolution [default: 32]
     --ny=<ny>                  Horizontal (y) resolution (sets to nx by default)
     --RK222                    Use RK222 timestepper (default: RK443)
+    --SBDF2                    Use SBDF2 timestepper (default: RK443)
     --safety=<s>               CFL safety factor [default: 0.75]
     --mesh=<m>                 Processor distribution mesh (e.g., "4,4")
 
@@ -453,10 +454,15 @@ def run_cartesian_instability(args):
     problem = set_subs(problem)
     problem = set_equations(problem)
 
-    if args['-RK222']:
-        ts = de.timesteppers.RK443
-    else:
+    if args['--RK222']:
+        logger.info('using timestepper RK222')
         ts = de.timesteppers.RK222
+    elif args['--SBDF2']:
+        logger.info('using timestepper SBDF2')
+        ts = de.timesteppers.SBDF2
+    else:
+        logger.info('using timestepper RK443')
+        ts = de.timesteppers.RK443
     solver = problem.build_solver(ts)
     logger.info('Solver built')
 
@@ -557,7 +563,7 @@ def run_cartesian_instability(args):
     dense_scales = 20
     z_dense = domain.grid(-1, scales=dense_scales)
     dense_handler = solver.evaluator.add_dictionary_handler(sim_dt=1, iter=np.inf)
-    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=dense_scales, layout='g')
+    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=(0.25,0.25,dense_scales), layout='g')
 
     flow = flow_tools.GlobalFlowProperty(solver, cadence=1)
     flow.add_property("Re", name='Re')
@@ -585,6 +591,8 @@ def run_cartesian_instability(args):
         last_height_t = 0
         completion_checks = np.zeros(int(args['--completion_checks']), dtype=bool)
 
+        adjusted_last_dt = False
+
         L_cz0 = None
         zmax = 0
         tol = 1e-8 #tolerance on magnitude of dLcz/dt
@@ -601,6 +609,19 @@ def run_cartesian_instability(args):
                 if effective_iter % Hermitian_cadence == 0:
                     for f in solver.state.fields:
                         f.require_grid_space()
+
+                if adjusted_last_dt:
+                    if args['--SBDF2']:
+                        for fname in ['u', 'v', 'w', 'ωx', 'ωy', 'ωz', 'p']:
+                            solver.state[fname].set_scales(domain.dealias, keep_data=True)
+                            solver.state[fname]['g'] *= one_to_zero(z_de, 1, width=0.05)
+                        mean_T_z = -(grad_ad - zero_to_one(z_de, zmax, width=0.05)*delta_grad)
+                        mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
+                        T1_z['g'] -= flow.properties['mean_T1_z']['g']
+                        T1_z['g'] *= one_to_zero(z_de, 1, width=0.05)
+                        T1_z['g'] += mean_T1_z
+                        T1_z.antidifferentiate('z', ('right', 0), out=T1)
+                    adjusted_last_dt = False
 
                 if solver.sim_time > last_height_t + 1:
                     last_height_t = int(solver.sim_time)
@@ -667,11 +688,12 @@ def run_cartesian_instability(args):
                                 solver.state[fname].set_scales(domain.dealias, keep_data=True)
                                 solver.state[fname]['g'] *= one_to_zero(z_de, 1, width=0.05)
 
-                            L_cz0 = L_cz1
+                            L_cz0 = zmax = L_cz1
                             good_times[:] = False
                             transient_start = None
                             done_T_iters += 1
                             logger.info('T_adjust {}/{}: Adjusting mean state to have L_cz = {:.4f}'.format(done_T_iters, max_T_iters, L_cz1))
+                            adjusted_last_dt = True
 
 
                 if effective_iter % 10 == 0:
