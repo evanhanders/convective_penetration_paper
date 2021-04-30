@@ -47,8 +47,8 @@ Options:
     --predictive=<delta>       A guess for delta_P the penetration depth. The initial state grad(T) will be an erf from grad(T_ad) to grad(T_rad) centered at L_cz + delta_P
     --T_iters=<N>              Number of times to iterate background profile before pure timestepping [default: 10]
     --completion_checks=<N>    Number of times that dL_cz/dt signs have to differ to stop [default: 10]
-    --transient_wait=<t>       Number of sim times to wait for AE procedure after transient starts, an integer [default: 30]
-    --N_AE=<t>                 Number of sim times to calculate AE over, an integer. [default: 70]
+    --transient_wait=<t>       Number of sim times to wait for AE procedure after transient starts, an integer [default: 50]
+    --N_AE=<t>                 Number of sim times to calculate AE over, an integer. [default: 50]
     --plot_model               If flagged, create and plt.show() some plots of the 1D atmospheric structure.
 
 """
@@ -563,7 +563,7 @@ def run_cartesian_instability(args):
     dense_scales = 20
     z_dense = domain.grid(-1, scales=dense_scales)
     dense_handler = solver.evaluator.add_dictionary_handler(sim_dt=1, iter=np.inf)
-    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=(0.25,0.25,dense_scales), layout='g')
+    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=(1,1,dense_scales), layout='g')
 
     flow = flow_tools.GlobalFlowProperty(solver, cadence=1)
     flow.add_property("Re", name='Re')
@@ -672,11 +672,14 @@ def run_cartesian_instability(args):
                                 done_T_iters = max_T_iters
                         elif delta_Lz != 0 and delta_dLz_dt != 0:
                             delta_L_cz = avg_dLz_dt * np.abs(delta_Lz / delta_dLz_dt)
-                            max_delta_L_cz = np.abs(2*(transient_wait+N)*dLz_dt_beg)
+                            max_delta_L_cz = np.abs(5*(transient_wait+N)*avg_dLz_dt)
                             if np.abs(delta_L_cz) > max_delta_L_cz:
                                 delta_L_cz *= max_delta_L_cz/np.abs(delta_L_cz)
-                            L_cz1 = avg_Lz + delta_L_cz
-    #                        L_cz1 = L_cz0 + 2*(N + transient_wait)*avg_dLz_dt
+                            if delta_L_cz > 0:
+                                Lz_start = np.max(top_cz_z)
+                            else:
+                                Lz_start = np.min(top_cz_z)
+                            L_cz1 = Lz_start + delta_L_cz
                             mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad)
                             mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
                             T1_z['g'] -= flow.properties['mean_T1_z']['g']
