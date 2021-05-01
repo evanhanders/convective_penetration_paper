@@ -148,7 +148,7 @@ Thus, with $\Fconv|_{\rm{cz}} = Q\delta_H$,
 \mP = -\frac{\Fconv|_{\rm{cz}}}{\Fconv|_{2L_{\rm{cz}}}}
 = -\frac{Q\delta_H}{\partial_z k_0 L_{\rm{cz}}\mP^{-1}\gradad}
 \Rightarrow
-\mP^2 = \frac{Q \delta_H}{\gradad \partial_z k_0 L_{\rm{cz}}}
+1 = \frac{Q \delta_H}{\gradad \partial_z k_0 L_{\rm{cz}}}
 \end{equation}
 \item Defining $f_{\rm{conv}}^2 \approx Q$ and $N^2 \approx -(\grad_{\rm{rad}}|_{2L_{\rm{cz}}} - \grad_{\rm{ad}})$, the stiffness gives
 \begin{equation}
@@ -159,12 +159,12 @@ Thus, with $\Fconv|_{\rm{cz}} = Q\delta_H$,
 
 Solving this system of equations gives
 \begin{align}
-\partial_z k_0 = \frac{\delta_H}{L \mP^2 \mS}\frac{1}{\xi},\qquad
-k_b = \frac{\delta }{\mS}\frac{\zeta}{\xi},\qquad
-k_{\rm{ad}} = \frac{\delta}{\mS}\frac{1 + \zeta}{\xi},\qquad
+\partial_z k_0 = \frac{\delta_H}{L_{\rm{cz}} \mS}\frac{1}{\xi},\qquad
+k_b = \frac{\delta_H }{\mS}\frac{\zeta}{\xi},\qquad
+k_{\rm{ad}} = \frac{\delta_H}{\mS}\frac{1 + \zeta}{\xi},\qquad
 \gradad = Q \mS \xi 
 \end{align}
-with $\xi \equiv 1 + \mP^3(1 + \zeta)$ and $\gradrad = F_{\rm{tot}}/k(z)$.
+with $\xi \equiv 1 + \mP(1 + \zeta)$ and $\gradrad = F_{\rm{tot}}/k(z)$.
 
 
 Just to be safe, I'm going to offset the internal heating from the bottom boundary.
