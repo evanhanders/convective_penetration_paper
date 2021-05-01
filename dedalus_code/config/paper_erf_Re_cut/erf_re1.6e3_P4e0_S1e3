@@ -5,7 +5,7 @@ P = 4e0
 Lz = 2
 nz = 256
 nx = 128
-run_time_wall = 35.5
+run_time_wall = 119.5
 run_time_ff = 5e3
 
 predictive=0.485

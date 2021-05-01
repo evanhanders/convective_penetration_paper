@@ -5,8 +5,10 @@ P = 4e0
 Lz = 2
 nz = 256
 nx = 256
-run_time_wall = 11.5
+run_time_wall = 119.5
 run_time_ff = 5e3
 
 predictive=0.46
 T_iters=200
+
+restart=erf_step_3D_Re6.4e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer200_256x256x256_predictive0.46/final_checkpoint/final_checkpoint_s1.h5
