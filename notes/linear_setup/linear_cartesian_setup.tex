@@ -1,0 +1,196 @@
+\documentclass[12pt,preprint]{article}
+\usepackage{natbib}
+\bibliographystyle{plain}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+
+\usepackage{pb-diagram}
+
+\parindent = 0.0 in
+\parskip = 0.15 in
+
+\newcommand\Beq{\begin{align}} 
+\newcommand\Eeq{\end{align}}
+
+\newcommand\Bfig{\begin{figure}} 
+\newcommand\Efig{\end{figure}}
+
+\newcommand{\gradrad}{\ensuremath{\nabla_{\rm{rad}}}}
+\newcommand{\gradad}{\ensuremath{\nabla_{\rm{ad}}}}
+\newcommand{\Ftot}{\ensuremath{F_{\rm{tot}}}}
+\newcommand{\Frad}{\ensuremath{F_{\rm{rad}}}}
+\newcommand{\Fconv}{\ensuremath{F_{\rm{conv}}}}
+\newcommand{\mP}{\ensuremath{\mathcal{P}}}
+\newcommand{\mR}{\ensuremath{\mathcal{R}}}
+\newcommand{\mS}{\ensuremath{\mathcal{S}}}
+\newcommand\Pran{\ensuremath{\mathrm{Pr}}}
+\newcommand\Ra{\mathrm{Ra}}
+\newcommand\Rac{\mathrm{Ra}_{\mathrm{c}}}
+\newcommand\Ek{\mathrm{Ek}}
+\newcommand\Ro{\mathrm{Ro}}
+\newcommand\Nu{\mathrm{Nu}}
+\newcommand\Sc{\mathrm{Sc}}
+
+\newcommand\eps{\varepsilon}
+\renewcommand\L {\mathcal{L}}
+
+\newcommand{\n}{\\ \nonumber \\ }
+\newcommand{\nn}{\nonumber}
+\newcommand{\nnn}{\\ \nonumber \\ \nonumber}
+
+\newcommand\ie{\textit{i.e.},~}
+\newcommand\eg{\textit{e.g.},~}
+\newcommand{\omicron}{o}
+
+\newcommand{\pd}[1]{\partial_{#1}}
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+\newcommand{\M}[1]{\mathbf{#1}}
+\renewcommand{\dot}{\vec{\cdot}}
+\newcommand{\grad}{\vec{\nabla}}
+\newcommand{\cross}{\vec{\times}}
+\newcommand{\laplacian}{\nabla^2}
+
+\newcommand{\sump}[2]{\sideset{}{'}\sum_{{#1}=0}^{#2}}
+
+\newcommand{\eq}[1]{eq.~(\ref{#1})}
+\newcommand{\eqs}[2]{eqs.~(\ref{#1})~\&~(\ref{#2})}
+\newcommand{\eqss}[2]{eqs.~(\ref{#1})--(\ref{#2})}
+
+\newcommand{\Eq}[1]{Eq.~(\ref{#1})}
+\newcommand{\Eqs}[2]{Eqs.~(\ref{#1})~\&~(\ref{#2})}
+\newcommand{\Eqss}[2]{Eqs.~(\ref{#1})--(\ref{#2})}
+
+\newcommand{\fig}[1]{Fig.~(\ref{#1})}
+\newcommand{\figs}[2]{Figs.~(\ref{#1})~\&~(\ref{#2})}
+
+\newcommand{\tbl}[1]{Table~(#1)}
+
+
+\begin{document}
+
+\section{Nondimensional equations}
+The nondimensional system of equations we solve is
+\begin{align}
+&\grad\dot\vec{u} = 0 \\
+&\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\grad \varpi + T \hat{z} + \mR^{-1}\grad^2 \vec{u} \\
+&\partial_t T + \vec{u}\dot\grad T + w \grad_{\rm{ad}} = (\Pran\mR)^{-1}\grad^2 T' + \grad\dot[k \grad \overline{T}] + Q
+\end{align}
+These are just the Boussinesq equations of motion, with some slight tweaks:
+\begin{enumerate}
+\item There is a nonzero adiabatic temperature gradient, $\partial_z T_{\rm{ad}} = -\grad_{\rm{ad}}$.
+We choose this sign convention ($\grad_{\rm{ad}}$ and similarly $\grad_{\rm{rad}}$ will be positive) to align better with the stellar structure community's intuition.
+$|\grad T_0|$ and $\grad_{\rm{ad}}$ may be much larger in magnitude than the convective fluctuations.
+The background temperature field $T_0$ does not enter into the momentum equation, as it is automatically canceled by a background $\grad \varpi$.
+\item Convection is driven by internal heating, $Q$.
+I've confirmed with some simple tests that $|u|^2 \approx Q$, and therefore the convective frequency is $f_{\rm{conv}}^2 \approx Q$.
+$|u|$ is also a weak function of $\mR$, but is a very strong function of $Q$.
+\item The control freefall Reynolds number (\mR) and P\'{e}clet number (\Pran\mR)---and the diffusivity associated with them---only act on fluctuations, not on the $k_x = 0$ mode.
+For the $k_x = 0$ mode, we model the radiative flux as $F_{\rm{rad}} = -k \grad \overline{T}$, where $k$ is a nonconstant coefficient, $k(z)$.
+$k$ may be a larger or smaller diffusivity than $\rm{Pe}_0^{-1}$, and its magnitude is set by $\int Q\, dz \approx -k \grad\overline{T}$.
+\end{enumerate}
+
+
+\section{Model Setup}
+We will study a two-layer model in $z = [0, L_z]$ in which the gradient of the conductivity, $\partial_z k(z)$, is a step function,
+\begin{equation}
+\frac{\partial k(z)}{\partial z} = \partial_z k_{0}\begin{cases}
+1 & z < L_{\rm{cz}} \\
+\mP^{-1} & z \geq L_{\rm{cz}}
+\end{cases}
+\end{equation}
+Generally, we will set $L_{\rm{cz}} = 1$.
+The crucial thing here is that the CZ has a nondimensional slope of order $\partial_z k_0$, but above the place where the Schwarzschild criterion is met ($\gradrad = \gradad$) the slope is larger or smaller than that value according to the magnitude of \mP.
+$\mP$ therefore sets how quickly the magnitude of $\Frad$ conducted along a (constant) $\gradad$ varies with height.
+
+Aside from $\mR$ and $\Pran$, there will be two important input parameters in this system:
+\begin{enumerate}
+\item The stiffness, 
+\begin{equation}
+\mathcal{S} = \frac{N_{\rm{RZ}}^2}{f_{\mathrm{conv}}^2},
+\end{equation}
+which is the characteristic ratio of the buoyancy frequency (in the stable layer) to the square convective frequency.
+Since $N_{\rm{RZ}}^2$ (and $\gradrad$) will vary with height, we will nondimensionalize using its characteristic value at $z = 2 L_{\rm{cz}}$.
+\item $\mathcal{P}$, a parameter which sets the penetration depth.
+$\mathcal{P}$ determines how steeply the value of $\Frad$ (conducted along $\gradad$ in the penetration zone) changes as a function of height.
+As a result, assuming flux conservation with $\Ftot = \Frad + \Fconv$, $\mP$ sets how rapidly the convective flux decreasing (into negative values) as a function of height.
+We will define $\mP$ using an atmosphere where $\grad = \gradad$ everywhere; In this atmosphere,
+\begin{equation}
+\mP \equiv -\frac{\Fconv|_{\rm{cz}}}{\Fconv|_{2L_{\rm{cz}}}}
+= -\frac{(\Ftot - \Frad)|_{\rm{cz}}}{(\Ftot - \Frad)|_{2L_{\rm{cz}}}}
+\end{equation}
+Our expectation is that we get a lot of convective penetration when $\mathcal{P} \gg 1$ and none when $\mathcal{P} \ll 1$.
+\end{enumerate}
+In addition to these parameters, the magnitude of the heating, $Q$ and the vertical extent of the heating layer, $\delta_H$, must be specified as they set $F_{\rm{conv}} = Q \delta_H$.
+We will choose $Q = 1$ and $\delta_H = 0.2$ so that $F_{\rm{conv}} = 0.2$; we will furthermore choose and $F_{\rm{bot}} = \zeta F_{\rm{conv}}$, where $\zeta$ is some arbitrary scalar that sets how much smaller $k$ is in the cz than the RZ; we'll set $\zeta = 10^{-3}$ for now.
+This choice sets a boundary condition on the integral of $k_0$ so that $k_0(z=0) = F_{\rm{bot}}/\gradad$.
+
+Under these choices, the system is determined by five equations,
+\begin{enumerate}
+\item At $z = L_{\rm{cz}}$, the adiabatic gradient is equal to the radiative gradient,
+\begin{equation}
+k_{\rm{ad}}\grad_{\rm{ad}} = F_{\rm{tot}}.
+\end{equation}
+\item at $z = 0$, the base of the CZ, the adiabatic temperature gradient is the radiative gradient, $\grad_{\rm{ad}} = \grad_{\rm{rad}}$, and carries $F_{\rm{bot}}$,
+\begin{equation}
+k_0(z=0) \grad_{\rm{ad}} = F_{\rm{bot}}
+\end{equation}
+\item The radiative gradient can carry the flux in the RZ,
+\begin{equation}
+k(z > L_{\rm{cz}}) \grad_{\rm{rad}} = (k_{\rm{ad}} + \partial_z k_0 \mP^{-1}(z - L_{\rm{cz}}))\gradrad = F_{\rm{tot}}
+\end{equation}
+\item The magnitude of $\mP$ is based on the radiative flux conducted along the adiabat at $z = 2 L_{\rm{cz}}$, where $k(z=2L_{\rm{cz}}) = k_{\rm{ad}} + \partial_z k_0 L_{\rm{cz}}\mP^{-1}$.
+Thus, with $\Fconv|_{\rm{cz}} = Q\delta_H$,
+\begin{equation}
+\mP = -\frac{\Fconv|_{\rm{cz}}}{\Fconv|_{2L_{\rm{cz}}}}
+= -\frac{Q\delta_H}{\partial_z k_0 L_{\rm{cz}}\mP^{-1}\gradad}
+\Rightarrow
+\mP^2 = \frac{Q \delta_H}{\gradad \partial_z k_0 L_{\rm{cz}}}
+\end{equation}
+\item Defining $f_{\rm{conv}}^2 \approx Q$ and $N^2 \approx -(\grad_{\rm{rad}}|_{2L_{\rm{cz}}} - \grad_{\rm{ad}})$, the stiffness gives
+\begin{equation}
+\mS = \frac{N^2}{f_{\mathrm{conv}}^2} = \frac{-(\grad_{\rm{rad}}|_{2L_{\rm{cz}}} - \grad_{\rm{ad}})}{Q}
+= \frac{F_{\mathrm{tot}}}{Q}(k_{\rm{ad}}^{-1} - [k_{\rm{ad}} + \partial_z k_0 \mP^{-1} L_{\rm{cz}}]^{-1})
+\end{equation}
+\end{enumerate}
+
+Solving this system of equations gives
+\begin{align}
+\partial_z k_0 = \frac{\delta_H}{L \mP^2 \mS}\frac{1}{\xi},\qquad
+k_b = \frac{\delta }{\mS}\frac{\zeta}{\xi},\qquad
+k_{\rm{ad}} = \frac{\delta}{\mS}\frac{1 + \zeta}{\xi},\qquad
+\gradad = Q \mS \xi 
+\end{align}
+with $\xi \equiv 1 + \mP^3(1 + \zeta)$ and $\gradrad = F_{\rm{tot}}/k(z)$.
+
+
+Just to be safe, I'm going to offset the internal heating from the bottom boundary.
+We wouldn't need to do this if we didn't have a bottom, impenetrable boundary condition with a viscous boundary layer.
+But, since $w \rightarrow 0$ at the bottom boundary, I don't want to inject heating into the domain somewhere where it must be carried by a superadiabatic temperature gradient (I explicitly don't want to study boundary-driven convection).
+So
+\begin{equation}
+Q(z) = \begin{cases}
+0 & z < 0.1 \\
+Q & 0.1 \leq z < 0.1 + \delta_H, \\
+0 & \text{elsewhere}
+\end{cases}.
+\end{equation}
+
+We then choose $T_0$ to satisfy
+\begin{equation}
+\partial_z T_0 =
+-\begin{cases}
+\grad_{\mathrm{ad}} & z \leq 1 \\
+\grad_{\mathrm{rad}} & z > 1
+\end{cases}
+\end{equation}
+(again, perhaps not perfectly this, but with smooth transitions).
+And we're off to the races.
+
+
+
+\bibliography{biblio.bib}
+\end{document} 

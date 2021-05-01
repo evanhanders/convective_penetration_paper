@@ -1,6 +1,6 @@
-\documentclass[12pt,preprint]{article}
+\documentclass[12pt]{article}
 \usepackage{natbib}
-\bibliographystyle{plain}
+\bibliographystyle{aasjournal}
 \usepackage{latexsym}
 \usepackage{graphicx}
 \usepackage{epsfig}
@@ -60,6 +60,8 @@
 \newcommand{\figs}[2]{Figs.~(\ref{#1})~\&~(\ref{#2})}
 
 \newcommand{\tbl}[1]{Table~(#1)}
+
+\newcommand{\aap}{A\&A}
 
 \begin{document}
 
@@ -140,6 +142,38 @@ If we had assumed that the convective flux had the form $\rho c_p w \delta T$ du
 \frac{\delta_p}{H_P} = \frac{\rho\, w_{\rm{cz}}^3}{2 F_{\rm{conv, cz}}}  \mathcal{P},
 \end{equation}
 with $H_P = c_P T / g$ the rough pressure scale height.
+
+\section{Zahn argument}
+Here we will work through a Boussinesq version of the argument in section 3.1 of \citet{zahn1991}.
+In the adiabatic penetrative region, we know that the radiative flux is
+\begin{equation}
+F_{\rm{rad}} = -k \frac{\partial T_{\rm{ad}}}{\partial z}
+\end{equation}
+Further, we know that the convective flux is the difference between the total total and radiative flux,
+\begin{equation}
+F_{\rm{conv}} = F_{\rm{tot}} - F_{\rm{rad}}.
+\end{equation}
+Furthermore, the convective flux is
+\begin{equation}
+F_{\rm{conv}} = \overline{w T} = f \, W(z) \, \delta T(z),
+\end{equation}
+where $f$ is the filling factor of the flows that carry the flux in the penetration zone (upflows) and $W$ and $T$ give the vertical shape of typical velocity and temperature perturbations.
+
+We next assume that the temperature and velocity are highly correlated in the overshooting convective motions (upflows).
+This allows us to describe the horizontal nature of all fields in upflows using a function $h(x,y)$ so that
+\begin{equation}
+w(x,y,z) = W(z) h(x,y)
+\qquad
+T'(x,y,z) = \delta T(z) h(x,y),
+\end{equation}
+where $T'$ are the temperature fluctuations away from the mean.
+By continuity and by our above definition of the convective flux, we have
+\begin{equation}
+\overline{h} = 0,
+\qquad
+\overline{h^2} = f.
+\end{equation}
+
 
 
 \bibliography{biblio.bib}
