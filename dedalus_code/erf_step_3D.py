@@ -561,9 +561,11 @@ def run_cartesian_instability(args):
     analysis_tasks = initialize_output(solver, data_dir, mode=mode, output_dt=t_ff)
 
     dense_scales = 20
+    dense_x_scales = 1#mesh[0]/nx
+    dense_y_scales = 1#mesh[1]/ny
     z_dense = domain.grid(-1, scales=dense_scales)
     dense_handler = solver.evaluator.add_dictionary_handler(sim_dt=1, iter=np.inf)
-    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=(1,1,dense_scales), layout='g')
+    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=(dense_x_scales, dense_y_scales, dense_scales), layout='g')
 
     flow = flow_tools.GlobalFlowProperty(solver, cadence=1)
     flow.add_property("Re", name='Re')

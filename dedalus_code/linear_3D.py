@@ -1,7 +1,7 @@
 """
 Dedalus script for a two-layer, Boussinesq simulation.
 The bottom of the domain is at z = 0.
-The lower part of the domain is stable; the domain is Schwarzschild stable above z >~ 1.
+The lower part of the domain is stable; the domain is Schwarzschild stable above z >~ L_cz.
 
 There are 6 control parameters:
     Re      - The approximate reynolds number = (u / diffusivity) of the evolved flows
@@ -372,8 +372,6 @@ def run_cartesian_instability(args):
     Q.antidifferentiate('z', ('left', Fbot), out=flux_of_z)
     flux = flux_of_z.interpolate(z=L_cz)['g'].min()
 
-    print(k0.interpolate(z=L_cz)['g'].min(), k_ad)
-
     T_ad_z['g'] = -grad_ad
     T_rad_z0['g'] = T_rad_func(flux_of_z['g'], k0['g'])
 
@@ -547,6 +545,9 @@ def run_cartesian_instability(args):
     ### 6. Setup output tasks; run main loop.
     analysis_tasks = initialize_output(solver, data_dir, mode=mode, output_dt=t_ff)
 
+    T_rad_z0.set_scales(domain.dealias)
+    delta_grad_de = grad_ad - (-T_rad_z0['g'][0,0,:]) #negative in RZ, positive in CZ
+
     dense_scales = 20
     z_dense = domain.grid(-1, scales=dense_scales)
     T_rad_z0.set_scales((1,1,dense_scales))
@@ -604,7 +605,7 @@ def run_cartesian_instability(args):
                         for fname in ['u', 'v', 'w', 'ωx', 'ωy', 'ωz', 'p']:
                             solver.state[fname].set_scales(domain.dealias, keep_data=True)
                             solver.state[fname]['g'] *= one_to_zero(z_de, 1, width=0.05)
-                        mean_T_z = -(grad_ad - zero_to_one(z_de, zmax, width=0.05)*delta_grad)
+                        mean_T_z = -(grad_ad - zero_to_one(z_de, zmax, width=0.05)*delta_grad_de)
                         mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
                         T1_z['g'] -= flow.properties['mean_T1_z']['g']
                         T1_z['g'] *= one_to_zero(z_de, 1, width=0.05)
@@ -616,11 +617,11 @@ def run_cartesian_instability(args):
                     last_height_t = int(solver.sim_time)
                     #Get departure point from grad_ad
                     grad = dense_handler['grad']['g'][0,0,:]
-                    cz_points = (grad > grad_ad - grad_departure_frac*delta_grad)*(delta_grad < 0)
+                    cz_points = (grad > grad_ad - grad_departure_frac*delta_grad)*(delta_grad > 0)
                     if np.sum(cz_points) > 0:
                         zmax = z_dense.flatten()[cz_points].max()
                     else:
-                        zmax = 0
+                        zmax = L_cz
                     zmax = reducer.reduce_scalar(zmax, MPI.MAX)
                     #Track trajectory of grad_ad->grad_rad departure over time
                     if Re_avg > 1:
@@ -669,7 +670,7 @@ def run_cartesian_instability(args):
                             else:
                                 Lz_start = np.min(top_cz_z)
                             L_cz1 = Lz_start + delta_L_cz
-                            mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad)
+                            mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad_de)
                             mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
                             T1_z['g'] -= flow.properties['mean_T1_z']['g']
                             T1_z['g'] *= one_to_zero(z_de, 1, width=0.05)
