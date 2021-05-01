@@ -173,7 +173,69 @@ By continuity and by our above definition of the convective flux, we have
 \qquad
 \overline{h^2} = f.
 \end{equation}
+Furthermore, as in \citet{zahn1991}, $h$ is normalized so that its mean square averages to zero over the area where $h > 0$,
+\begin{equation}
+\overline{h^2 \mu(x,y)} = 1,
+\end{equation}
+where $\mu(x,y) = (1 + h/|h|)/2$, which is 1 when $h > 0$ and 0 when $h \leq 0$.
 
+Per the momentum equation, the deceleration of plumes in the penetration zone is described by buoyancy breaking,
+\begin{equation}
+\frac{d w^2}{dz} = \alpha g T'.
+\end{equation}
+Multiplying by $h$ (to preserve the LHS) and taking a horizontal average, we get
+\begin{equation}
+\frac{\overline{h^3}}{\alpha g f}d W^2 = \delta T dz.
+\end{equation}
+After elimination of $\delta T$ with the formula for $F_{\rm{conv}}$, we integrate
+\begin{equation}
+\frac{\overline{h^3}}{3 \alpha g}\int_{W_0}^0 dW^3 = \int_{L_{\rm{cz}}}^{L_{\rm{cz}} + L_p} F_{\rm{conv}}\, dz,
+\label{eqn:buoyancy_integral}
+\end{equation}
+assuming that the velocity drops to roughly $W = 0$ at $z = L_{\rm{cz}} + L_p$, where $L_{\rm{cz}}$ is the height where $\grad_{\rm{rad}} = \grad_{\rm{ad}}$.
+
+At this point we will consider two cases:
+\begin{enumerate}
+\item The ``erf'' simulations, where we assume that $F_{\rm{conv}}$ jumps from a value of $F_0$ in the CZ to a value of $-F_0/\mathcal{P}$ in the PZ.
+In this case, integration of a constant straightforwardly returns
+\begin{equation}
+L_p = \frac{\overline{h^3} W_0^3}{3\alpha g F_0}\mathcal{P}.
+\end{equation}
+\item The ``linear'' simulations, where we assume that $F_{\rm{conv}}$ decreases from a value of 0 at $L_{\rm{cz}}$ linearly, so $F(z > L_{\rm{cz}}) = -|\partial_z F_0|(z - L_{\rm{cz}})$.
+We set $|\partial_z F_0| \sim \mathcal{P}^{-1}$ in these simulations.
+In this case, integration yields
+\begin{equation}
+L_p = \left(\frac{2\overline{h^3} W_0^3}{3\alpha g|\partial_z F_0|}\right)^{1/2} \propto \sqrt{\mathcal{P}}.
+\end{equation}
+This is more directly the case mentioned by Zahn.
+\end{enumerate}
+
+Following a step further, we now adopt the assumption of MLT that the CZ flux is described by
+\begin{equation}
+F_{0} = \mathcal{F} W^3.
+\end{equation}
+The difficulty is in in determining the value of $\mathcal{F}$.
+To achieve this, we return to Eqn.~\ref{eqn:buoyancy_integral} and integrate over the relevant length scale in the CZ (for the Boussinesq case, this is just the depth of the CZ),
+\begin{equation}
+\frac{\overline{h_{\rm{cz}}^3}}{3 \alpha g}\int_0^{W_0} dW^3 = \int_{0}^{L_{\rm{cz}}} F_0\, dz
+\Rightarrow
+F_0 = \frac{\overline{h_{\rm{cz}}^3} W_0^3}{3 \alpha g L_{\rm{cz}}},
+\end{equation}
+where above I have performed the integral for the ``erf'' case and assumed a constant $F_0$ in the CZ (I should be more careful about this, because internal heating, and my length scale is slightly off).
+Plugging this expression for $F_0$ into the erf expression for $L_p$, we retrieve
+\begin{equation}
+\frac{L_p}{L_{\rm{cz}}} = \frac{\overline{h^3}}{\overline{h_{\rm{cz}}^3}} \mathcal{P},
+\end{equation}
+and we see that the penetration depth depends only on $\mathcal{P}$ and the horizontal extent of the upflows in the CZ compared to the PZ.
+We expect the latter of these factors to be a weak function of things like the stiffness or the Reynolds number.
+In the simulations I have thusfar conducted, I think I have found that the average filling factor $f$ of the flows decreases as you move upwards in the CZ (from something like 0.6 to 0.4); in the PZ it quickly returns to 0.5, and it stays 0.5 in the RZ (where waves dominate, and that makes sense).
+However, I did these calculations using a pure filling factor calculation (``what fraction of the horizontal volume is filled with an upflow?''); I think a better algorithm which attempts to determine where the convective plumes are would be ideal.
+Regardless, naively I think that $\overline{h^3} \approx f^{3/2}$ is probably a fine first assumption.
+By that assumption, with the above numbers I quoted ($f_{\rm{cz}} \approx 0.6$ and $f_{\rm{pz}} \approx 0.4$), we get
+\begin{equation}
+\frac{L_p}{L_{\rm{cz}}} \approx \frac{f_{\rm{pz}}^{3/2}}{f_{\rm{cz}}^{3/2}}\mathcal{P} \approx 0.54 \mathcal{P}.
+\end{equation}
+This is strikingly close to what we are seeing in these simulations.
 
 
 \bibliography{biblio.bib}
