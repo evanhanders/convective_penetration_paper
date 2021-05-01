@@ -13,7 +13,7 @@ cd $PBS_O_WORKDIR
 RE=4e2
 PEN=8e0
 STIFF=1e3
-CONF=config/paper_erf_P_cut/erf_re1e3_P8e0_S1e3
+CONF=config/paper_erf_P_cut/erf_re4e2_P8e0_S1e3
 date
 mpiexec_mpt -n 1024 python3 erf_step_3D.py  $CONF  > out.paper_P.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
 date

@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N erf_step_3D_re4e2_P1e0_S_1e3_paper_P
+#PBS -N erf_step_3D_re4e2_P4e0_S_1e4_paper_S
 #PBS -l select=7:ncpus=40:mpiprocs=40:model=sky_ele
 #PBS -l walltime=120:00:00
 #PBS -j oe
@@ -11,9 +11,9 @@ conda activate dedalus
 cd $PBS_O_WORKDIR
 
 RE=4e2
-PEN=1e0
-STIFF=1e3
-CONF=config/paper_erf_P_cut/erf_re4e2_P1e0_S1e3
+PEN=4e0
+STIFF=1e4
+CONF=config/paper_stiffness_cut/erf_re4e2_P4e0_S1e4
 date
-mpiexec_mpt -n 256 python3 erf_step_3D.py  $CONF  > out.paper_P.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
+mpiexec_mpt -n 256 python3 erf_step_3D.py  $CONF  > out.paper_S.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
 date
