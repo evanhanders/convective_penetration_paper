@@ -10,5 +10,4 @@ run_time_ff = 5e3
 
 predictive = 0.325
 
-N_AE = 0
 T_iters = 0
