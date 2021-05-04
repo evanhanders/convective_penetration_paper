@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N erf_step_3D_re4e2_P4e0_S_1e3_paper_AE_pertUp
+#PBS -N erf_step_3D_re4e2_P4e0_S_1e3_paper_AE_schwarzschild
 #PBS -l select=7:ncpus=40:mpiprocs=40:model=sky_ele
 #PBS -l walltime=120:00:00
 #PBS -j oe
@@ -13,7 +13,7 @@ cd $PBS_O_WORKDIR
 RE=4e2
 PEN=4e0
 STIFF=1e3
-CONF=config/paper_AE_cut/erf_re1e3_P4e0_S1e3_pertUp
+CONF=config/paper_AE_cut/erf_re1e3_P4e0_S1e3_schwarzschild
 date
-mpiexec_mpt -n 256 python3 erf_step_3D.py  $CONF  > out.paper_AE_pertUp.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
+mpiexec_mpt -n 256 python3 erf_step_3D.py  $CONF  > out.paper_AE_schwarzschild.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
 date
