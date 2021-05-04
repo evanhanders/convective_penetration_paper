@@ -2,7 +2,7 @@
 Re = 8e2
 S = 1e3
 P = 1.6e1
-Lz = 2
+Lz = 2.25
 nz = 256
 nx = 64
 run_time_wall = 119.5
