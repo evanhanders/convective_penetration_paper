@@ -8,5 +8,5 @@ nx = 64
 run_time_wall = 119
 run_time_ff = 5e3
 
-predictive=0.55
-T_iters=100
+predictive=0.5
+T_iters=0

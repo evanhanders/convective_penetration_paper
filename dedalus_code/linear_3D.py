@@ -566,6 +566,8 @@ def run_cartesian_instability(args):
     Hermitian_cadence = 100
 
     def main_loop(dt):
+        T1 = solver.state['T1']
+        T1_z = solver.state['T1_z']
         Re_avg = 0
         max_T_iters = int(args['--T_iters'])
         done_T_iters = 0

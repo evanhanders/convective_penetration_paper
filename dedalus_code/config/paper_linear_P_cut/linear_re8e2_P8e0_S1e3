@@ -5,8 +5,9 @@ P = 8e0
 Lz = 2
 nz = 256
 nx = 64
-run_time_wall = 47.5
+run_time_wall = 119.5
 run_time_ff = 5e3
 
+predictive = 0.65
 
-predictive = 0.8
+T_iters = 0
