@@ -1,18 +1,24 @@
-\documentclass[12pt]{article}
+\documentclass[12pt, fullpage]{article}
 \usepackage{natbib}
-\bibliographystyle{aasjournal}
 \usepackage{latexsym}
 \usepackage{graphicx}
 \usepackage{epsfig}
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{epstopdf}
-\usepackage{hyperref}
+\usepackage[colorlinks=true, citecolor=blue]{hyperref}
 
 \usepackage{pb-diagram}
 
 \parindent = 0.0 in
 \parskip = 0.15 in
+
+\addtolength{\oddsidemargin}{-.875in}
+\addtolength{\evensidemargin}{-.875in}
+\addtolength{\textwidth}{1.75in}
+
+\addtolength{\topmargin}{-.875in}
+\addtolength{\textheight}{1.75in}
 
 \newcommand\Beq{\begin{align}} 
 \newcommand\Eeq{\end{align}}
@@ -79,27 +85,32 @@
 \item Observational \& Theoretical context: ``convective overshoot'' and the problems it relates to.
 Include sources on e.g., 
 \begin{itemize}
-\item stellar Lithium abundances \citep[][fig 4]{pinsonneault_1997}, 
-\item solar modeling problem \citep{basu_antia_2004, bahcall_etal_2005, vinyoles_etal_2017, asplund_etal_2021},
+\item stellar Lithium abundances \citep[fig 4 of][]{pinsonneault_1997, dumont_etal_2021}, 
+\item solar modeling problem \citep{basu_antia_2004, bahcall_etal_2005, zhang_li_2012, vinyoles_etal_2017, asplund_etal_2021},
 \item helioseismology \citep[][]{christensen-dalsgaard_etal_2011},
 \item stellar evolution \& remnants \citep{higgins_vink_2020}, 
-\\item stellar core convection overshoot \citep{claret_torres_2018}, 
-\item parameterizations \citep{shaviv_salpeter_1973, maeder1975, herwig2000} and ``convective boundaries'' in MESA papers \citep{paxton_etal_2011, paxton_etal_2013, paxton_etal_2018, paxton_etal_2019}. 
+\item stellar core convection overshoot \citep{claret_torres_2018, jermyn_etal_2018, viani_basu_2020, martinet_etal_2021}, 
+\item parameterizations \citep{shaviv_salpeter_1973, maeder1975, herwig2000}
+\item``convective boundaries'' in MESA papers \citep{paxton_etal_2011, paxton_etal_2013, paxton_etal_2018, paxton_etal_2019}. 
 \item Other things?
 \end{itemize}
 \item Terminology of overshoot vs penetration.
 \item Note that the state of the field has been reviewed many times by many authors \citep{marcus_etal_1983, zahn1991, browning_etal_2004, rogers_etal_2006, viallet_etal_2015, korre_etal_2019}.
 We will do a brief review but these are additional resources.
-\item Mention miscellaneous theoretical or semianalytical arguments or models \citep{roxburgh1965, roxburgh1978, roxburgh1989, roxburgh1992, roxburgh1998, marcus_etal_1983, zahn1991, hurlburt_etal_1994, rempel2004, canuto2011, viallet_etal_2015, korre_etal_2019}.
+\item Mention miscellaneous theoretical or semianalytical arguments or models \citep{roxburgh1965, roxburgh1978, roxburgh1989, roxburgh1992, roxburgh1998, marcus_etal_1983, zahn1991, hurlburt_etal_1994, rempel2004, canuto2011, viallet_etal_2015, rieutord2019, korre_etal_2019}.
+\item Quick mention of penetration in the geophysical context \citep[including neat lab experiments like][]{deardorff_etal_1969}.
 \item Briefly review simulations:
 \begin{itemize}
 \item ``Early'' simulations of e.g., plumes \citep{schmitt_etal_1984}.
-\item Dynamical Cartesian simulations in both fully compressible and Boussinesq equation sets \citep{hurlburt_etal_1994, brummell_etal_2002, rogers_glatzmaier_2005, kapyla_etal_2007, kitiashvili_etal_2016, lecoanet_etal_2016, kapyla_etal_2017, couston_etal_2017, toppaladoddi_wettlaufer_2018}.
-\item Dynamical spherical geometry 2D or 3D simulations (fully compressible, anelastic, boussinesq, some solar-like, some not) \citep{browning_etal_2004, rogers_etal_2006, brun_etal_2017, pratt_etal_2017, dietrich_wicht_2018}
+\item Dynamical Cartesian simulations in both fully compressible and Boussinesq equation sets \citep{musman1968, moore_weiss_1973, hurlburt_etal_1986, hurlburt_etal_1994, singh_etal_1995, saikia_etal_2000, brummell_etal_2002, rogers_glatzmaier_2005, kapyla_etal_2007, tian_etal_2009, kitiashvili_etal_2016, lecoanet_etal_2016, kapyla_etal_2017, couston_etal_2017, toppaladoddi_wettlaufer_2018, kapyla2019, cai2020}.
+\item Dynamical spherical geometry 2D or 3D simulations (fully compressible, anelastic, boussinesq, some solar-like, some not) \citep{browning_etal_2004, rogers_etal_2006, brun_etal_2017, pratt_etal_2017, dietrich_wicht_2018, higl_etal_2021}
 \end{itemize}
 \item Zahn's energetics arguments and the various times it has cropped up in the literature \citep{zahn1991, hurlburt_etal_1994, rempel2004, rogers_etal_2006}.
-\item Say very clearly that \emph{the penetration depth depends on how steeply the radiative flux changes with depth} (and also convective structures).
-Say that we're going to present simulations which agree with this.
+\item Simulations that have noticed that overshoot and/or penetration depends in some way on the flux \citep{singh_etal_1998, hotta2017, kapyla2019}.
+\item State the conclusions of this work very clearly. 
+\emph{The penetration depth depends on how steeply the radiative flux changes with depth near the radiative-convective boundary}.
+Thus, the penetration depth depends on the slope of the radiative conductivity / the opacity near the boundaries of the CZ
+We have designed two simple numerical setups which demonstrate this point.
 \end{itemize}
 
 \section{Theory}
@@ -107,21 +118,25 @@ Say that we're going to present simulations which agree with this.
 \item The dimensional modified Boussinesq equations (note that Zahn did the fully compressible one, we're simplifying for easier reading and math and alignment with sims).
 \item Walk through $F_{\rm{conv}} = F_0 W^3$ argument in both the CZ and an adiabatic PZ in general terms.
 Importantly, we need to leave this part general as a ratio of integrals of the flux around the point where $\grad_{\rm{ad}} = \grad_{\rm{rad}}$.
-\item If this theory is correct, it should work regardless of the shape of $k$ and thus $F$. So we will do two experiments with different predictions to test it.
+\item If this theory is correct, it should work regardless of the shape of $k$. 
+So we will do two experiments with different predictions to test the overall idea of this theory.
 One where $k$ is discontinuous, and one where $\partial_z k$ is discontinuous.
-\item Solve out the predictions for the two simulations we're going to do.
-\item Comment on uncertainties (rotation, magnetism, density stratification) that we won't attempt to handle in this work.
-Say that we won't handle them but that this is a first step.
+\item Solve out the theory to get function forms of $\delta_P/L_{\rm{cz}}$ for the two simulations we're doing.
+\item Comment briefly on the fact that this work will only be able to get at the \emph{shape of conductivity} portion of this theoretical prediction.
+Future work which includes density stratification would be required to understand the geometrical effects of the plumes, but that's beyond the scope of this work.
 \end{itemize}
 
 \section{Simulation Details}
 \begin{itemize}
 \item Nondimensionalization details \& nondimensional eqns.
-\item Parameters ($\mathcal{P}$, $\mathcal{R}$, Pr, $\mathcal{S}$, $Q$, $\zeta$)
-\item Conductivity profiles (erf and linear), $\grad_{\rm{ad}}$, internal heating.
+\item Parameters ($\mathcal{P}$, $\mathcal{R}$, Pr, $\mathcal{S}$, $Q$, $\zeta$).
+We used fixed values of Pr, $Q$, $\zeta$ in this work and vary the others.
+\item Specification of conductivity profiles (erf and linear), $\grad_{\rm{ad}}$, internal heating.
+\item The magic sauce of internal heating that allows splitting $\mathcal{S}$ and $\mathcal{P}$, and a brief discussion of some prior work where those were implicitly tied.
 \item Mention Dedalus \citep{burns_etal_2020} and timestepping details.
 \item Define a set of ``standard parameters:'' e.g., $\mathrm{R} = 400$, $\mathrm{Pr} = 0.5$, $Q = 1$, $\zeta = 10^{-3}$, $\mathcal{S} = 10^3$, $\mathcal{P} = 4$.
 All of our cuts through our multi-D parameter space cut through these parameters, varying one parameter ($\mathcal{S}$, $\mathcal{P}$, $\mathcal{R}$) and holding the rest constant.
+Note the different standard parameters for the erf (subscript E?) and linear (subscript L?) simulations.
 \item Forward ref an appendix on our initial conditions / accelerated evolution (appendix A) and also an appendix of tables of simulation details (appendix B).
 \end{itemize}
 
@@ -131,26 +146,28 @@ All of our cuts through our multi-D parameter space cut through these parameters
 \begin{itemize}
 \item Description of the \emph{evolved state} of a turbulent simulation.
 This is the ``put in some pretty convective dynamics picture'' section to orient people into what our simulations look like.
-And to show them that we get sims where the ``MESA answer" does a really bad job of describing the final state.
-Dynamics pictuer will show: pretty standard CZ dynamics; a developed PZ with the sign of $w$ and $T$ reversed from the CZ.
+And to show them that we get sims where the standard answer (edge of CZ is where $\grad_{\rm{rad}} = \grad_{\rm{ad}}$) does a really bad job of describing the final state.
+Dynamics picture will show: pretty CZ dynamics, a developed PZ with the sign of $w$ and $T$ reversed from the CZ.
 \item Here we'll also show one of our $|\grad T|$ plots to show that convection flattens $\grad \rightarrow \grad_{\rm{ad}}$ far above top of nominal CZ.
-This is a good time to explain the definitions of penetration vs overshoot in words again with a picture.
+This is a good time to re-explain the definitions of penetration vs overshoot in words again with a picture.
 This is also a good time to show pictorally what our measure of the height of the PZ is (currently it's where $\grad$ is 50\% between $\grad_{\rm{rad}}$ and $\grad_{\rm{ad}}$).
+Could even label ``CZ'', ``PZ'', ``OZ'', ``RZ'' (convection, penetration, overshoot, radiative zones) on the profile picture.
 \end{itemize}
 
 \subsection{Measured penetration zone scalings}
 \begin{itemize}
-\item Profile verification of theory.
+\item Time-averaged 1D profile plots showing verification of theory.
 Does $W$ go from $W_0$ to $\mathcal{O}(0)$ at the top of the PZ?
 Is it an e-folding?
 Also how does the rms Pe or Re scale with height?
-Does Zahn's ``thermal adjustment layer'' with Pe $\sim$ 1 hold in the PZ-RZ transition?
-\item Show that the predicted $\mathcal{P}$ scalings do a pretty good job.
+Does Zahn's ``thermal adjustment layer'' with Pe $\sim$ 1 hold in the OZ?
+\item Show that the predicted $\mathcal{P}$ scalings do a good job (think about what the relevant error bars are on our measures).
 This will include some parameter space plots (probably all in one figure) that show:
 \begin{itemize}
 \item $\delta_P$ depends on $\mathcal{P}$.
 \item $\delta_P$ does not really depend strongly on $\mathcal{S}$ or $\mathcal{R}$.
 \end{itemize}
+\item An additional figure (like above) for the linear sims, where we only vary $\mathcal{P}$.
 \item Mention that 2D simulations produce more pronounced PZs (larger by a factor of $\sim 2$) but similar scalings with theory; we choose to omit 2D results and focus on more realistic 3D results.
 \item our theory has $\delta_P = A \mathcal{P}$ (for erf sims) and $\delta_P = B \mathcal{P}^{1/2}$; we should report good-fits for $A$ and $B$.
 These can be plugged directly into MESA as first guesses as the penetration depth there.
@@ -160,9 +177,10 @@ These can be plugged directly into MESA as first guesses as the penetration dept
 
 \section{A modified solar model}
 \begin{itemize}
-\item Here we briefly describe a new MESA algorithm where we have a paramterization like $\delta_P/\ell = \xi B \mathcal{P}^{1/2}$ put into MESA, where $\xi$ is a knob the user can turn and $\ell$ is the mixing length or some such.
+\item Here we briefly describe a new MESA algorithm where we have a parameterization like $\delta_P/\ell = \xi B \mathcal{P}^{1/2}$ put into MESA, where $\xi$ is a knob the user can turn and $\ell$ is the mixing length or some such.
 We have two options here: state that $\mathcal{P} = 1$ is always true, or have MESA do a simple linear interpolation of $\grad_{\rm{rad}}$ over some depth like $\ell/2$ above and below the CZ boundary to get a value for $\mathcal{P}$.
-\item We probably can use the lame / naive assumption that below $\delta_P$, MESA latches immediately onto $\grad_{\rm{rad}}$ (it is stiff, after all).
+\item We probably can use the lame / naive assumption that below $\delta_P$, MESA latches immediately onto $\grad_{\rm{rad}}$ (this means there is no OZ; stars are stiff, after all).
+Assume everything is mixed within the full CZ-PZ.
 \item We calculate a few solar models with $\xi = [0.5, 1, 2]$ and show how these models change the structure at the base of the solar CZ.
 \end{itemize}
 
@@ -170,10 +188,25 @@ We have two options here: state that $\mathcal{P} = 1$ is always true, or have M
 \begin{itemize}
 \item Say what we said again.
 Penetration depth depends on how quickly $F_{\rm{rad}}$ changes with height.
-\item Discuss the subtleties associated with filling factors and how boussinesq can't really appropriately capture that.
+\item Discuss the subtleties associated with filling factors and how Boussinesq / incompressible can't really appropriately capture that.
+(And the confusion that \citet{massaguer_etal_1984} have a model that suggests \emph{more} penetration for downflows than upflows in stratified domains).
 \item Discuss open questions (rotation, stratification [above], magnetism, geometry).
-\item Round it off by calling back to how awesome it is that $\mathcal{P}$ totally determines $\delta_P$ in our work and that $\mathcal{S}$ and $\mathcal{Re}$ don't, which suggests we can actually use simulations to crack this long-standing problem in stellar physics.
+\item Round it off by calling back to how awesome it is that $\mathcal{P}$ totally determines $\delta_P$ in our work and that $\mathcal{S}$ and $\mathcal{R}$ don't, which suggests we can actually use simulations to crack this long-standing problem in stellar physics.
 \end{itemize}
 
+\section{Appendix A: Accelerated Evolution}
+\begin{itemize}
+\item Description of time evolution of simulation starting from ``schwarzschild'' ICs and how brutal the time evolution is.
+\item Description of newton iter-like procedure.
+\item Figure that shows things converging to the same answer to within a few \%.
+\end{itemize}
+
+\section{Appendix B: Table-o-sims}
+\begin{itemize}
+\item Housekeeping; show resolutions, etc.
+\end{itemize}
+
+\bibliographystyle{aasjournal}
+\setlength{\bibsep}{0pt plus 0.3ex}
 \bibliography{biblio.bib}
 \end{document} 
