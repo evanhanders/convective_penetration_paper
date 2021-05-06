@@ -65,6 +65,8 @@
 \newcommand{\aap}{A\&A}
 \newcommand{\apj}{ApJ}
 \newcommand{\apjl}{ApJL}
+\newcommand{\apjs}{ApJS}
+\newcommand{\apss}{Astrophysics and Space Science}
 \newcommand{\mnras}{MNRAS}
 \newcommand{\araa}{Annual Review of Astronomy and Astrophysics}
 
@@ -75,14 +77,24 @@
 \section{Intro \& Background}
 \begin{itemize}
 \item Observational \& Theoretical context: ``convective overshoot'' and the problems it relates to.
-Include sources on e.g., stellar Lithium abundances \citep[][fig 4]{pinsonneault_1997}, helioseismology \citep[][]{christensen-dalsgaard_etal_2011}, stellar evolution \& remnants \citep{higgins_vink_2020}, stellar core convection overshoot \citep{claret_torres_2018}, $\sim$every MESA paper? Other things?
+Include sources on e.g., 
+\begin{itemize}
+\item stellar Lithium abundances \citep[][fig 4]{pinsonneault_1997}, 
+\item solar modeling problem \citep{basu_antia_2004, bahcall_etal_2005, vinyoles_etal_2017, asplund_etal_2021},
+\item helioseismology \citep[][]{christensen-dalsgaard_etal_2011},
+\item stellar evolution \& remnants \citep{higgins_vink_2020}, 
+\\item stellar core convection overshoot \citep{claret_torres_2018}, 
+\item parameterizations \citep{shaviv_salpeter_1973, maeder1975, herwig2000} and ``convective boundaries'' in MESA papers \citep{paxton_etal_2011, paxton_etal_2013, paxton_etal_2018, paxton_etal_2019}. 
+\item Other things?
+\end{itemize}
 \item Terminology of overshoot vs penetration.
 \item Note that the state of the field has been reviewed many times by many authors \citep{marcus_etal_1983, zahn1991, browning_etal_2004, rogers_etal_2006, viallet_etal_2015, korre_etal_2019}.
-\item Miscellaneous theoretical or semianalytical arguments or models \citep{marcus_etal_1983, zahn1991, hurlburt_etal_1994, rempel2004, canuto2011, viallet_etal_2015, korre_etal_2019} (also Roxburgh?).
+We will do a brief review but these are additional resources.
+\item Mention miscellaneous theoretical or semianalytical arguments or models \citep{roxburgh1965, roxburgh1978, roxburgh1989, roxburgh1992, roxburgh1998, marcus_etal_1983, zahn1991, hurlburt_etal_1994, rempel2004, canuto2011, viallet_etal_2015, korre_etal_2019}.
 \item Briefly review simulations:
 \begin{itemize}
 \item ``Early'' simulations of e.g., plumes \citep{schmitt_etal_1984}.
-\item Dynamical Cartesian simulations in both fully compressible and Boussinesq equation sets \citep{hurlburt_etal_1994, brummell_etal_2002, rogers_glatzmaier_2005, kapyla_etal_2007, kitiashvili_etal_2016, kapyla_etal_2017, couston_etal_2017, toppaladoddi_wettlaufer_2018}.
+\item Dynamical Cartesian simulations in both fully compressible and Boussinesq equation sets \citep{hurlburt_etal_1994, brummell_etal_2002, rogers_glatzmaier_2005, kapyla_etal_2007, kitiashvili_etal_2016, lecoanet_etal_2016, kapyla_etal_2017, couston_etal_2017, toppaladoddi_wettlaufer_2018}.
 \item Dynamical spherical geometry 2D or 3D simulations (fully compressible, anelastic, boussinesq, some solar-like, some not) \citep{browning_etal_2004, rogers_etal_2006, brun_etal_2017, pratt_etal_2017, dietrich_wicht_2018}
 \end{itemize}
 \item Zahn's energetics arguments and the various times it has cropped up in the literature \citep{zahn1991, hurlburt_etal_1994, rempel2004, rogers_etal_2006}.
@@ -128,7 +140,12 @@ This is also a good time to show pictorally what our measure of the height of th
 
 \subsection{Measured penetration zone scalings}
 \begin{itemize}
-\item Here we show that the predicted $\mathcal{P}$ scalings do a pretty good job.
+\item Profile verification of theory.
+Does $W$ go from $W_0$ to $\mathcal{O}(0)$ at the top of the PZ?
+Is it an e-folding?
+Also how does the rms Pe or Re scale with height?
+Does Zahn's ``thermal adjustment layer'' with Pe $\sim$ 1 hold in the PZ-RZ transition?
+\item Show that the predicted $\mathcal{P}$ scalings do a pretty good job.
 This will include some parameter space plots (probably all in one figure) that show:
 \begin{itemize}
 \item $\delta_P$ depends on $\mathcal{P}$.
