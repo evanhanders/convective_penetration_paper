@@ -28,6 +28,8 @@ from scipy.interpolate import interp1d
 import logging
 logger = logging.getLogger(__name__)
 
+import dedalus.public as de
+
 from scipy.special import erf
 def one_to_zero(x, x0, width=0.1):
     return (1 - erf( (x - x0)/width))/2
@@ -49,6 +51,17 @@ fig_name   = args['--fig_name']
 logger.info("reading data from {}".format(root_dir))
 
 #therm_mach2 = float(root_dir.split("Ma2t")[-1].split("_")[0])
+Lz = float(root_dir.split('Lz')[-1].split('_')[0])
+nz = int(root_dir.split('Titer')[-1].split('x')[-1].split('_')[0].split('/')[0])
+z_basis = de.Chebyshev('z', nz, interval=(0,Lz), dealias=1)
+domain = de.Domain([z_basis,], grid_dtype=np.float64, mesh=None, comm=MPI.COMM_SELF)
+dense_scales=20
+Tz_field = domain.new_field()
+grad_ad_field = domain.new_field()
+delta_grad_field = domain.new_field()
+vel_field = domain.new_field()
+vel_integ_field = domain.new_field()
+z_dense = domain.grid(0, scales=dense_scales)
 
 plotter = SFP(root_dir, file_dir='profiles', fig_name=fig_name, start_file=start_file, n_files=n_files, distribution='even')
 MPI.COMM_WORLD.barrier()
@@ -113,6 +126,7 @@ times = []
 cross_z = []
 vel_cross_z = []
 z_departure = []
+cz_velocities = []
 
 
 bases_names = ['z',]
@@ -133,7 +147,12 @@ if not plotter.idle:
         Tz_rad_IH0 = first_tasks['T_rad_z_IH'][0,:].squeeze()
         grad_ad = -first_tasks['T_ad_z'][0,:].squeeze()
         grad_rad = -Tz_rad_IH0
-        delta_grad = grad_ad[-1] - grad_rad[-1]
+        grad_ad_field.set_scales(1)
+        grad_ad_field['g'] = grad_ad
+        delta_grad_field.set_scales(1)
+        delta_grad_field['g'] = grad_ad - grad_rad
+        grad_ad_field.set_scales(dense_scales, keep_data=True)
+        delta_grad_field.set_scales(dense_scales, keep_data=True)
         system_flux = first_tasks['flux_of_z'][0,:].squeeze()[-1] #get flux at top of domain
         system_flux_prof = first_tasks['flux_of_z'][0,:].squeeze() / system_flux
         fluxrange = np.abs(first_tasks['F_rad'][0,:].squeeze()/system_flux - system_flux_prof).max() * 1.5
@@ -156,16 +175,26 @@ if not plotter.idle:
             T_z = tasks['T_z'][i]
             T1 = T - first_tasks['T'][0]
 
+            vel_field['g'] = roller.rolled_averages['vel_rms']
+            vel_field.antidifferentiate('z', ('left', 0), out=vel_integ_field)
+            cz_vel = (vel_integ_field.interpolate(z=0.9)['g'].min() - vel_integ_field.interpolate(z=0.2)['g'].min())/0.7
+
+            cz_velocities.append(cz_vel)
+
             #Find top of CZ according to different measures
 
             #departure from grad_ad
+            Tz_field.set_scales(1)
+            Tz_field['g'] = T_z
+            Tz_field.set_scales(dense_scales, keep_data=True)
             departure_factor = 0.5
-            T_z_departure = (z > 0.9)*(-T_z < grad_ad - departure_factor*delta_grad)
+            T_z_departure = (z_dense > 0.9)*(-Tz_field['g'] > grad_ad_field['g'] - departure_factor*delta_grad_field['g'])*(delta_grad_field['g'] > 0)
             if np.sum(T_z_departure) > 0:
-                z_T_departure_guess = z[T_z_departure].min()
-                x1 = z_T_departure_guess * 0.9
-                func_zd = interp1d(z, -T_z - (grad_ad - departure_factor*delta_grad), bounds_error=False, fill_value='extrapolate')
-                root_zd = sop.root_scalar(func_zd, x0=z_T_departure_guess, x1=x1).root
+                z_T_departure_guess = z_dense[T_z_departure].max()
+                root_zd = z_T_departure_guess
+#                x1 = z_T_departure_guess * 0.9
+#                func_zd = interp1d(z, -T_z - (grad_ad - departure_factor*delta_grad), bounds_error=False, fill_value='extrapolate')
+#                root_zd = sop.root_scalar(func_zd, x0=z_T_departure_guess, x1=x1).root
             else:
                 z_T_departure_guess = root_zd = z.max()
 
@@ -211,9 +240,9 @@ if not plotter.idle:
             ax1.set_ylim(1e-2, np.max(roller.rolled_averages['bruntN2'])*2)
 
             ax2.plot(z, -roller.rolled_averages['T_z'], label='T_z', c='k')
-            ax2.plot(z, -roller.rolled_averages['T_rad_z_IH'], label='T_rad_z', c='r')
+            ax2.plot(z, grad_rad, label='T_rad_z', c='r')
             ax2.plot(z, grad_ad, lw=0.5, c='b', label='T_ad_z')
-            y_min = np.abs(roller.rolled_averages['T_rad_z']).min()
+            y_min = np.abs(roller.rolled_averages['T_rad_z'][z > 1]).min()
             deltay = np.abs(grad_ad).max() - y_min
             ax2.set_ylim(np.abs(grad_ad).max() - deltay*1.25, np.abs(grad_ad).max() + deltay*1.25)
             ax2.legend(loc='upper right')
@@ -236,6 +265,7 @@ if not plotter.idle:
     cross_z = np.array(cross_z)
     vel_cross_z = np.array(vel_cross_z)
     z_departure = np.array(z_departure)
+    cz_velocities = np.array(cz_velocities)
 buffer = np.zeros(1, dtype=int)
 if plotter.idle:
     buffer[0] = 0
@@ -249,7 +279,7 @@ else:
     buffer[0] = int(write_nums.min())
 plotter.reader.comm.Allreduce(MPI.IN_PLACE, buffer, op=MPI.MIN)
 global_min_write = buffer[0]
-data = np.zeros((5, int(global_max_write - global_min_write + 1)))
+data = np.zeros((6, int(global_max_write - global_min_write + 1)))
 if not plotter.idle:
     write_nums -= int(global_min_write)
     data[0, write_nums] = write_nums
@@ -257,25 +287,36 @@ if not plotter.idle:
     data[2, write_nums] = cross_z
     data[3, write_nums] = vel_cross_z
     data[4, write_nums] = z_departure
+    data[5, write_nums] = cz_velocities
 plotter.reader.comm.Allreduce(MPI.IN_PLACE, data, op=MPI.SUM)
 write_nums = data[0,:]
 times   = data[1,:]
 cross_z = data[2,:]
 vel_cross_z = data[3,:]
 z_departure = data[4,:]
+cz_velocities = data[5,:]
 
 if plotter.reader.comm.rank == 0:
     fig = plt.figure()
-    plt.plot(times, cross_z, c='indigo', label=r'zero of $N^2 - \omega^2$')
-    plt.plot(times, vel_cross_z, c='green', label=r'zero of $N^2 - u^2$')
-    plt.plot(times, z_departure, c='red', label=r'departure from grad_ad')
+#    plt.plot(times, cross_z, c='indigo', label=r'zero of $N^2 - \omega^2$')
+#    plt.plot(times, vel_cross_z, c='green', label=r'zero of $N^2 - u^2$')
+    plt.plot(times, z_departure - 1, c='red', label=r'50% departure from grad_ad')
     plt.legend(loc='best')
     plt.xlabel('time')
-    plt.ylabel('z (top cz)')
+    plt.ylabel(r'$\delta_p$')
     fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'trace_top_cz'), dpi=400, bbox_inches='tight')
+
+    fig = plt.figure()
+    plt.plot(times, cz_velocities, c='k')
+    plt.xlabel('time')
+    plt.ylabel(r'$|u_{\rm{cz}}|$')
+    fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'cz_velocities'), dpi=400, bbox_inches='tight')
+
+
 
     with h5py.File('{:s}/data_top_cz.h5'.format(plotter.out_dir), 'w') as f:
         f['times'] = times
         f['cross_z'] = cross_z
         f['vel_cross_z'] = vel_cross_z
+        f['cz_velocities'] = cz_velocities
         f['z_departure'] = z_departure

@@ -136,7 +136,7 @@ if not plotter.idle:
                 tasks[k] = np.expand_dims(tasks[k], axis=0)
 
         for i in range(tasks['T'].shape[0]):
-            roller.calculate_rolling_average(i, fields, avg_num=20)
+            roller.calculate_rolling_average(i, fields, avg_num=2)
             if plotter.reader.comm.rank == 0:
                 print('plotting {:06d}/{}'.format(i+1, tasks['T'].shape[0]))
 
@@ -161,7 +161,7 @@ if not plotter.idle:
             ax2.plot(z, -roller.rolled_averages['T_z'], label='T_z', c='k')
             ax2.plot(z, -roller.rolled_averages['T_rad_z_IH'], label='T_rad_z', c='r')
             ax2.plot(z, -grad_ad, lw=0.5, c='b', label='T_ad_z')
-            y_min = np.abs(roller.rolled_averages['T_rad_z']).min()
+            y_min = np.abs(roller.rolled_averages['T_rad_z'][z > 1]).min()
             deltay = np.abs(grad_ad).max() - y_min
             ax2.set_ylim(np.abs(grad_ad).max() - deltay*1.25, np.abs(grad_ad).max() + deltay*1.25)
             ax2.legend(loc='upper right')
