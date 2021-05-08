@@ -2,11 +2,11 @@
 Re = 4e2
 S = 1e3
 P = 2e1
-Lz = 4.25
+Lz = 3.75
 nz = 512
 nx = 128
-run_time_wall = 119
+run_time_wall = 64.5
 run_time_ff = 5e3
 
-predictive=2.75
+predictive=2.2
 T_iters=100
