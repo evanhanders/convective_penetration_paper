@@ -1,0 +1,152 @@
+% Preamble
+\documentclass{aastex631}
+\usepackage{natbib}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+\usepackage{hyperref}
+
+%%%% Custom commands
+\newcommand{\gradrad}{\ensuremath{\nabla_{\rm{rad}}}}
+\newcommand{\gradad}{\ensuremath{\nabla_{\rm{ad}}}}
+\newcommand{\Ftot}{\ensuremath{F_{\rm{tot}}}}
+\newcommand{\Frad}{\ensuremath{F_{\rm{rad}}}}
+\newcommand{\Fconv}{\ensuremath{F_{\rm{conv}}}}
+\newcommand{\mP}{\ensuremath{\mathcal{P}}}
+\newcommand{\mR}{\ensuremath{\mathcal{R}}}
+\newcommand{\mS}{\ensuremath{\mathcal{S}}}
+\newcommand\Pran{\ensuremath{\mathrm{Pr}}}
+
+\newcommand{\pd}[1]{\partial_{#1}}
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+\newcommand{\M}[1]{\mathbf{#1}}
+\renewcommand{\dot}{\vec{\cdot}}
+\newcommand{\grad}{\vec{\nabla}}
+\newcommand{\cross}{\vec{\times}}
+\newcommand{\laplacian}{\nabla^2}
+
+%%%% Journal preamble
+\received{}
+\revised{}
+\accepted{}
+\published{}
+\submitjournal{ApJ}
+
+\shorttitle{SHORT TITLE}
+\shortauthors{Anders et al}
+
+
+\begin{document}
+
+%%%% Title and Abstract
+\title{This is a title}
+\author[0000-0002-3433-4733]{Evan H. Anders}
+\affiliation{CIERA, Northwestern University}
+\author[0000-0001-5048-9973]{Adam S. Jermyn}
+\affiliation{CCA, Flatiron Institute}
+\author{Daniel Lecoanet}
+\affiliation{ESAM \& CIERA, Northwestern University}
+\author[0000-0001-8935-219X]{Benjamin P. Brown}
+\affiliation{APS Dept and LASP, University of Colorado, Boulder}
+
+\correspondingauthor{Evan H. Anders}
+\email{evan.anders@northwestern.edu}
+
+\begin{abstract}
+Blah Blah short description
+\end{abstract}
+\keywords{UAT keywords}
+
+
+
+%%%% Body of paper
+\section{Introduction}
+\label{sec:introduction}
+Convection is a crucial heat transport mechanism over some fraction of the stellar radius for all stars at some point in the stellar lifetime [CITE].
+These motions drive the magnetic dynamo of the Sun and other stars [CITE], leading to the host of emergent phenomena known as stellar activity.
+Furthermore, convective motions impinge upon nearby stable layers, exciting gravity waves [CITE].
+Convection is also responsible for mixing chemical compositions, which becomes increasingly important in the cores of evolved stars [CITE].
+A complete and nuanced understanding is therefore crucial for understanding stellar structure, evolution, and observations.
+
+One particular aspect of stellar convection which remains poorly understood even after decades of study is the class of mechanisms generally referred to as ``convective overshoot.''
+Useful parameterizations of the way in which convective motions extend beyond the nominally Schwarzschild- or Ledoux- stable boundaries of the convective zone have historically been elusive.
+Improved models of this ``overshoot'' could help to resolve many discrepancies between observations and theoretical model.
+In the Sun and solar-type stars, better models of convective boundaries could help solve the mystery of low abundances of Li at the surface of solar-type stars \citep{pinsonneault1997, dumont_etal_2021}, the ``solar modeling problem'' \citep{basu_antia_2004, bahcall_etal_2005, zhang_li_2012, vinyoles_etal_2017, asplund_etal_2021} and problems in helioseismic profiles near the base of the convection zone \citep{christensen-dalsgaard_etal_2011}.
+There is also ample evidence that we do not understand the nature of convective mixing at the boundary of core convection zones \citep{claret_torres_2018, jermyn_etal_2018, viani_basu_2020, martinet_etal_2021, pedersen_etal_2021} which could have profound implications for the post-main sequence evolution and remnants of massive stars \citet{farmer_etal_2019, higgins_vink_2020}.
+In order to ensure that models can be evolved on fast (human) timescales, 1D stellar evolution codes rely on simple parameterizations of convective overshoot and mixing beyond convective boundaries \citep{shaviv_salpeter_1973, maeder1975, herwig2000, paxton_etal_2011, paxton_etal_2013, paxton_etal_2018, paxton_etal_2019}.
+While some preliminary work has been done to couple 3D dynamical convective simulations with 1D stellar evolution codes [CITE], these calculations are currently prohibitively expensive to perform e.g., at every timestep in a stellar evolution calculation.
+In short, an improved theoretical understanding of the behavior of convective boundaries which can inform easy-to-calculate parameterizations is essential.
+
+Convective overshoot and penetration have been studied in laboratory experiments and numerical simulations for decades, and has been reviewed by many authors \citep{marcus_etal_1983, zahn1991, browning_etal_2004, rogers_etal_2006, viallet_etal_2015, korre_etal_2019}.
+%Early experiments of convective penetration of water in the laboratory \citep{deardorff_etal_1969} or simple numerical plumes \citep{schmitt_etal_1984} have given way to a wide array of dynamical experiments in recent years.
+A slew of simulations in Cartesian \citep{musman1968, moore_weiss_1973, hurlburt_etal_1986, hurlburt_etal_1994, singh_etal_1995, saikia_etal_2000, brummell_etal_2002, rogers_glatzmaier_2005, kapyla_etal_2007, tian_etal_2009, kitiashvili_etal_2016, lecoanet_etal_2016, kapyla_etal_2017, couston_etal_2017, toppaladoddi_wettlaufer_2018, kapyla2019, cai2020} and spherical \citep{browning_etal_2004, rogers_etal_2006, brun_etal_2017, pratt_etal_2017, dietrich_wicht_2018, higl_etal_2021} geometry have been studied.
+Despite this lengthy list of experiments, no consensus model of convective overshoot or penetration has emerged.
+Throughout the remainder of this work, we will use terminology from this hydrodynamical literature.
+``Convective penetration'' refers to convective motions which extend beyond the nominal Schwarzschild boundary of the convection zone \emph{and} flatten the temperature gradient towards the adiabatic.
+``Convective overshoot'' refers to the motions that extend beyond the convective boundary but do not modify the thermal structure.
+Our main focus in this paper will be on convective penetration.
+
+\citet{zahn1991} theorized that convective penetration should depend only on how steeply the radiative temperature gradient varies at the convective boundary.
+Some simulations \citep{hurlburt_etal_1994, rogers_etal_2006} have shown at least partial agreement with this theory.
+A semianalytic model of solar overshoot \citep{rempel2004} also agreed with the early ideas of Zahn. 
+Furthermore, some select simulations have found hints that convective overshoot or penetration may be sensitive the magnitude of the flux in some way \citep{singh_etal_1998, hotta2017, kapyla2019}.
+These results suggest that the gradients of fluxes near convective boundaries deserve further examination.
+
+In this work, we design two numerical experiments to test the theory of \citet{zahn1991}.
+We use a modified incompressible, Boussinesq model to study the simplest possible system, and re-derive his theory in our simplified limit.
+The results of our simulations are in full agreement with Zahn's theory.
+\begin{quote}
+\emph{
+Specifically, we find that the depth of convective penetration depends on the gradient of the radiative flux near the convective boundary.
+}
+\end{quote}
+Thus, the penetration depth can be approximated so long as the radiative conductivity, or likewise the opacity, is known at the convective boundary.
+
+We present these findings as follows.
+In Sec.~\ref{sec:theory}, we describe our modified Boussinesq equations, re-derive the theory of \citet{zahn1991}, and retrieve predictions for our two experimental designs from that theory.
+In Sec.~\ref{sec:simulation_details}, we describe our simulation setup and parameters.
+In Sec.~\ref{sec:results}, we present the results of these simulations, with a particular focus on the depth of the penetrative regions.
+In Sec.~\ref{sec:solar_model}, we create and discuss a solar MESA model which uses this theory to determine the bottom of the solar convection zone.
+Finally, we discuss how future simulations can put finer constraints on this theory in Sec.~\ref{sec:discussion}.
+
+\section{Theory}
+\label{sec:theory}
+
+\section{Simulation Details}
+\label{sec:simulation_details}
+\begin{align}
+&\grad\dot\vec{u} = 0 \\
+&\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\grad \varpi + T \hat{z} + \mR^{-1}\grad^2 \vec{u} \\
+&\partial_t T + \vec{u}\dot\grad T + w \grad_{\rm{ad}} = (\Pran\mR)^{-1}\grad^2 T' + \grad\dot[k \grad \overline{T}] + Q
+\end{align}
+
+\section{Results}
+\label{sec:results}
+
+\section{A modified solar model}
+\label{sec:solar_model}
+
+\section{Discussion}
+\label{sec:discussion}
+
+\begin{acknowledgments}
+We'd like to thank
+\end{acknowledgments}
+
+
+\appendix
+
+\section{Accelerated Evolution}
+
+\section{Table of simulation parameters}
+
+
+
+
+
+\bibliographystyle{aasjournal}
+\bibliography{biblio}
+\end{document}
