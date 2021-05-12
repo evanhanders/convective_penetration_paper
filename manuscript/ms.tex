@@ -114,6 +114,25 @@ Finally, we discuss how future simulations can put finer constraints on this the
 
 \section{Theory}
 \label{sec:theory}
+Throughout this work, we will utilize a modified version of the Boussinesq equations of motion, similar to the model derived by \citet{spiegel_veronis_1960} and utilized by e.g., \citet{korre_etal_2019}.
+In dimensional form,
+\begin{align}
+&\grad\dot\vec{u} = 0 
+\label{eqn:incompressible} \\
+&\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\frac{1}{\rho_0}\grad p + \frac{\rho'}{\rho_0}\vec{g} + \nu\grad^2 \vec{u} 
+\label{eqn:momentum} \\
+&\partial_t T + \vec{u}\dot\grad T + w \gradad = \chi\grad^2 T' + \grad\dot[k \grad \overline{T}] + Q
+\label{eqn:temperature} \\
+&\frac{\rho'}{\rho_0} = -|\alpha| T.
+\label{eqn:boussinesq}
+\end{align}
+In this model, $\rho_0$ is a (constant) background density and $\rho'$ are fluctuations which act only in the buoyancy force and varies linearly with the temperature $T$ according to the coefficient of thermal expansion, $\alpha = \partial\ln\rho / \partial T$.
+Furthermore, $\vec{u}$ is the velocity vector, $\nu$ and $\chi$ are respectively the viscous and thermal diffusivity, $Q$ is a bulk internal heating term [CITE], and $\gradad$ is the adiabatic temperature gradient (we define $\gradad$ as a positive value to align with stellar structure conventions; this means marginal stability is achieved when $\partial_z T = -\gradad$).
+We modify the model of \citet{spiegel_veronis_1960} to allow the mean temperature profile $\overline{T}$ to carry a radiative flux $\Frad = -k \grad \overline{T}$, where $k$ is a radiative diffusivity which can vary with height.
+We assume that the classical thermal diffusion term $\chi \grad^2 T'$  only acts on the fluctuations away from the mean temperature profile, $T' \equiv T - \overline{T}$.
+
+
+
 
 \section{Simulation Details}
 \label{sec:simulation_details}
