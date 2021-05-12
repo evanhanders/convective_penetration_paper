@@ -23,15 +23,9 @@ echo $DIR
 echo $NCORE
 echo "Processing $DIR on $NCORE cores"
 
-mpiexec_mpt -n $NCORE python3 plot_profile_movie.py $DIR
 mpiexec_mpt -n $NCORE python3 find_top_cz.py $DIR
-mpiexec_mpt -n $NCORE python3 threeD_plot_slices.py $DIR
-mpiexec_mpt -n $NCORE python3 plot_slices.py $DIR
 mpiexec_mpt -n $NCORE python3 plot_avg_profiles.py $DIR
 
 cd $DIR
-$OLDPWD/png2mp4.sh profile_mov/ profile_mov.mp4 30
-$OLDPWD/png2mp4.sh snapshots/ snapshots.mp4 30
-#$OLDPWD/png2mp4.sh top_cz/top_cz top_cz.mp4 30
 tar -cvf avg_profs.tar avg_profs/
 cd $OLDPWD

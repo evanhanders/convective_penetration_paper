@@ -2,7 +2,7 @@
 Script for plotting movies of 1D profile movies showing the top of the CZ vs time.
 
 Usage:
-    compare_top_cz_traces.py <dir1> <dir2> [options]
+    compare_top_cz_traces.py <dirs>... [options]
 
 Options:
     --fig_name=<fig_name>               Name of figure output directory & base name of saved figures [default: top_cz]
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 fig_name   = args['--fig_name']
 
-dirs = [args['<dir1>'], args['<dir2>']]
+dirs = args['<dirs>']
 data = []
 
 zmax = 0
@@ -35,22 +35,26 @@ zmax = 0
 for d in dirs:
     with h5py.File('{:s}/{:s}/data_top_cz.h5'.format(d, fig_name), 'r') as f:
         times = f['times'][()]
-        cross_z = f['cross_z'][()]
-        vel_cross_z = f['vel_cross_z'][()]
-        z_departure = f['z_departure'][()]
+        cross_z = f['cross_z'][()] - 1
+        vel_cross_z = f['vel_cross_z'][()] - 1
+        z_departure = f['z_departure'][()] - 1
     data.append((times, cross_z, vel_cross_z))
 
     if 'adiabatic' in d:
         label = 'adiabaticIC'
         color = 'green'
         zorder = 1
+        plt.plot(times, z_departure, label=label, color=color, zorder=zorder)
+    elif 'predictive' in d:
+        label = d.split('predictive')[-1].split('/')[0]
+        plt.plot(times, z_departure, label=label)
     else:
         label = 'schwarzschildIC'
         color = 'k'
         zorder = 10
-    plt.plot(times, z_departure, label=label, color=color, zorder=zorder)
+        plt.plot(times, z_departure, label=label, color=color, zorder=zorder)
     if np.max(cross_z) > zmax:
-        zmax = np.max(cross_z)
+        zmax = np.max(z_departure) 
 
 plt.ylim(0, zmax*1.02)
 plt.legend()

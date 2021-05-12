@@ -126,6 +126,7 @@ times = []
 cross_z = []
 vel_cross_z = []
 z_departure = []
+z_overshoot = []
 cz_velocities = []
 
 
@@ -187,7 +188,7 @@ if not plotter.idle:
             Tz_field.set_scales(1)
             Tz_field['g'] = T_z
             Tz_field.set_scales(dense_scales, keep_data=True)
-            departure_factor = 0.5
+            departure_factor = 0.1
             T_z_departure = (z_dense > 0.9)*(-Tz_field['g'] > grad_ad_field['g'] - departure_factor*delta_grad_field['g'])*(delta_grad_field['g'] > 0)
             if np.sum(T_z_departure) > 0:
                 z_T_departure_guess = z_dense[T_z_departure].max()
@@ -197,6 +198,15 @@ if not plotter.idle:
 #                root_zd = sop.root_scalar(func_zd, x0=z_T_departure_guess, x1=x1).root
             else:
                 z_T_departure_guess = root_zd = z.max()
+
+            overshoot_factor = 0.9
+            T_z_overshoot = (z_dense > 0.9)*(-Tz_field['g'] > grad_ad_field['g'] - overshoot_factor*delta_grad_field['g'])*(delta_grad_field['g'] > 0)
+            if np.sum(T_z_overshoot) > 0:
+                z_T_overshoot_guess = z_dense[T_z_overshoot].max()
+            else:
+                z_T_overshoot_guess = root_zd = z.max()
+
+
 
             #brunt minus measures of f_conv
             brunt_sub_enstrophy = roller.rolled_averages['bruntN2'] - roller.rolled_averages['enstrophy']
@@ -227,6 +237,7 @@ if not plotter.idle:
             cross_z.append(root)
             vel_cross_z.append(root_vel2)
             z_departure.append(root_zd)
+            z_overshoot.append(z_T_overshoot_guess)
 
             ax1.plot(z, roller.rolled_averages['bruntN2'],             c='k', label=r'$N^2$')
             ax1.plot(z, -roller.rolled_averages['bruntN2'],             c='k', ls='--')
@@ -265,6 +276,7 @@ if not plotter.idle:
     cross_z = np.array(cross_z)
     vel_cross_z = np.array(vel_cross_z)
     z_departure = np.array(z_departure)
+    z_overshoot = np.array(z_overshoot)
     cz_velocities = np.array(cz_velocities)
 buffer = np.zeros(1, dtype=int)
 if plotter.idle:
@@ -279,7 +291,7 @@ else:
     buffer[0] = int(write_nums.min())
 plotter.reader.comm.Allreduce(MPI.IN_PLACE, buffer, op=MPI.MIN)
 global_min_write = buffer[0]
-data = np.zeros((6, int(global_max_write - global_min_write + 1)))
+data = np.zeros((7, int(global_max_write - global_min_write + 1)))
 if not plotter.idle:
     write_nums -= int(global_min_write)
     data[0, write_nums] = write_nums
@@ -288,6 +300,7 @@ if not plotter.idle:
     data[3, write_nums] = vel_cross_z
     data[4, write_nums] = z_departure
     data[5, write_nums] = cz_velocities
+    data[6, write_nums] = z_overshoot
 plotter.reader.comm.Allreduce(MPI.IN_PLACE, data, op=MPI.SUM)
 write_nums = data[0,:]
 times   = data[1,:]
@@ -295,12 +308,14 @@ cross_z = data[2,:]
 vel_cross_z = data[3,:]
 z_departure = data[4,:]
 cz_velocities = data[5,:]
+z_overshoot = data[6,:]
 
 if plotter.reader.comm.rank == 0:
     fig = plt.figure()
 #    plt.plot(times, cross_z, c='indigo', label=r'zero of $N^2 - \omega^2$')
 #    plt.plot(times, vel_cross_z, c='green', label=r'zero of $N^2 - u^2$')
-    plt.plot(times, z_departure - 1, c='red', label=r'50% departure from grad_ad')
+    plt.plot(times, z_departure - 1, c='k', label=r'10% departure from grad_ad')
+    plt.plot(times, z_overshoot - 1, c='red', label=r'90% departure from grad_ad')
     plt.legend(loc='best')
     plt.xlabel('time')
     plt.ylabel(r'$\delta_p$')
@@ -320,3 +335,4 @@ if plotter.reader.comm.rank == 0:
         f['vel_cross_z'] = vel_cross_z
         f['cz_velocities'] = cz_velocities
         f['z_departure'] = z_departure
+        f['z_overshoot'] = z_overshoot

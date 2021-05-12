@@ -13,8 +13,8 @@ Options:
     --static_cbar                       If flagged, don't evolve the cbar with time
     --dpi=<dpi>                         Image pixel density [default: 200]
 
-    --horiz_inch=<in>                   Number of inches / horizontal plot [default: 4]
-    --vert_inch=<in>                    Number of inches / vertical plot [default: 2]
+    --horiz_inch=<in>                   Number of inches / horizontal plot [default: 2]
+    --vert_inch=<in>                    Number of inches / vertical plot [default: 1]
     --pad=<inch>                        Plot padding inches [default: 0.5]
 
     --fig_type=<fig_type>               Type of figure to plot
@@ -49,18 +49,24 @@ if int(args['--fig_type']) == 1:
     v_inch = float(args['--vert_inch'])
     pad = float(args['--pad'])
     title_offset = 0.5
-    height = v_inch + h_inch
-    width  = 2*h_inch
     plot_grid = CustomPlotGrid()
     plot_grid.add_spec((0,0), (0,          title_offset),            (h_inch, v_inch), cbar=True)
     plot_grid.add_spec((0,1), (h_inch+pad, title_offset),            (h_inch, v_inch), cbar=True)
     plot_grid.add_spec((1,0), (0,          title_offset+v_inch+pad), (h_inch, h_inch), cbar=True)
     plot_grid.add_spec((1,1), (h_inch+pad, title_offset+v_inch+pad), (h_inch, h_inch), cbar=True)
+    plot_grid.add_spec((2,0), (0,          title_offset+ 2*pad + v_inch + h_inch), (h_inch, h_inch), cbar=True)
+    plot_grid.add_spec((2,1), (h_inch+pad, title_offset+ 2*pad + v_inch + h_inch), (h_inch, h_inch), cbar=True)
+    plot_grid.add_spec((3,0), (0,          title_offset+ 3*pad + v_inch + 2*h_inch), (h_inch, h_inch), cbar=True)
+    plot_grid.add_spec((3,1), (h_inch+pad, title_offset+ 3*pad + v_inch + 2*h_inch), (h_inch, h_inch), cbar=True)
     plot_grid.make_subplots()
     plotter.use_custom_grid(plot_grid)
     fnames = [  (("T1_y_mid",), {'remove_x_mean' : True, 'label' : 'T(y=Ly/2) - horiz_avg(T)'}),
-                (("w_y_mid",), {'cmap': 'PuOr_r'}),
+                (('T1_z_1.2',),  {'remove_mean': True, 'label' : 'T(z=1.2) - horiz_avg(T)', 'y_basis' : 'y'}),
+                (('T1_z_1',),  {'remove_mean': True, 'label' : 'T(z=1) - horiz_avg(T)', 'y_basis' : 'y'}),
                 (('T1_z_0.5',),  {'remove_mean': True, 'label' : 'T(z=0.5) - horiz_avg(T)', 'y_basis' : 'y'}),
+                (("w_y_mid",), {'cmap': 'PuOr_r'}),
+                (('w_z_1.2',),  {'cmap': 'PuOr_r', 'y_basis' : 'y'}),
+                (('w_z_1',),  {'cmap': 'PuOr_r', 'y_basis' : 'y'}),
                 (('w_z_0.5',),  {'cmap': 'PuOr_r', 'y_basis' : 'y'})]
 
 for tup in fnames:

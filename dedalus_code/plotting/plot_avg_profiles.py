@@ -6,10 +6,10 @@ Usage:
 
 Options:
     --fig_name=<fig_name>               Name of figure output directory & base name of saved figures [default: avg_profs]
-    --start_file=<file_start_num>       Number of Dedalus output file to start plotting at [default: 20]
+    --start_file=<file_start_num>       Number of Dedalus output file to start plotting at [default: 1]
     --n_files=<num_files>               Number of files to plot
     --dpi=<dpi>                         Image pixel density [default: 200]
-    --avg_writes=<n_writes>             Number of output writes to average over [default: 1000]
+    --avg_writes=<n_writes>             Number of output writes to average over [default: 200]
 
     --col_inch=<in>                     Number of inches / column [default: 6]
     --row_inch=<in>                     Number of inches / row [default: 3]
