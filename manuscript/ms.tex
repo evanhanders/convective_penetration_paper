@@ -12,10 +12,14 @@
 %%%% Custom commands
 \newcommand{\gradrad}{\ensuremath{\nabla_{\rm{rad}}}}
 \newcommand{\gradad}{\ensuremath{\nabla_{\rm{ad}}}}
+\newcommand{\Fbot}{\ensuremath{F_{\rm{bot}}}}
 \newcommand{\Ftot}{\ensuremath{F_{\rm{tot}}}}
 \newcommand{\Frad}{\ensuremath{F_{\rm{rad}}}}
 \newcommand{\Fconv}{\ensuremath{F_{\rm{conv}}}}
+\newcommand{\Fcz}{\ensuremath{F_{\rm{cz}}}}
 \newcommand{\mP}{\ensuremath{\mathcal{P}}}
+\newcommand{\dP}{\ensuremath{\delta_{\rm{p}}}}
+\newcommand{\Lcz}{\ensuremath{L_{\rm{cz}}}}
 \newcommand{\mR}{\ensuremath{\mathcal{R}}}
 \newcommand{\mS}{\ensuremath{\mathcal{S}}}
 \newcommand\Pran{\ensuremath{\mathrm{Pr}}}
@@ -121,7 +125,7 @@ In dimensional form,
 \label{eqn:incompressible} \\
 &\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\frac{1}{\rho_0}\grad p + \frac{\rho'}{\rho_0}\vec{g} + \nu\grad^2 \vec{u} 
 \label{eqn:momentum} \\
-&\partial_t T + \vec{u}\dot\grad T + w \gradad = \chi\grad^2 T' + \grad\dot[k \grad \overline{T}] + Q
+&\partial_t T + \vec{u}\dot\grad T + w \gradad + \grad\dot[-k \grad \overline{T}] = \chi\grad^2 T' + Q
 \label{eqn:temperature} \\
 &\frac{\rho'}{\rho_0} = -|\alpha| T.
 \label{eqn:boussinesq}
@@ -131,6 +135,94 @@ Furthermore, $\vec{u}$ is the velocity vector, $\nu$ and $\chi$ are respectively
 We modify the model of \citet{spiegel_veronis_1960} to allow the mean temperature profile $\overline{T}$ to carry a radiative flux $\Frad = -k \grad \overline{T}$, where $k$ is a radiative diffusivity which can vary with height.
 We assume that the classical thermal diffusion term $\chi \grad^2 T'$  only acts on the fluctuations away from the mean temperature profile, $T' \equiv T - \overline{T}$.
 
+The basis of the theory of \citet{zahn1991} is that the size of the convection zone is determined by the horizontally-averaged energetics and buoyancy breaking.
+We assume convection reaches a time-stationary, equilibrium state; we vertically integrate Eqn.~\ref{eqn:temperature} and take a horizontal average to find
+\begin{equation}
+\Ftot = \Frad + \Fconv = \int Q dz + \Fbot,
+\end{equation}
+with $\Fconv = \overline{w T}$ and $\Fbot$ the flux at the bottom of the convective domain and $\Ftot$ the total flux, which can vary in height according to integral of $Q$.
+We next assume that convection penetrates above the nominal schwarzschild boundary of the convection zone and mixes the temperature gradient towards the adiabatic in that region.
+Thus, in that region, the convective flux can be found,
+\begin{equation}
+\Fconv = \Ftot - F_{\rm{rad, ad}} = \Ftot - k \grad_{\rm{ad}}.
+\end{equation}
+By definition, in this region, $\grad_{\rm{ad}} > \grad_{\rm{rad}}$, where $\grad_{\rm{rad}} = \Ftot/k$, so this requires that $\Fconv < 0$ in the convective penetration region.
+We next assume that the temperature and velocity are highly correlated in the penetrative region with very similar horizontal fluctuations,
+\begin{equation}
+w(x,y,z) = W(z)h(x,y),
+\qquad
+T'(x,y,z) = \delta T(z)h(x,y).
+\end{equation}
+We here assume that $\overline{h} = 0$ and $\overline{h^2} \neq 0$.
+We can then express the convective flux in terms of these vertically-varying profiles and an average over the horizontal structure of the flows,
+\begin{equation}
+\Fconv \equiv \overline{w T} = \overline{h^2} \, W(z) \, \delta T(z).
+\label{eqn:Fconv_vertical}
+\end{equation}
+In the penetrative region, since $\Fconv < 0$, $W(z)$ and $\delta T(z)$ must be oppositely signed and the convective flows should eventually come to a stop through buoyancy breaking.
+This is achieved through a balance between advection and buoyancy in the vertical momentum equation (Eqn.~\ref{eqn:momentum} with Eqn.~\ref{eqn:boussinesq}), 
+\begin{equation}
+\frac{1}{2}\frac{d w^2}{dz} = |\alpha| g T'.
+\end{equation}
+Multiplying both sides by $h(x,y)$, taking a horizontal average, and then substituting $\delta T(z)$ using Eqn.~\ref{eqn:Fconv_vertical}, we retrieve a simple ordinary differential equation,
+\begin{equation}
+\frac{\overline{h^3}}{6 |\alpha| g \overline{h^2}} dW^3 = \Fconv dz.
+\label{eqn:theory_ode}
+\end{equation}
+This equation can be integrated over the depth of the convection zone from $W = 0$ to $W = W_0$ at the convective boundary, as well as over the penetration zone from $W = W_0$ to where $W = 0$.
+We assume however that the horizontal structure $h$ of the flux-carrying flows is not identical in the convection zone (CZ) and the penetration zone (PZ).
+Integrating Eqn.~\ref{eqn:theory_ode} over the CZ and PZ and taking a ratio of these two equations, we find
+\begin{equation}
+-\frac{(\overline{h}^3/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}} = 
+\frac{\int_{\rm{PZ}} \Fconv dz}{\int_{\rm{CZ}} \Fconv dz}.
+\label{eqn:theory_fraction}
+\end{equation}
+In order to move further with this theory, it is necessary to specify the vertical shape of $\Fconv$, which is in turn set by $Q$, $\gradad$, and $k$.
+We will assume that $\gradad$ has a constant value and that the internal heating $Q$ is localized near the bottom of the CZ so that a constant convective flux $\Fcz$ is carried in the bulk convection zone.
+As a result, the vertical profile of $\Frad$ and $\Fconv$ is determined completely by the behavior of $k(z)$ near the convective boundary.
+We will study two cases in this work: a discontinuous jump in $k(z)$ at the convective boundary, and a piecewise-linear profile of $k(z)$ whose derivative may be discontinuous at the convective boundary.
+
+\subsection{Case I: Discontinuous radiative conductivity}
+We first consider a radiative conductivity $k(z)$ which is discontinuous, with a value of $k_{\rm{CZ}}$ in the convection zone and larger value $k_{\rm{RZ}}$ in the PZ and radiative zone (RZ).
+The values of $k$ are chosen so that the convective flux follows
+\begin{equation}
+\Fconv(z) = \begin{cases}
+\Fcz			&	z \leq \Lcz,\\
+-\mP_D^{-1} \Fcz & 	z > \Lcz 
+\end{cases}.
+\end{equation}
+Here, $\mP_D^{-1}$ is the ``penetration parameter'' (subscript D for discontinuous case).
+Plugging this functional form of the flux into Eqn.~\ref{eqn:theory_fraction}, and integrating the convection zone from $z = 0$ to $z = \Lcz$ and the penetration zone from $z = \Lcz$ to $z = \Lcz + \dP$,
+\begin{equation}
+\frac{\dP}{\Lcz} = \mP_D
+\frac{(\overline{h}^3/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}}.
+\label{eqn:discontinuous_prediction}
+\end{equation}
+We then see that the size of the penetration region is linearly proportional to $\mP_D$ and is a function of the horizontal structure of the convective dynamics in the PZ and the CZ.
+This makes sense; As $\mP_D$ grows, the magnitude of $\Fconv$ in the PZ shrinks, and so too does the breaking force of buoyancy.
+
+\subsection{Case II: Piecewise linear radiative conductivity}
+We next assume that $k(z)$ is not discontinuous at the CZ-PZ boundary, but that its derivative may be.
+As a result, the convective flux in the vicinity of the boundary takes the form
+\begin{equation}
+\Fconv(z) = 
+\begin{cases}
+(\partial_z k)_{\rm{cz}}\gradad (\Lcz - z) & z \leq \Lcz \\
+-\mP_L^{-1}(\partial_z k)_{\rm{cz}}\gradad (z - \Lcz) & z > \Lcz
+\end{cases},
+\end{equation}
+where we assume that $(\partial_z \Frad)_{\rm{cz}} =  (\partial_z k)_{\rm{cz}}\gradad$ is a constant.
+Again, solving Eqn.~\ref{eqn:theory_fraction} with this functional form of the flux, we retrieve
+\begin{equation}
+\frac{\dP}{\Lcz} = \sqrt{\mP_L
+\frac{(\overline{h}^3/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}}},
+\label{eqn:linear_prediction}
+\end{equation}
+which is identical to the prediction of \citet{zahn1991} when we take $\mP_L = 1$.
+
+
+
+
 
 
 
@@ -139,7 +231,7 @@ We assume that the classical thermal diffusion term $\chi \grad^2 T'$  only acts
 \begin{align}
 &\grad\dot\vec{u} = 0 \\
 &\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\grad \varpi + T \hat{z} + \mR^{-1}\grad^2 \vec{u} \\
-&\partial_t T + \vec{u}\dot\grad T + w \grad_{\rm{ad}} = (\Pran\mR)^{-1}\grad^2 T' + \grad\dot[k \grad \overline{T}] + Q
+&\partial_t T + \vec{u}\dot\grad T + w \grad_{\rm{ad}}  + \grad\dot[-k \grad \overline{T}] = (\Pran\mR)^{-1}\grad^2 T' + Q
 \end{align}
 
 \section{Results}
