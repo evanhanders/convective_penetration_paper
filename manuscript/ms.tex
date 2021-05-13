@@ -23,7 +23,9 @@
 \newcommand{\mR}{\ensuremath{\mathcal{R}}}
 \newcommand{\mS}{\ensuremath{\mathcal{S}}}
 \newcommand\Pran{\ensuremath{\mathrm{Pr}}}
+\newcommand{\brunt}{Brunt-V\"{a}is\"{a}l\"{a}}
 
+\newcommand{\angles}[1]{\langle #1 \rangle}
 \newcommand{\pd}[1]{\partial_{#1}}
 \renewcommand{\vec}[1]{\boldsymbol{#1}}
 \newcommand{\M}[1]{\mathbf{#1}}
@@ -183,6 +185,7 @@ As a result, the vertical profile of $\Frad$ and $\Fconv$ is determined complete
 We will study two cases in this work: a discontinuous jump in $k(z)$ at the convective boundary, and a piecewise-linear profile of $k(z)$ whose derivative may be discontinuous at the convective boundary.
 
 \subsection{Case I: Discontinuous radiative conductivity}
+\label{sec:discontinuous_theory}
 We first consider a radiative conductivity $k(z)$ which is discontinuous, with a value of $k_{\rm{CZ}}$ in the convection zone and larger value $k_{\rm{RZ}}$ in the PZ and radiative zone (RZ).
 The values of $k$ are chosen so that the convective flux follows
 \begin{equation}
@@ -202,6 +205,7 @@ We then see that the size of the penetration region is linearly proportional to 
 This makes sense; As $\mP_D$ grows, the magnitude of $\Fconv$ in the PZ shrinks, and so too does the breaking force of buoyancy.
 
 \subsection{Case II: Piecewise linear radiative conductivity}
+\label{sec:linear_theory}
 We next assume that $k(z)$ is not discontinuous at the CZ-PZ boundary, but that its derivative may be.
 As a result, the convective flux in the vicinity of the boundary takes the form
 \begin{equation}
@@ -219,20 +223,123 @@ Again, solving Eqn.~\ref{eqn:theory_fraction} with this functional form of the f
 \label{eqn:linear_prediction}
 \end{equation}
 which is identical to the prediction of \citet{zahn1991} when we take $\mP_L = 1$.
-
-
-
-
-
-
+In this work, we will test the predictions of Eqns.~\ref{eqn:linear_prediction} and \ref{eqn:discontinuous_prediction}.
+Our aim is to see if the predicted scalings with $\mP$ are realized in direct numerical simulations, and to measure preliminary values for $\frac{(\overline{h}^3/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}}$ in local simulations.
 
 \section{Simulation Details}
+We nondimensionalize Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq} on the length scale of the convection zone, the timescale of freefall across that convection zone, and the temperature scale of the internal heating over that freefall time,
+\begin{equation}
+\begin{split}
+&T^* = (\Delta T)T = Q_0 \tau T,\qquad
+\partial_{t^*} = \tau^{-1}\partial_t = \left(\frac{\alpha g Q_0}{\Lcz}\right)^{1/3} \partial_t,\qquad
+\grad^* = \Lcz^{-1} \grad,\qquad
+\vec{u}^* = u_{\rm{ff}}\vec{u} = \left(\alpha g Q_0 \Lcz^2\right)^{1/3}\vec{u},
+\\
+&k^* = (\Lcz^2 \tau^{-1})k,\qquad
+Q^* = Q_0 Q,\qquad
+\mR = \frac{u_{\rm{ff}} \Lcz}{\nu},\qquad
+\Pran = \frac{\nu}{\chi}.
+\end{split}
+\end{equation}
+Here, quantities with $*$ (e.g., $T^*$) refer to the ``dimensionful'' quantities of Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq}, and going forward quantities without these (e.g., $T$) will be dimensionless.
+The equations of motion are therefore
 \label{sec:simulation_details}
 \begin{align}
-&\grad\dot\vec{u} = 0 \\
-&\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\grad \varpi + T \hat{z} + \mR^{-1}\grad^2 \vec{u} \\
-&\partial_t T + \vec{u}\dot\grad T + w \grad_{\rm{ad}}  + \grad\dot[-k \grad \overline{T}] = (\Pran\mR)^{-1}\grad^2 T' + Q
+&\grad\dot\vec{u} = 0 
+\label{eqn:nondim_incompressible} \\
+&\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\grad \varpi + T \hat{z} + \mR^{-1}\grad^2 \vec{u}
+\label{eqn:nondim_momentum} \\
+&\partial_t T + \vec{u}\dot\grad T + w \grad_{\rm{ad}}  + \grad\dot[-k \grad \overline{T}] = (\Pran\mR)^{-1}\grad^2 T' + Q.
+\label{eqn:nondim_temperature}
 \end{align}
+We construct a domain in the range $z \in [0, L_z]$ where in this work we choose $L_z \geq 2$ so that the domain contains at least two convection zone length scales according to the Schwarzschild criterion.
+We decompose the temperature field into a background and fluctuations, $T(x, y, z, t) = T_0(z) + T_1(x, y, z, t)$.
+For boundary conditions, we impose impenetrable, no-slip boundary conditions at the top and bottom of the box so that $\vec{u} = 0$ at $z = [0, L_z]$.
+We also impose a fixed-flux boundary at the bottom of the box ($\partial_z T_1 = 0$ at $z = 0$) and a fixed temperature boundary at the top of the domain ($T_1 = 0$ at $z = L_z$).
+
+We impose an order unity internal heating which spans one fifth of the convection zone,
+\begin{equation}
+Q = \begin{cases}
+0		& z < 0.1\,\,\rm{or}\,\,z\geq 0.1 + \delta_H,\\
+|Q_{\rm{mag}}|		& 0.1 \leq z \leq 0.1 + \delta_H
+\end{cases}.
+\end{equation}
+The integrated value of the flux through the system from the heating is therefore $F_H(z > 0.1 + \delta_H) = \int_0^z Q_{\rm{mag}} dz = Q_{\rm{mag}}\delta_H$.
+Throughout this work we choose $Q_{\rm{mag}} = 1$ and $\delta_H = 0.2$ so $F_H = 0.2$.
+We offset this heating from the bottom boundary to $z = 0.1$ to avoid heating within the bottom impenetrable boundary layer where velocities go to zero and $k$ is small; this prevents strong temperature gradients from establishing there.
+We assume that the (adiabatic) temperature gradient at the bottom boundary carries some flux, $\Fbot = \zeta F_H$ and we choose $\zeta = 10^{-3}$ so that most of the flux in the convection zone is carried by the convection.
+
+In our equations, we expect the volume-average convective velocities to depend on the magnitude of the heating, $\angles{\vec{u}} \approx Q_{\rm{mag}}^{1/2} \approx 1$, so the characteristic convective frequency $f_{\rm{conv}} \approx \angles{\vec{u}} \Lcz \approx 1$.
+We want to allow the stiffness of the radiative-convective interface to be a control parameter.
+The stiffness is defined,
+\begin{equation}
+\mS \equiv \frac{N^2}{f_{\rm{conv}}} \approx N^2,
+\end{equation}
+where $N^2$ is the \brunt$\,$frequency in the radiative zone.
+In our nondimensionalization, $N^2 = \gradad - \gradrad$ where $\gradrad = \Ftot/k$, so by choosing a value of the stiffness we set the magnitude of the background temperature gradient, $T_0$ which in turn sets the value of $k$ in the radiative zone.
+
+The crucial place in which our model differs from that of prior work is that we define a ``penetration parameter,'' $\mP$, which determines the size of the convective penetration region.
+We define
+\begin{equation}
+\mP = -\frac{\Fconv|_{\rm{CZ}}}{\Fconv|_{PZ}},
+\end{equation}
+where $\Fconv|_{PZ}$ is the negative convective flux carried in a perfectly adiabatic convective penetration region.
+We construct our experiments so that $\mP$ and $\mS$ can be varied separately.
+We suspect that many past experiments have implicitly set $\mP \approx \mS^{-1}$.
+
+Aside form $\mS$ and $\mP$, the two remaining control parameters that control our experiments determine the degree of turbulence.
+The value of $\mR$ roughly corresponds to the value of the peak Reynolds number measured in the simulations, and we set the ratio of the diffusivities $\Pran = 0.5$ throughout this work.
+Astrophysical convection is in the limit of $\Pran \ll 1$; we choose a modest value of $\Pran$ which slightly separates the scales between thermal and viscous structures while still allowing us to achieve convection with large Reynolds and P\'{e}clet numbers.
+
+\subsection{Case I: Discontinuous radiative conductivity}
+Most of the simulations in this paper study simulations with a discontinuous radiative conductivity,
+\begin{equation}
+k_D(z) = \begin{cases}
+k_{\rm{CZ}}	&	z < 1 \\
+k_{\rm{RZ}} &	z \geq 1
+\end{cases}.
+\end{equation}
+Leaving $\mS$ and $\mP_D$ as free parameters and requiring that the adiabatic gradient can carry the $\Fbot$ at $z = 0$ and that the radiative gradient can carry the flux for $z \geq 1$ specifies this system fully,
+\begin{equation}
+k_{\rm{RZ}} = \frac{\delta_H}{\mS\mP_D},\qquad
+k_{\rm{CZ}} = k_{\rm{RZ}}\frac{1}{1 + \zeta + \mP_D^{-1}},\qquad
+\gradad = Q_{\rm{mag}}\mS\mP_D(1 + \zeta + \mP_D^{-1}),\qquad
+\gradrad = \gradad - Q_{\rm{mag}}\mS.
+\end{equation}
+
+We study three sweeps through the ($\mP_D$, $\mS$, $\mR$) parameter space in this paper (one in which we vary each parameter while holding the other parameters constant).
+We use ``Reference values'' of $\mP_D = 4$, $\mS = 10^3$, and $\mR = 400$; all of our parameter space sweeps pass through this point in the three-dimensional parameter space.
+As in section \ref{sec:discontinuous_theory}, we expect $\delta_p \propto \mP_D$.
+
+\subsection{Case II: Piecewise linear radiative conductivity}
+We additionally study a select few simulations where the radiative conductivity's gradient is piecewise discontinuous,
+\begin{equation}
+\partial_z k = \partial_z k_0
+\begin{cases}
+1	&	z < 1 \\
+\mP_L^{-1} &	z \geq 1
+\end{cases}
+\end{equation}
+Since $k$ varies with height, the value of $\mS$ and $\mP$ also vary with height; we specify their values at $z = 2$.
+by this choice, we require
+\begin{equation}
+\partial_z k_0 = \frac{\delta_H}{\Lcz \mS \xi},\qquad
+k_b = \frac{\delta_H\zeta}{\mS\xi},\qquad
+\gradad = Q \mS \xi,
+\end{equation}
+where $\xi \equiv 1 + \mP_L(1 + \zeta)$.
+In these simulations, we hold $\mS = 10^3$ and $\mR = 800$ while varying $\mP_L$.
+As in section \ref{sec:linear_theory}, we expect $\delta_p \propto \mP_L^{1/2}$.
+
+\subsection{Numerics}
+We time-evolve equations \ref{eqn:nondim_incompressible}-\ref{eqn:nondim_temperature} using the Dedalus pseudospectral solver \citep{burns_etal_2020}\footnote{we use X version} using timestepper RK443 [CITE].
+All fields are represented as spectral expansions of $n_z$ Chebyshev coefficients in the vertical ($z$) direction and as ($n_x$,$n_y$) Fourier coefficients in the horizontal ($x$,$y$) directions; our domains are therefore horizontally periodic.
+The aspect ratio of our domains is two so that $x \in [0, L_x]$ and $y \in [0, L_y]$ with $L_x = L_y = 2 L_z$.
+To start our simulations, we add random noise temperature perturbations with a magnitude of $10^{-3}$ to a background temperature profile $\overline{T}$; we discuss the choice of $\overline{T}$ in appendix \ref{app:accelerated_evolution}.
+We produce the figures in this paper using matplotlib [CITE].
+All of the Python scripts used to run the simulations in this paper and to create the figures in this paper are publicly available in a git repo, found at [CITE].
+
+
 
 \section{Results}
 \label{sec:results}
@@ -251,8 +358,10 @@ We'd like to thank
 \appendix
 
 \section{Accelerated Evolution}
+\label{app:accelerated_evolution}
 
 \section{Table of simulation parameters}
+\label{app:simulation_table}
 
 
 
