@@ -81,7 +81,7 @@ A complete and nuanced understanding is therefore crucial for understanding stel
 One particular aspect of stellar convection which remains poorly understood even after decades of study is the class of mechanisms generally referred to as ``convective overshoot.''
 Useful parameterizations of the way in which convective motions extend beyond the nominally Schwarzschild- or Ledoux- stable boundaries of the convective zone have historically been elusive.
 Improved models of this ``overshoot'' could help to resolve many discrepancies between observations and theoretical model.
-In the Sun and solar-type stars, better models of convective boundaries could help solve the mystery of low abundances of Li at the surface of solar-type stars \citep{pinsonneault1997, dumont_etal_2021}, the ``solar modeling problem'' \citep{basu_antia_2004, bahcall_etal_2005, zhang_li_2012, vinyoles_etal_2017, asplund_etal_2021} and problems in helioseismic profiles near the base of the convection zone \citep{christensen-dalsgaard_etal_2011}.
+In the Sun and solar-type stars, better models of convective boundaries could help solve the mystery of low abundances of Li at the surface of solar-type stars \citep{pinsonneault1997, carlos_etal_2019, dumont_etal_2021}, the ``solar modeling problem'' \citep{basu_antia_2004, bahcall_etal_2005, zhang_li_2012, vinyoles_etal_2017, asplund_etal_2021} and problems in helioseismic profiles near the base of the convection zone \citep{christensen-dalsgaard_etal_2011}.
 There is also ample evidence that we do not understand the nature of convective mixing at the boundary of core convection zones \citep{claret_torres_2018, jermyn_etal_2018, viani_basu_2020, martinet_etal_2021, pedersen_etal_2021} which could have profound implications for the post-main sequence evolution and remnants of massive stars \citet{farmer_etal_2019, higgins_vink_2020}.
 In order to ensure that models can be evolved on fast (human) timescales, 1D stellar evolution codes rely on simple parameterizations of convective overshoot and mixing beyond convective boundaries \citep{shaviv_salpeter_1973, maeder1975, herwig2000, paxton_etal_2011, paxton_etal_2013, paxton_etal_2018, paxton_etal_2019}.
 While some preliminary work has been done to couple 3D dynamical convective simulations with 1D stellar evolution codes \citep{jorgensen_weiss_2019}, these calculations are currently prohibitively expensive to perform e.g., at every timestep in a stellar evolution calculation.
@@ -443,28 +443,64 @@ In this work, from the theory lines plotted in Figs.~\ref{fig:erf_3D_penetration
 \begin{equation}
 \frac{(\overline{h}^3/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}} \approx 0.125 \,\,(\text{Case I: Discontinuous}),\qquad
 \frac{(\overline{h}^3/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}} \approx 0.0625 \,\,(\text{Case II: Linear}).
+\label{eqn:fit_h_values}
 \end{equation}
 As the case II linear simulations are more applicable in the regime of stellar convection, we suggest that those simulations likely provide a starting guess for how to implement \citet{zahn1991}'s theory in 1D stellar models.
 We examine this further in the next section.
 
-
-
-
-
-
-
-
-
-
-
 \section{A modified solar model}
 \label{sec:solar_model}
+We now examine briefly how \citet{zahn1991}'s theory modifies a simple structure model of the Sun.
+We implement a simple prescription of convective penetration in MESA \citep{paxton_etal_2013} as follows:
+\begin{enumerate}
+\item Find the radial location of the radiative-convective boundary according to the Schwarzschild criterion, $r_{\rm{RCB}}$.
+Also evaluate the value of the mixing length $\ell$ at that location.
+\item Integrate the magnitude of the convective luminosity within the convection zone, $L_i = \int_{r_{\rm{RCB}}}^{r_{\rm{RCB}} + \ell} L_{\rm{conv}} dr$.
+\item Following Eqn.~\ref{eqn:theory_fraction} and the measured values for the horizontal dynamics in Eqn.~\ref{eqn:fit_h_values}, integrate $L_o = \int_{r_{\rm{RCB}}}^{r_{\rm{RCB}} + \delta_p} (L_{\rm{rad}} - L_{\rm{rad,ad}}) dr$, where $L_{\rm{rad}}$ is the radiative luminosity carried by $\gradrad$ and $L_{\rm{rad,ad}}$ is the radiative luminosity carried by $\gradad$.
+We determine the value of $\delta_p$ according to Eqn.~\ref{eqn:theory_fraction} so that
+\begin{equation}
+C \equiv -\frac{(\overline{h}^3/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}} \approx -0.1
+\Rightarrow
+L_o = C L_i.
+\label{eqn:mesa_equation}
+\end{equation}
+\item Override the value of $\grad$ in the MESA solver to set $\grad = \gradad$ from $r_{\rm{RCB}}$ to $r_{\rm{RCB}} - \delta_p$.
+\item Mix within this new convection zone by setting the convective velocities according to the average convective luminosity in the penetration zone, $4\pi r^2 \rho v^3 \sim L_o$.
+\end{enumerate}
 
 \section{Discussion}
 \label{sec:discussion}
+In this work, we discussed the theory of convective penetration put forward by \citet{zahn1991}, then designed and analyzed two sets of simulations which showed good agreement with that theory.
+We furthermore examined briefly what the impliciations of this theory could be for a simple solar model.
+We find that convection zones are bounded by ``penetration zones,'' whose depths are determined by the shape of the radiative gradient near the convective boundaries.
+For the proper choice of parameters, these penetration zones can be larger than the convection zones themselves; however, for realistic stellar values ($\mP_L \approx 1$), we find that they may be as large as 20\% of the convective length scale (the mixing length in a star).
+
+The simulations we presented in this work were the simplest possible simulations to try to test the basic tenents of \citet{zahn1991}'s theory.
+In particular, they show convincingly that the shape of the flux near the convective boundary is one of the factors that the determines the depth of the penetration zone.
+However, as discussed in Eqns.~\ref{eqn:theory_fraction} \& \ref{eqn:mesa_equation}, the structure of the penetrative convective flows is the other crucial ingredient in Zahn's theory.
+The scalar numerical estimates for how these dynamic sshould be handled in the theory, presented in Eqn.~\ref{eqn:fit_h_values}, of course come with the caveat that the local, Cartesian, Boussinesq flows studied here may be quite different from stars where spherical effects and density stratification come into account.
+Future work should aim to determine how much the values in Eqn.~\ref{eqn:fit_h_values} vary when these more realistic effects are taken into account.
+
+Furthermore, it is important to note that stellar opacities, and thus stellar conductivities, are functions of thermodynamic variables rather than radial location.
+As a result, the formation of a penetration zone will in turn affect the conductivity profile and $\gradrad$, which will in turn affect the estimate of how deep a penetration zone should form.
+Future studies should follow e.g., \citet{kapyla_etal_2017} and implement realistic opacity profiles which evolve self-consistently with the thermodynamic state.
+
+Finally, we note that our work here assumes a uniform composition through the convective and radiative region.
+Frequently within stars, convective boundaries coincide with discontinuities in composition profiles \citep{salaris_cassisi_2017}.
+Future work should also aim to determine if stabilizing composition gradients can prevent the formation of penetration zones seen here (as in Fig.~\ref{fig:time_evolution}).
+
+In summary, we have provided a first step towards deconstructing the mysteries of the behavior of convection near convective boundaries.
+We find that the simple-but-elegant theory of \citet{zahn1991} provides an excellent starting point for building a better understanding of the nature of convective penetration in stellar interiors.
+In future work, we will aim to more robustly implement Zahn's theory into MESA.
+
+
+
+
 
 \begin{acknowledgments}
-We'd like to thank
+We'd like to thank Keaton Burns and Kyle Augustson for useful discussions which improved the content of this manuscript.
+EHA is funded as a CIERA Postdoctoral fellow and would like to thank CIERA and Northwestern University. 
+Computations were conducted with support from the NASA High End Computing (HEC) Program through the NASA Advanced Supercomputing (NAS) Division at Ames Research Center on Pleiades with allocation GID s2276.
 \end{acknowledgments}
 
 
@@ -472,7 +508,25 @@ We'd like to thank
 
 \section{Accelerated Evolution}
 \label{app:accelerated_evolution}
-\citet{anders_etal_2018}
+As demonstrated in Fig.~\ref{fig:time_evolution}, the time evolution of simulations which start from a state based on the Schwarzschild criterion can be prohibitively long.
+In \citet{anders_etal_2018}, we explored the long time evolution of simple convective simulations and found that fast-forwarding the evolution of a convective simulation's internal energy and thermal structure is possible.
+In this work, we accelerate the evolution of of our simulations in order to more quickly determine the final size of the evolved penetration zones according to the following algorithm.
+\begin{enumerate}
+\item Once a simulation has a volume-averaged Reynolds number greater than 1, we wait 50 freefall times.
+\item We measure the 50\% departure point ($\delta_p$) of the top of the convection zone every freefall time, and store this information for 50 freefall times.
+\item We measure $d\delta_p/dt$ using NumPy's \texttt{gradient} function. 
+If the average value of $d\delta_p/dt$ has a different sign over the first and last 25 freefall times in our collection window, we erase the first 25 freefall times of data and return to step 2 for 25 freefall times.
+If the average value of $d\delta_p/dt$ has the same sign over the first and last 25 freefall times, we accelerate the evolution of our simulations.
+\item We find a value of $\delta_p$ to adjust the simulation toward. TODO: here's how we do this.
+\item We zero out convective velocities above the schwarzschild point. TODO: here's how.
+\item We restart from step 1.
+\end{enumerate}
+If a simulation returns to step 2 from step 3 ten times over the course of its evolution, we assume that it has converged near its answer, stop this iterative loop, and allow the simulation to timestep normally.
+This process effectively removes the long diffusive thermal evolution on display in the middle panel of Fig.~\ref{fig:time_evolution} by immediately setting the mean temperature profile to the radiative profile above the PZ.
+
+In Fig.~\ref{fig:AE_time_figure}, we display the time evolution of the same simulation as in Fig.~\ref{fig:time_evolution}, and we compare it to three simulations which use this accelerated evolution procedure.
+We start these three simulations with penetration zones whose depths are $\delta_p = [0, 0.4, 0.7]$, and we expect the evolved penetration zone depth to be $\delta_p \approx 0.55$.
+While the standard evolution simulation takes tens of thousands of time units to reach the final state, the accelerated simulations reach the final state over the course of hundreds of freefall times.
 
 \section{Table of simulation parameters}
 \label{app:simulation_table}
