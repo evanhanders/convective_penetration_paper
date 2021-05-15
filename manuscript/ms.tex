@@ -72,11 +72,11 @@ Blah Blah short description
 %%%% Body of paper
 \section{Introduction}
 \label{sec:introduction}
-Convection is a crucial heat transport mechanism over some fraction of the stellar radius for essentially all stars \citep{woosley_etal_2002, hansen_etal_2004, christensen-dalsgaard_2021}.
+Convection is a crucial heat transport mechanism in essentially all stars \citep{woosley_etal_2002, hansen_etal_2004, christensen-dalsgaard_2021}.
 Convective dynamics drive many still poorly-understood phenomena in stars.
 For example, convection drives the magnetic dynamo of the Sun, leading to the host of emergent phenomena known as solar activity \citep{brun_browning_2017}.
-Furthermore, convective motions excite both acoustic and gravity waves, which can be observed and used to constrain the thermodynamic structure of stars \citep{aerts2010, basu2016}.
 Convection is also responsible for compositional mixing, which can modify surface abundances or inject additional fuel into convective cores, thereby extending stellar lifetimes \citep{salaris_cassisi_2017}.
+Furthermore, convective motions excite both acoustic and gravity waves, which can be observed and used to constrain the thermodynamic structure of stars \citep{aerts2010, basu2016}.
 A complete and nuanced understanding of convection is therefore crucial for understanding stellar structure, evolution, and observations.
 
 One aspect of stellar convection which remains poorly understood despite decades of study is the class of mechanisms generally referred to as ``convective overshoot.''
@@ -273,6 +273,7 @@ Q = \begin{cases}
 0		& z < 0.1\,\,\rm{or}\,\,z\geq 0.1 + \delta_H,\\
 |Q_{\rm{mag}}|		& 0.1 \leq z \leq 0.1 + \delta_H
 \end{cases}.
+\label{eqn:sim_Q}
 \end{equation}
 The integrated value of the flux through the system from the heating is therefore $F_H(z > 0.1 + \delta_H) = \int_0^z Q_{\rm{mag}} dz = Q_{\rm{mag}}\delta_H$.
 Throughout this work we choose $Q_{\rm{mag}} = 1$ and $\delta_H = 0.2$ so $F_H = 0.2$.
@@ -308,6 +309,7 @@ k_D(z) = \begin{cases}
 k_{\rm{CZ}}	&	z < 1 \\
 k_{\rm{RZ}} &	z \geq 1
 \end{cases}.
+\label{eqn:sim_discontinuous_k}
 \end{equation}
 Leaving $\mS$ and $\mP_D$ as free parameters and requiring that the adiabatic gradient can carry the $\Fbot$ at $z = 0$ and that the radiative gradient can carry the flux for $z \geq 1$ specifies this system fully,
 \begin{equation}
@@ -329,6 +331,7 @@ We additionally study a select few simulations where the radiative conductivity'
 1	&	z < 1 \\
 \mP_L^{-1} &	z \geq 1
 \end{cases}
+\label{eqn:sim_linear_k}
 \end{equation}
 Since $k$ varies with height, the value of $\mS$ and $\mP$ also vary with height; we specify their values at $z = 2$.
 by this choice, we require
@@ -349,7 +352,16 @@ To start our simulations, we add random noise temperature perturbations with a m
 We produce the figures in this paper using matplotlib \citep{hunter2007, mpl3.3.4}.
 All of the Python scripts used to run the simulations in this paper and to create the figures in this paper are publicly available in a git repo, found at [CITE].
 
-We can't use true discontinuities and so we use approximate Heaviside functions like follows (TODO).
+Spectral methods with finite coefficient expansions cannot capture true discontinuities.
+In order to approximate discontinuous functions such as Eqns.~\ref{eqn:sim_Q}, \ref{eqn:sim_discontinuous_k}, \ref{eqn:sim_linear_k}, we must use smooth transitions.
+To create these smooth transitions, we define an approximate Heaviside step function using the error function,
+\begin{equation}
+H(z; z_0, \delta_w) = \frac{1}{2}\left(1 + \rm{erf}\left[\frac{z - z_0}{\delta_w}\right]\right).
+\label{eqn:heaviside}
+\end{equation}
+In the limit of that $\delta_w \rightarrow 0$, this function behaves identically to the classical Heaviside function centered at $z_0$.
+While constructing Eqn.~\ref{eqn:sim_Q} and Eqn.~\ref{eqn:sim_linear_k}, we use $\delta_w = 0.02$; while constructing Eqn.~\ref{eqn:sim_discontinuous_k} we use $\delta_w = 0.075$.
+In all other cases, we use $\delta_w = 0.05$.
 
 \subsection{Penetration depth measurements}
 
@@ -532,16 +544,40 @@ In this work, we accelerate the evolution of of our simulations in order to more
 \item We measure $d\delta_p/dt$ using NumPy's \texttt{gradient} function. 
 If the average value of $d\delta_p/dt$ has a different sign over the first and last 25 freefall times in our collection window, we erase the first 25 freefall times of data and return to step 2 for 25 freefall times.
 If the average value of $d\delta_p/dt$ has the same sign over the first and last 25 freefall times, we accelerate the evolution of our simulations.
-\item We find a value of $\delta_p$ to adjust the simulation toward. TODO: here's how we do this.
-\item We zero out convective velocities above the schwarzschild point. TODO: here's how.
+\item We calculate $\Delta\delta_p$ as the minimum of 
+\begin{equation}
+\Delta\delta_{p,1} = \overline{\frac{d\delta_p}{dt}}\bigg|\frac{\Delta \delta_p}{\Delta d \delta_p / dt} \bigg|,\qquad
+\Delta\delta_{p,2} = 500\overline{\frac{d\delta_p}{dt}}.
+\end{equation}
+Here, $\Delta\delta_{p,1}$ essentially represents a newton iteration in $d\delta_p / dt$ vs. $\delta_p$ space towards the root value where $d\delta_p / dt = 0$.
+In some cases, $\Delta\delta_{p,1}$ becomes too large; we thus limit the maximum change to $\Delta\delta_{p,2}$, which represents an advancement of the convective boundary at the current evolutionary pace by 500 freefall time units.
+\item After determining a new value of $\delta_{\rm{p,ev}} = \delta_{p,0} + \Delta\delta_p$, we adjust the $m = 0$ temperature gradient to
+\begin{equation}
+\partial_z \overline{T} = -\gradad - H(z; \delta_{\rm{p,ev}}, 0.05) \Delta\grad,
+\label{eqn:initial_grad}
+\end{equation}
+where $H$ is defined in Eqn.~\ref{eqn:heaviside} and $\Delta\grad = \gradrad - \gradad$.
+We also multiply the temperature perturbations and full convective velocity field by $H(z; 1, 0.05)$.
+This sets all fluctuations above the nominal Schwarzschild convection zone to zero, thereby avoiding any strange dynamical transients caused by the the old dynamics at the radiative-convective boundary (which has moved as a result of this process).
 \item We restart from step 1.
 \end{enumerate}
 If a simulation returns to step 2 from step 3 ten times over the course of its evolution, we assume that it has converged near its answer, stop this iterative loop, and allow the simulation to timestep normally.
 This process effectively removes the long diffusive thermal evolution on display in the middle panel of Fig.~\ref{fig:time_evolution} by immediately setting the mean temperature profile to the radiative profile above the PZ.
 
 In Fig.~\ref{fig:AE_time_figure}, we display the time evolution of the same simulation as in Fig.~\ref{fig:time_evolution}, and we compare it to three simulations which use this accelerated evolution procedure.
-We start these three simulations with penetration zones whose depths are $\delta_p = [0, 0.4, 0.7]$, and we expect the evolved penetration zone depth to be $\delta_p \approx 0.55$.
-While the standard evolution simulation takes tens of thousands of time units to reach the final state, the accelerated simulations reach the final state over the course of hundreds of freefall times.
+We start these three simulations with initial temperature profiles defined by Eqn.~\ref{eqn:initial_grad} with initial values of $\delta_{\rm{p,ev}} = 0$ (red line), $\delta_{\rm{p,ev}} 0.4$ (purple line), or $\delta_{\rm{p,ev}} = 0.7$ (green line).
+For these simulations, we expect the evolved penetration zone depth to be $\delta_p \approx 0.55$, so these represent perturbations above and below this estimate, as well as the classical Schwarzschild initial conditions.
+While the simulation that we straightforwardly timestep (black line) takes tens of thousands of time units to reach the final state, the accelerated simulations reach the final state over the course of hundreds of freefall times.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=\textwidth]{AE_time_figure.pdf}
+\caption{
+\label{fig:AE_time_figure}
+}
+\end{figure}
+
+
 
 \section{Table of simulation parameters}
 \label{app:simulation_table}
