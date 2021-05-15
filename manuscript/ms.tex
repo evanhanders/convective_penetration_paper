@@ -72,35 +72,44 @@ Blah Blah short description
 %%%% Body of paper
 \section{Introduction}
 \label{sec:introduction}
-Convection is a crucial heat transport mechanism over some fraction of the stellar radius for all stars at some point in the stellar lifetime \citep{woosley_etal_2002, hansen_etal_2004, christensen-dalsgaard_2021}.
-These motions drive the magnetic dynamo of the Sun and other stars \citep{brun_browning_2017}, leading to the host of emergent phenomena known as stellar activity.
-Furthermore, convective motions impinge upon nearby stable layers, exciting gravity waves \citep{aerts2010}.
-Convection is also responsible for mixing chemical compositions, which becomes increasingly important in the cores of evolved stars \citep{salaris_cassisi_2017}.
-A complete and nuanced understanding is therefore crucial for understanding stellar structure, evolution, and observations.
+Convection is a crucial heat transport mechanism over some fraction of the stellar radius for essentially all stars \citep{woosley_etal_2002, hansen_etal_2004, christensen-dalsgaard_2021}.
+Convective dynamics drive many still poorly-understood phenomena in stars.
+For example, convection drives the magnetic dynamo of the Sun, leading to the host of emergent phenomena known as solar activity \citep{brun_browning_2017}.
+Furthermore, convective motions excite both acoustic and gravity waves, which can be observed and used to constrain the thermodynamic structure of stars \citep{aerts2010, basu2016}.
+Convection is also responsible for compositional mixing, which can modify surface abundances or inject additional fuel into convective cores, thereby extending stellar lifetimes \citep{salaris_cassisi_2017}.
+A complete and nuanced understanding of convection is therefore crucial for understanding stellar structure, evolution, and observations.
 
-One particular aspect of stellar convection which remains poorly understood even after decades of study is the class of mechanisms generally referred to as ``convective overshoot.''
-Useful parameterizations of the way in which convective motions extend beyond the nominally Schwarzschild- or Ledoux- stable boundaries of the convective zone have historically been elusive.
-Improved models of this ``overshoot'' could help to resolve many discrepancies between observations and theoretical model.
-In the Sun and solar-type stars, better models of convective boundaries could help solve the mystery of low abundances of Li at the surface of solar-type stars \citep{pinsonneault1997, carlos_etal_2019, dumont_etal_2021}, the ``solar modeling problem'' \citep{basu_antia_2004, bahcall_etal_2005, zhang_li_2012, vinyoles_etal_2017, asplund_etal_2021} and problems in helioseismic profiles near the base of the convection zone \citep{christensen-dalsgaard_etal_2011}.
-There is also ample evidence that we do not understand the nature of convective mixing at the boundary of core convection zones \citep{claret_torres_2018, jermyn_etal_2018, viani_basu_2020, martinet_etal_2021, pedersen_etal_2021} which could have profound implications for the post-main sequence evolution and remnants of massive stars \citet{farmer_etal_2019, higgins_vink_2020}.
+One aspect of stellar convection which remains poorly understood despite decades of study is the class of mechanisms generally referred to as ``convective overshoot.''
+Broadly, in the stellar structure literature, convective overshoot refers to any mechanism which causes at least compositional mixing beyond the Schwarzschild or Ledoux stable convective boundary.
+Improved models of overshoot could resolve many discrepancies between observations and structure models.
+For example, observed surface lithium abundances in the Sun and solar-type stars align poorly with models, which could suggest a need for additional mixing below the solar convection zone \citep{pinsonneault1997, carlos_etal_2019, dumont_etal_2021}.
+Furthermore, modern spectroscopic observations suggest a lower solar metallicity than previously thought, and models computed with modern metallicity estimates and opacity tables have shallower convection zones than helioseismic observations suggest \citep{basu_antia_2004, bahcall_etal_2005, vinyoles_etal_2017, asplund_etal_2021}; model and observation discrepancies can be reduced by appropriately incorporating mixing below the convective boundary \citep{christensen-dalsgaard_etal_2011}.
+There is also ample evidence from massive stars with core convection that currently-employed prescriptions of convective overshoot are inadequate \citep{claret_torres_2018, jermyn_etal_2018, viani_basu_2020, martinet_etal_2021, pedersen_etal_2021}.
+Since core convective overshoot increases the reservoir of fuel available for nuclear fusion at each stage in stellar evolution, improved models of core convective boundary mixing could have profound impacts on the post-main sequence evolution and remnant formation of massive stars \citep{farmer_etal_2019, higgins_vink_2020}.
 In order to ensure that models can be evolved on fast (human) timescales, 1D stellar evolution codes rely on simple parameterizations of convective overshoot and mixing beyond convective boundaries \citep{shaviv_salpeter_1973, maeder1975, herwig2000, paxton_etal_2011, paxton_etal_2013, paxton_etal_2018, paxton_etal_2019}.
 While some preliminary work has been done to couple 3D dynamical convective simulations with 1D stellar evolution codes \citep{jorgensen_weiss_2019}, these calculations are currently prohibitively expensive to perform e.g., at every timestep in a stellar evolution calculation.
-In short, an improved theoretical understanding of the behavior of convective boundaries which can inform easy-to-calculate parameterizations is essential.
+In short, in order to resolve many of the discrepancies between current stellar evolution models and observations, we must come to a more complete, and \emph{parameterizeable} understanding of the manner in which convective motions extend beyond convective boundaries.
+
+The host of mechanisms referred to as ``convective overshoot'' in the stellar literature fall into two hydrodynamical classes.
+The first of these classes is, confusingly, also called ``convective overshoot'' in the fluid dynamics literature and refers to motions which extend beyond the convective boundary and mix chemical compositions but importantly \emph{do not adjust the thermodynamic profile}.
+The second of these classes is called ``convective penetration,'' in which convective motions mix the thermodynamic profiles beyond the convective boundary, thereby extending the convective boundary beyond the nominal Schwarzschild or Ledoux one.
+We will follow a deep history \citep{zahn1991, korre_etal_2019} and use this terminology throughout this work.
+The primary focus of this work will be on convective penetration, as this mechanism shows promise in aligning observations and models \citep{christensen-dalsgaard_etal_2011, pedersen_etal_2021}.
 
 Convective overshoot and penetration have been studied in laboratory experiments and numerical simulations for decades, and has been reviewed by many authors \citep{marcus_etal_1983, zahn1991, browning_etal_2004, rogers_etal_2006, viallet_etal_2015, korre_etal_2019}.
-%Early experiments of convective penetration of water in the laboratory \citep{deardorff_etal_1969} or simple numerical plumes \citep{schmitt_etal_1984} have given way to a wide array of dynamical experiments in recent years.
-A slew of simulations in Cartesian \citep{musman1968, moore_weiss_1973, hurlburt_etal_1986, hurlburt_etal_1994, singh_etal_1995, saikia_etal_2000, brummell_etal_2002, rogers_glatzmaier_2005, kapyla_etal_2007, tian_etal_2009, andrassy_spruit_2015, kitiashvili_etal_2016, lecoanet_etal_2016, kapyla_etal_2017, couston_etal_2017, toppaladoddi_wettlaufer_2018, kapyla2019, cai2020} and spherical \citep{browning_etal_2004, rogers_etal_2006, brun_etal_2017, pratt_etal_2017, dietrich_wicht_2018, higl_etal_2021} geometry have been studied.
-Despite this lengthy list of experiments, no consensus model of convective overshoot or penetration has emerged.
-Throughout the remainder of this work, we will use terminology from this hydrodynamical literature.
-``Convective penetration'' refers to convective motions which extend beyond the nominal Schwarzschild boundary of the convection zone \emph{and} flatten the temperature gradient towards the adiabatic.
-``Convective overshoot'' refers to the motions that extend beyond the convective boundary but do not modify the thermal structure.
-Our main focus in this paper will be on convective penetration.
+Experiments and simulations exhibiting extensive convective penetration in simplified, Boussinesq setups have been studied for decades \citep{ musman1968, deardorff_etal_1969, moore_weiss_1973}, with multiple recent studies suggesting that the penetration depth (or overshoot depth) is highly dependent on the stiffness of the radiative-convective interface \citep{couston_etal_2017, toppaladoddi_wettlaufer_2018, korre_etal_2019}.
+Some studies in density-stratified or fully compressible, stratified systems \citep[e.g.,][]{hurlburt_etal_1986, saikia_etal_2000} also found significant penetration depths, with multiple authors finding results suggesting that penetration and overshoot depths were determined by the stiffness of the radiative-convective interface \citep{hurlburt_etal_1994, singh_etal_1995, browning_etal_2004, dietrich_wicht_2018}.
+However, a number of studies have contradicted these results, showing little to no dependence on the stiffness \citep{brummell_etal_2002, rogers_glatzmaier_2005}.
+Many modern simulations utilize stellar structure models as inspiration for their experimental setup, and find significant convective overshoot or penetration \citep{browning_etal_2004, rogers_etal_2006, kitiashvili_etal_2016, brun_etal_2017, pratt_etal_2017, higl_etal_2021}.
+Some simulations have found that the extension beyond the convection zone depends strongly on the input flux for their experimental setups \citep{singh_etal_1998, kapyla_etal_2007, tian_etal_2009, hotta2017, kapyla2019}.
+In this work, we follow the results of these last class of simulations and study how one aspect of the convective flux modifies the extent of the penetration region.
 
 \citet{zahn1991} theorized that convective penetration should depend only on how steeply the radiative temperature gradient varies at the convective boundary.
-Some simulations \citep{hurlburt_etal_1994, rogers_etal_2006} have shown at least partial agreement with this theory.
-A semianalytic model of solar overshoot \citep{rempel2004} also agreed with the early ideas of Zahn. 
-Furthermore, some select simulations have found hints that convective overshoot or penetration may be sensitive the magnitude of the flux in some way \citep{singh_etal_1998, hotta2017, kapyla2019}.
-These results suggest that the gradients of fluxes near convective boundaries deserve further examination.
+Following \citet{zahn1991}'s work, \citet{rempel2004} derived a semianalytic model and suggested that the boosting of luminosity in stellar experiments compared to reference stars may be leading to wrong estimates of the penetrative dynamics.
+Indeed, some simulations have shown partial agreement with these ideas.
+In the limit of low stiffness, the simulations of \citet{hurlburt_etal_1994, rogers_etal_2006} agree with Zahn's theory (although at high stiffness they disagree).
+Some simulations have used the magnitude of the system flux as a control parameter, and indeed found that the penetration depth was dependent on it \citep{singh_etal_1998, hotta2017, kapyla2019}.
+These results suggest that Zahn's theory deserves to be revisted.
 
 In this work, we design two numerical experiments to test the theory of \citet{zahn1991}.
 We use a modified incompressible, Boussinesq model to study the simplest possible system, and re-derive his theory in our simplified limit.
@@ -468,6 +477,12 @@ L_o = C L_i.
 \item Mix within this new convection zone by setting the convective velocities according to the average convective luminosity in the penetration zone, $4\pi r^2 \rho v^3 \sim L_o$.
 \end{enumerate}
 
+We find a convection zone which extends an additional $X H_p$ beneath the nominal Schwarzschild base of the convection zone.
+This results in a discontinuous temperature profile, which would result in an acoustic ``glitch'' on the solar frequencies.
+Past work has suggested from observations that the maximum depth of such an extended adiabatic region should be limited to $0.05 H_p$, which is smaller than what is found in our model \citep[see e.g., section 7.2.1 of][]{basu2016}.
+However, our results here are in line with the recent simulations of \citet{kapyla2019}, which suggest an overshooting depth of $0.2 H_p$ at the base of the solar convection zone.
+
+
 \section{Discussion}
 \label{sec:discussion}
 In this work, we discussed the theory of convective penetration put forward by \citet{zahn1991}, then designed and analyzed two sets of simulations which showed good agreement with that theory.
@@ -483,7 +498,7 @@ Future work should aim to determine how much the values in Eqn.~\ref{eqn:fit_h_v
 
 Furthermore, it is important to note that stellar opacities, and thus stellar conductivities, are functions of thermodynamic variables rather than radial location.
 As a result, the formation of a penetration zone will in turn affect the conductivity profile and $\gradrad$, which will in turn affect the estimate of how deep a penetration zone should form.
-Future studies should follow e.g., \citet{kapyla_etal_2017} and implement realistic opacity profiles which evolve self-consistently with the thermodynamic state.
+Future studies should follow e.g., \citet{kapyla_etal_2017, kapyla2019} and implement realistic opacity profiles which evolve self-consistently with the thermodynamic state.
 
 Finally, we note that our work here assumes a uniform composition through the convective and radiative region.
 Frequently within stars, convective boundaries coincide with discontinuities in composition profiles \citep{salaris_cassisi_2017}.
