@@ -364,6 +364,19 @@ While constructing Eqn.~\ref{eqn:sim_Q} and Eqn.~\ref{eqn:sim_linear_k}, we use 
 In all other cases, we use $\delta_w = 0.05$.
 
 \subsection{Penetration depth measurements}
+In our evolved simulations, we find that the penetrative region has a nearly adiabatic stratification $\grad \approx \gradad$.
+In order to characterize the vertical extent of the penetrative (and subsequent overshoot) region, we measure how drastically $\grad$ has departed from $\gradad$.
+We define the difference between the adiabatic and radiative gradient,
+\begin{equation}
+\Delta\grad \equiv \gradad(z) - \gradrad(z).
+\end{equation}
+We measure penetration and overshoot depths in terms of ``departure points,'' that is, points at which the realized temperature gradient $\grad$ has evolved away from the adiabatic $\gradad$ by some fraction $f < 1$.
+Specifically,
+\begin{equation}
+1 + \delta_{f} = \rm{max}(z) \mid \grad > \gradad - f\Delta\grad.
+\end{equation}
+In this work, we measure the 10\% ($\delta_{0.1}$), 50\% ($\delta_{0.5}$), and 90\% ($\delta_{0.9}$) departure points, which are respectively at the top of the penetration zone, in the middle of the overshoot zone, and at the top of the overshoot zone.
+We find that these measurements based on the (slowly-evolving) thermodynamic profile are more robust and straightforward than many previous dynamically-based prescriptions \citep[see e.g.,][for a nice discussion]{pratt_etal_2017}.
 
 \section{Results}
 \label{sec:results}
