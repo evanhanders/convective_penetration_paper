@@ -12,12 +12,14 @@
 %%%% Custom commands
 \newcommand{\gradrad}{\ensuremath{\nabla_{\rm{rad}}}}
 \newcommand{\gradad}{\ensuremath{\nabla_{\rm{ad}}}}
+\newcommand{\delp}{\ensuremath{\delta_{\rm{p}}}}
 \newcommand{\Fbot}{\ensuremath{F_{\rm{bot}}}}
 \newcommand{\Ftot}{\ensuremath{F_{\rm{tot}}}}
 \newcommand{\Frad}{\ensuremath{F_{\rm{rad}}}}
 \newcommand{\Fconv}{\ensuremath{F_{\rm{conv}}}}
 \newcommand{\Fcz}{\ensuremath{F_{\rm{cz}}}}
 \newcommand{\mP}{\ensuremath{\mathcal{P}}}
+\newcommand{\mD}{\ensuremath{\mathcal{D}}}
 \newcommand{\dP}{\ensuremath{\delta_{\rm{p}}}}
 \newcommand{\Lcz}{\ensuremath{L_{\rm{cz}}}}
 \newcommand{\mR}{\ensuremath{\mathcal{R}}}
@@ -130,129 +132,142 @@ Finally, we discuss how future simulations can put finer constraints on this the
 
 \section{Theory}
 \label{sec:theory}
-Throughout this work, we will utilize a modified version of the Boussinesq equations of motion, similar to the model derived by \citet{spiegel_veronis_1960} and utilized by e.g., \citet{korre_etal_2019}.
-In dimensional form,
+Throughout this work, we will utilize a modified version of the incompressible Boussinesq equations of motion,
 \begin{align}
 &\grad\dot\vec{u} = 0 
 \label{eqn:incompressible} \\
-&\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\frac{1}{\rho_0}\grad p + \frac{\rho'}{\rho_0}\vec{g} + \nu\grad^2 \vec{u} 
+&\partial_t \vec{u} + \vec{u}\dot\grad\vec{u} = -\frac{1}{\rho_0}\grad p + \frac{\rho_1}{\rho_0}\vec{g} + \nu\grad^2 \vec{u} 
 \label{eqn:momentum} \\
 &\partial_t T + \vec{u}\dot\grad T + w \gradad + \grad\dot[-k \grad \overline{T}] = \chi\grad^2 T' + Q
 \label{eqn:temperature} \\
-&\frac{\rho'}{\rho_0} = -|\alpha| T.
+&\frac{\rho_1}{\rho_0} = -|\alpha| T.
 \label{eqn:boussinesq}
 \end{align}
-In this model, $\rho_0$ is a (constant) background density and $\rho'$ are fluctuations which act only in the buoyancy force and varies linearly with the temperature $T$ according to the coefficient of thermal expansion, $\alpha = \partial\ln\rho / \partial T$.
-Furthermore, $\vec{u}$ is the velocity vector, $\nu$ and $\chi$ are respectively the viscous and thermal diffusivity, $Q$ is a bulk internal heating term \citep[as in e.g.,][]{goluskin_vanderpoel_2016}, and $\gradad$ is the adiabatic temperature gradient (we define $\gradad$ as a positive value to align with stellar structure conventions; this means marginal stability is achieved when $\partial_z T = -\gradad$).
-We modify the model of \citet{spiegel_veronis_1960} to allow the mean temperature profile $\overline{T}$ to carry a radiative flux $\Frad = -k \grad \overline{T}$, where $k$ is a radiative diffusivity which can vary with height.
-We assume that the classical thermal diffusion term $\chi \grad^2 T'$  only acts on the fluctuations away from the mean temperature profile, $T' \equiv T - \overline{T}$.
+Here, the density is decomposed into a (constant) background $\rho_0$ with fluctuations $\rho_1$ which appear only in the buoyancy force and depend on the temperature $T$ and the coefficient of thermal expansion $\alpha = \partial\ln\rho / \partial T$.
+We furthermore define the velocity vector $\vec{u}$, the viscous diffusivity $\nu$, the thermal diffusivity $\chi$, the bulk internal heating $Q$ \citep[as in e.g.,][]{goluskin_vanderpoel_2016}, and the adiabatic temperature gradient $\gradad$.
+We define $\gradad$ as a positive value to align with stellar structure conventions; thus marginal stability is achieved when $\partial_z T = -\gradad$.
+These equations are similar to those derived by \citet{spiegel_veronis_1960} and utilized by e.g., \citet{korre_etal_2019}, but we allow the mean temperature profile $\overline{T}$ to carry a radiative flux $\Frad = -k \grad \overline{T}$, where $k$ is a radiative diffusivity which can vary with height.
+The classic Boussinesq thermal diffusion term $\chi \grad^2 T'$ therefore carries no flux and acts only on the fluctuations away from the mean temperature profile, $T' \equiv T - \overline{T}$; throughout this work, we will represent horizontal averages with bars ($\overline{\,\cdot\,}$) and primes ($'$) represent fluctuations away from those horizontal means.
+Throughout this work, we will consider Cartesian coordinates $(x, y, z)$, but this analysis is generalizeable to spherical geometry.
+We will furthermore assume a model in which an unstable convection zone sits below a stable radiative zone, but this analysis also holds for the inverted problem.
 
-The basis of the theory of \citet{zahn1991} is that the size of the convection zone is determined by the horizontally-averaged energetics and buoyancy breaking.
-We assume convection reaches a time-stationary, equilibrium state; we vertically integrate Eqn.~\ref{eqn:temperature} and take a horizontal average to find
+\citet{zahn1991} theorized that the size of the convection zone is determined by the horizontally-averaged energy fluxes.
+Assuming convection reaches a time-stationary state, we horizontally-average the vertically integrated Eqn.~\ref{eqn:temperature} to find
 \begin{equation}
-\Ftot = \Frad + \Fconv = \int Q dz + \Fbot,
+\overline{\Ftot} = \overline{\Frad} + \overline{\Fconv} = \int Q dz + \Fbot,
 \end{equation}
-with $\Fconv = \overline{w T}$ and $\Fbot$ the flux at the bottom of the convective domain and $\Ftot$ the total flux, which can vary in height according to integral of $Q$.
-We next assume that convection penetrates above the nominal schwarzschild boundary of the convection zone and mixes the temperature gradient towards the adiabatic in that region.
-Thus, in that region, the convective flux can be found,
+where $\overline{\Fconv} = \overline{w T}$, is $\Fbot$ the flux carried at the bottom of the considered domain, and $\overline{\Ftot}$ is the total flux, which can vary in height due to the heating $Q$.
+We next assume that convection penetrates above the Schwarzschild boundary of the convection zone at $z = L_s$ and mixes the temperature gradient to the adiabatic in the region $z \in [L_s, L_s + \delp]$, where $\delp$ is the penetration depth.
+This assumption specifies the convective flux in the penetrative region,
 \begin{equation}
-\Fconv = \Ftot - F_{\rm{rad, ad}} = \Ftot - k \grad_{\rm{ad}}.
+\overline{\Fconv}(z \in [L_s, L_s + \delp]) = \Ftot - \overline{F_{\rm{rad, ad}}} = \Ftot - k \grad_{\rm{ad}}.
+\label{eqn:fconv_pz}
 \end{equation}
-By definition, in this region, $\grad_{\rm{ad}} > \grad_{\rm{rad}}$, where $\grad_{\rm{rad}} = \Ftot/k$, so this requires that $\Fconv < 0$ in the convective penetration region.
-We next assume that the temperature and velocity are highly correlated in the penetrative region with very similar horizontal fluctuations,
+At this point it is useful to define the radiative gradient, $\grad_{\rm{rad}} = \Ftot/k$.
+Within the penetrative region, $\grad_{\rm{ad}} > \grad_{\rm{rad}}$, so Eqn.~\ref{eqn:fconv_pz} requires $\overline{\Fconv} < 0$.
+Following \citet{zahn1991}, we next assume that the velocity and horizontal temperature fluctuations are highly correlated and specified by a function $h(x,y)$,
 \begin{equation}
 w(x,y,z) = W(z)h(x,y),
 \qquad
 T'(x,y,z) = \delta T(z)h(x,y).
 \end{equation}
-We here assume that $\overline{h} = 0$ and $\overline{h^2} \neq 0$.
-We can then express the convective flux in terms of these vertically-varying profiles and an average over the horizontal structure of the flows,
+The incompressibility constraint (Eqn.~\ref{eqn:incompressible}) specifies $\overline{w} = 0$, so $\overline{h} = 0$.
+However, nonlinear interactions do not disappear when horizontally averaged, so $\overline{h^2} \neq 0$.
+A vertically-varying formulation of the mean convective flux follows from this formulation,
 \begin{equation}
-\Fconv \equiv \overline{w T} = \overline{h^2} \, W(z) \, \delta T(z).
+\overline{\Fconv} \equiv \overline{w T} = \overline{h^2} \, W(z) \, \delta T(z).
 \label{eqn:Fconv_vertical}
 \end{equation}
-In the penetrative region, since $\Fconv < 0$, $W(z)$ and $\delta T(z)$ must be oppositely signed and the convective flows should eventually come to a stop through buoyancy breaking.
-This is achieved through a balance between advection and buoyancy in the vertical momentum equation (Eqn.~\ref{eqn:momentum} with Eqn.~\ref{eqn:boussinesq}), 
+In the penetrative region, since $\Fconv < 0$, $W(z)$ and $\delta T(z)$ must have opposite signs; the buoyancy force will therefore decelerate penetrative flows.
+In a stationary state, the penetrative zone is thus described by a balance between advection and buoyancy in the vertical momentum equation (Eqn.~\ref{eqn:momentum} with Eqn.~\ref{eqn:boussinesq}), 
 \begin{equation}
-\frac{1}{2}\frac{d w^2}{dz} = |\alpha| g T'.
+\frac{1}{2}\frac{d w^2}{dz} \sim |\alpha| g T'.
 \end{equation}
-Multiplying both sides by $h(x,y)$, taking a horizontal average, and then substituting $\delta T(z)$ using Eqn.~\ref{eqn:Fconv_vertical}, we retrieve a simple ordinary differential equation,
+Multiplying both sides by $h(x,y)$, horizontally averaging, and then eliminating $\delta T(z)$ using Eqn.~\ref{eqn:Fconv_vertical}, we retrieve a simple ordinary differential equation describing convective dynamics,
 \begin{equation}
-\frac{\overline{h^3}}{6 |\alpha| g \overline{h^2}} dW^3 = \Fconv dz.
+\frac{\overline{h^3}}{6 |\alpha| g \overline{h^2}} dW^3 \sim \overline{\Fconv} dz.
 \label{eqn:theory_ode}
 \end{equation}
-This equation can be integrated over the depth of the convection zone from $W = 0$ to $W = W_0$ at the convective boundary, as well as over the penetration zone from $W = W_0$ to where $W = 0$.
+While we have derived this expression in the penetrative zone, it should be equally valid in a stationary convection zone; there, however, $\overline{\Fconv} > 0$.
+This equation can be integrated over the depth of the convection zone (from $W = 0$ at $z = 0$ to $W = W_0$ at $z = L_s$), as well as over the penetration zone (from $W = W_0$ at $z = L_s$ to $W = 0$ at $z = L_s + \delp$).
 We assume however that the horizontal structure $h$ of the flux-carrying flows is not identical in the convection zone (CZ) and the penetration zone (PZ).
-Integrating Eqn.~\ref{eqn:theory_ode} over the CZ and PZ and taking a ratio of these two equations, we find
+Taking the ratio of these two integrals of Eqn.~\ref{eqn:theory_ode}, we find
 \begin{equation}
--\frac{(\overline{h}^3/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}} = 
-\frac{\int_{\rm{PZ}} \Fconv dz}{\int_{\rm{CZ}} \Fconv dz}.
+\mD \equiv \frac{(\overline{h^3}/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}},\qquad\qquad
+\frac{\int_{\rm{PZ}} \overline{\Fconv} dz}{\int_{\rm{CZ}} \overline{\Fconv} dz} = - \mD.
 \label{eqn:theory_fraction}
 \end{equation}
-In order to move further with this theory, it is necessary to specify the vertical shape of $\Fconv$, which is in turn set by $Q$, $\gradad$, and $k$.
-We will assume that $\gradad$ has a constant value and that the internal heating $Q$ is localized near the bottom of the CZ so that a constant convective flux $\Fcz$ is carried in the bulk convection zone.
-As a result, the vertical profile of $\Frad$ and $\Fconv$ is determined completely by the behavior of $k(z)$ near the convective boundary.
-We will study two cases in this work: a discontinuous jump in $k(z)$ at the convective boundary, and a piecewise-linear profile of $k(z)$ whose derivative may be discontinuous at the convective boundary.
+This equation represents the central result of \citet{zahn1991}'s theory: the ratio of the vertically integrated convective fluxes in the PZ and CZ is directly linked to some constant which is determined by the structure of the dynamics ($\mD$).
 
-\subsection{Case I: Discontinuous radiative conductivity}
-\label{sec:discontinuous_theory}
-We first consider a radiative conductivity $k(z)$ which is discontinuous, with a value of $k_{\rm{CZ}}$ in the convection zone and larger value $k_{\rm{RZ}}$ in the PZ and radiative zone (RZ).
-The values of $k$ are chosen so that the convective flux follows
+Eqn.~\ref{eqn:theory_fraction} is however not intuitively satisfying.
+In order to derive a specific prediction for the PZ depth, it is necessary to specify the vertical shape of $\overline{\Fconv}$.
+We will study two cases in this work: a discontinuous jump in $\overline{\Fconv}$ at the convective boundary, and continuous piecewise-linear profile of $\overline{\Fconv}$ whose derivative may be discontinuous at the convective boundary.
+In both of these cases, we will define a nondimensional ``Penetration Parameter,''
 \begin{equation}
-\Fconv(z) = \begin{cases}
-\Fcz			&	z \leq \Lcz,\\
--\mP_D^{-1} \Fcz & 	z > \Lcz 
+\mP \equiv -\frac{\overline{\Fconv}(z = L_s - \epsilon)}{\overline{\Fconv}(z = L_s + \epsilon)},
+\label{eqn:theory_P_defn}
+\end{equation}
+which is the negative ratio of the convective flux some equidistant length $\epsilon$ both above and below the Schwarzschild convective boundary (assuming the region above the boundary is an adiabatic penetrative zone).
+
+
+\subsection{Case I: Discontinuous flux}
+\label{sec:discontinuous_theory}
+We first consider a model which satisfies
+\begin{equation}
+\overline{\Fconv}(z) = \Fcz \begin{cases}
+1			&	z \leq \Lcz,\\
+-\mP_D^{-1}  & 	z > \Lcz 
 \end{cases}.
 \end{equation}
-Here, $\mP_D^{-1}$ is the ``penetration parameter'' (subscript D for discontinuous case).
-Plugging this functional form of the flux into Eqn.~\ref{eqn:theory_fraction}, and integrating the convection zone from $z = 0$ to $z = \Lcz$ and the penetration zone from $z = \Lcz$ to $z = \Lcz + \dP$,
+Here, $\Fcz$ is a (constant) value of flux carried in the convection zone and $\mP_D^{-1}$ is the penetration parameter (subscript D for discontinuous case).
+Plugging this functional form of the flux into Eqn.~\ref{eqn:theory_fraction}, and integrating the convection zone from $z = 0$ to $z = L_p$ and the penetration zone from $z = L_p$ to $z = L_p + \delp$,
 \begin{equation}
-\frac{\dP}{\Lcz} = \mP_D
-\frac{(\overline{h}^3/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}}.
+\frac{\delp}{L_s} = \mP_D \mD.
 \label{eqn:discontinuous_prediction}
 \end{equation}
-We then see that the size of the penetration region is linearly proportional to $\mP_D$ and is a function of the horizontal structure of the convective dynamics in the PZ and the CZ.
-This makes sense; As $\mP_D$ grows, the magnitude of $\Fconv$ in the PZ shrinks, and so too does the breaking force of buoyancy.
+We see that the size of the penetration region is linearly proportional to $\mP_D$ and is a function of the structure of the convective dynamics ($\mD$).
+Intuitively, this result makes sense: as $\mP_D$ grows, the magnitude of $\overline{\Fconv}$ and the breaking force of buoyancy in the PZ shrink, resulting in larger penetrative regions.
 
-\subsection{Case II: Piecewise linear radiative conductivity}
+\subsection{Case II: Piecewise linear flux}
 \label{sec:linear_theory}
-We next assume that $k(z)$ is not discontinuous at the CZ-PZ boundary, but that its derivative may be.
-As a result, the convective flux in the vicinity of the boundary takes the form
+We next assume that $\overline{\Fconv}(z)$ is not discontinuous at the CZ-PZ boundary, but that its derivative may be,
 \begin{equation}
-\Fconv(z) = 
+\overline{\Fconv}(z) = 
+\frac{\partial \Frad}{\partial z}\bigg|_{\rm{cz}}
 \begin{cases}
-(\partial_z k)_{\rm{cz}}\gradad (\Lcz - z) & z \leq \Lcz \\
--\mP_L^{-1}(\partial_z k)_{\rm{cz}}\gradad (z - \Lcz) & z > \Lcz
+(L_p - z) & z \leq L_p \\
+-\mP_L^{-1} (z - L_p) & z > L_p
 \end{cases},
 \end{equation}
-where we assume that $(\partial_z \Frad)_{\rm{cz}} =  (\partial_z k)_{\rm{cz}}\gradad$ is a constant.
+where $(\partial \Frad / \partial z)|_{\rm{cz}}$ is a constant and $\mP_L$ is the penetration parameter (subscript L for linear case).
 Again, solving Eqn.~\ref{eqn:theory_fraction} with this functional form of the flux, we retrieve
 \begin{equation}
-\frac{\dP}{\Lcz} = \sqrt{\mP_L
-\frac{(\overline{h}^3/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}}},
+\frac{\delp}{L_p} = \sqrt{\mP_L \mD},
 \label{eqn:linear_prediction}
 \end{equation}
 which is identical to the prediction of \citet{zahn1991} when we take $\mP_L = 1$.
-In this work, we will test the predictions of Eqns.~\ref{eqn:linear_prediction} and \ref{eqn:discontinuous_prediction}.
-Our aim is to see if the predicted scalings with $\mP$ are realized in direct numerical simulations, and to measure preliminary values for $\frac{(\overline{h}^3/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}}$ in local simulations.
+In this work, we will test the predictions of Eqns.~\ref{eqn:discontinuous_prediction} and \ref{eqn:linear_prediction}.
+Our aim is to see if the predicted scalings with the penetration parameter $\mP$ are realized in direct numerical simulations, and to measure preliminary values for $\mD$ in local simulations.
 
 \section{Simulation Details}
-We nondimensionalize Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq} on the length scale of the convection zone, the timescale of freefall across that convection zone, and the temperature scale of the internal heating over that freefall time,
+We nondimensionalize Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq} on the length scale of the Schwarzschild-defined convection zone ($L_s$), the timescale of freefall across that convection zone ($\tau_{\rm{ff}}$), and the temperature scale of the internal heating over that freefall time ($\Delta T$),
 \begin{equation}
 \begin{split}
-&T^* = (\Delta T)T = Q_0 \tau T,\qquad
-\partial_{t^*} = \tau^{-1}\partial_t = \left(\frac{\alpha g Q_0}{\Lcz}\right)^{1/3} \partial_t,\qquad
-\grad^* = \Lcz^{-1} \grad,\qquad
-\vec{u}^* = u_{\rm{ff}}\vec{u} = \left(\alpha g Q_0 \Lcz^2\right)^{1/3}\vec{u},
+&T^* = (\Delta T)T = Q_0 \tau_{\rm{ff}} T,\qquad
+\partial_{t^*} = \tau_{\rm{ff}}^{-1}\partial_t = \left(\frac{\alpha g Q_0}{L_s}\right)^{1/3} \partial_t,\qquad
+\grad^* = L_s^{-1} \grad,\qquad
+\vec{u}^* = u_{\rm{ff}}\vec{u} = \left(\alpha g Q_0 L_s^2\right)^{1/3}\vec{u},
 \\
-&k^* = (\Lcz^2 \tau^{-1})k,\qquad
+&p^* = \rho_0 u_{\rm{ff}}^2\varpi,\qquad
+k^* = (L_s^2 \tau_{\rm{ff}}^{-1})k,\qquad
 Q^* = Q_0 Q,\qquad
-\mR = \frac{u_{\rm{ff}} \Lcz}{\nu},\qquad
+\mR = \frac{u_{\rm{ff}} L_s}{\nu},\qquad
 \Pran = \frac{\nu}{\chi}.
 \end{split}
 \end{equation}
-Here, quantities with $*$ (e.g., $T^*$) refer to the ``dimensionful'' quantities of Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq}, and going forward quantities without these (e.g., $T$) will be dimensionless.
-The equations of motion are therefore
+For convenience, here we define quantities with $*$ (e.g., $T^*$) as being the ``dimensionful'' quantities of Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq}.
+Going forward, quantities without $*$ (e.g., $T$) will be dimensionless.
+The dimensionless equations of motion are therefore
 \label{sec:simulation_details}
 \begin{align}
 &\grad\dot\vec{u} = 0 
@@ -287,23 +302,19 @@ The stiffness is defined,
 \mS \equiv \frac{N^2}{f_{\rm{conv}}} \approx N^2,
 \end{equation}
 where $N^2$ is the \brunt$\,$frequency in the radiative zone.
-In our nondimensionalization, $N^2 = \gradad - \gradrad$ where $\gradrad = \Ftot/k$, so by choosing a value of the stiffness we set the magnitude of the background temperature gradient, $T_0$ which in turn sets the value of $k$ in the radiative zone.
+In our nondimensionalization, $N^2 = \gradad - \gradrad$ where $\gradrad = \Ftot/k$, so by choosing a value of the stiffness we set the magnitude of the background temperature gradient, $\partial_z T_0$ which in turn sets the value of $k$ in the radiative zone.
 
-The crucial place in which our model differs from that of prior work is that we define a ``penetration parameter,'' $\mP$, which determines the size of the convective penetration region.
-We define
-\begin{equation}
-\mP = -\frac{\Fconv|_{\rm{CZ}}}{\Fconv|_{PZ}},
-\end{equation}
-where $\Fconv|_{PZ}$ is the negative convective flux carried in a perfectly adiabatic convective penetration region.
+The crucial place in which our model differs from that of prior work is that we define a ``penetration parameter,'' $\mP$, according to Eqn.~\ref{eqn:theory_P_defn}.
 We construct our experiments so that $\mP$ and $\mS$ can be varied separately.
 We suspect that many past experiments have implicitly set $\mP \approx \mS^{-1}$.
 
 Aside form $\mS$ and $\mP$, the two remaining control parameters that control our experiments determine the degree of turbulence.
-The value of $\mR$ roughly corresponds to the value of the peak Reynolds number measured in the simulations, and we set the ratio of the diffusivities $\Pran = 0.5$ throughout this work.
-Astrophysical convection is in the limit of $\Pran \ll 1$; we choose a modest value of $\Pran$ which slightly separates the scales between thermal and viscous structures while still allowing us to achieve convection with large Reynolds and P\'{e}clet numbers.
+The value of $\mR$ roughly corresponds to the value of the peak Reynolds number $\rm{Re} = \mR |\vec{u}|$ measured in the simulations, and we set the ratio of the diffusivities $\Pran = 0.5$ throughout this work.
+Astrophysical convection is in the limit of $\Pran \ll 1$ \citep{garaud2021}; we choose a modest value of $\Pran$ which slightly separates the scales between thermal and viscous structures while still allowing us to achieve convection with large Reynolds and P\'{e}clet numbers.
 
-\subsection{Case I: Discontinuous radiative conductivity}
-Most of the simulations in this paper study simulations with a discontinuous radiative conductivity,
+\subsection{Case I: Discontinuous flux}
+Most of the simulations in this paper study simulations with a discontinuous convective flux at the Schwarzschild convective boundary.
+We achieve this by constructing a discontinuous radiative conductivity,
 \begin{equation}
 k_D(z) = \begin{cases}
 k_{\rm{CZ}}	&	z < 1 \\
@@ -323,8 +334,9 @@ We study three sweeps through the ($\mP_D$, $\mS$, $\mR$) parameter space in thi
 We use ``Reference values'' of $\mP_D = 4$, $\mS = 10^3$, and $\mR = 400$; all of our parameter space sweeps pass through this point in the three-dimensional parameter space.
 As in section \ref{sec:discontinuous_theory}, we expect $\delta_p \propto \mP_D$.
 
-\subsection{Case II: Piecewise linear radiative conductivity}
-We additionally study a select few simulations where the radiative conductivity's gradient is piecewise discontinuous,
+\subsection{Case II: Piecewise linear flux}
+We additionally study a select few simulations where the flux's gradient may be discontinuous at the Schwarzschild convective boundary.
+We achieve this by constructing a radiative conductivity with a piecewise discontinuous gradient,
 \begin{equation}
 \partial_z k = \partial_z k_0
 \begin{cases}
@@ -524,6 +536,12 @@ Future work should aim to determine how much the values in Eqn.~\ref{eqn:fit_h_v
 Furthermore, it is important to note that stellar opacities, and thus stellar conductivities, are functions of thermodynamic variables rather than radial location.
 As a result, the formation of a penetration zone will in turn affect the conductivity profile and $\gradrad$, which will in turn affect the estimate of how deep a penetration zone should form.
 Future studies should follow e.g., \citet{kapyla_etal_2017, kapyla2019} and implement realistic opacity profiles which evolve self-consistently with the thermodynamic state.
+
+One additional complication is that stellar fluid dynamics exist in the regime of Pr$\,\ll1$ \citep{garaud2021}.
+Dynamics in this regime may be different from those in the regime of Pr$\lesssim 1$ that we studied here, which could affect flow morphologies and thus penetration depths.
+Recently, \citet{kapyla2021} found that convective flows exhibited exhibited more overshoot at low Pr than high Pr.
+Future work should aim to understand how strongly the (TODO: symbol for h integrals) fraction depends on Pr.
+
 
 Finally, we note that our work here assumes a uniform composition through the convective and radiative region.
 Frequently within stars, convective boundaries coincide with discontinuities in composition profiles \citep{salaris_cassisi_2017}.
