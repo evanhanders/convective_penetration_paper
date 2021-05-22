@@ -132,6 +132,9 @@ Finally, we discuss how future simulations can put finer constraints on this the
 
 \section{Theory}
 \label{sec:theory}
+
+\subsection{Equations}
+\label{sec:theory_equations}
 Throughout this work, we will utilize a modified version of the incompressible Boussinesq equations of motion,
 \begin{align}
 &\grad\dot\vec{u} = 0 
@@ -151,12 +154,73 @@ The classic Boussinesq thermal diffusion term $\chi \grad^2 T'$ therefore carrie
 Throughout this work, we will consider Cartesian coordinates $(x, y, z)$, but this analysis is generalizeable to spherical geometry.
 We will furthermore assume a model in which an unstable convection zone sits below a stable radiative zone, but this analysis also holds for the inverted problem.
 
-\citet{zahn1991} theorized that the size of the convection zone is determined by the horizontally-averaged energy fluxes.
-Assuming convection reaches a time-stationary state, we horizontally-average the vertically integrated Eqn.~\ref{eqn:temperature} to find
+\subsection{Vertical momentum equation balances}
+\label{sec:theory_momentum}
+Assuming a vertical and uniform gravitational acceleration $\vec{g} = -g\hat{z}$, the vertical component of Eqn.~\ref{eqn:momentum} with Eqn.~\ref{eqn:boussinesq} is
+\begin{equation}
+\partial_t w + (\vec{u}\dot\grad)w = -\frac{1}{\rho_0}\partial_z p + |\alpha|g T + \nu\grad^2 \vec{u}.
+\label{eqn:momentum_z}
+\end{equation}
+We next horizontally average this equation; under the assumption that $\overline{w} = 0$ at some height (e.g., at an impenetrable boundary), Eqn.~\ref{eqn:incompressible} requires $\overline{w}$ = 0 everywhere.
+The horizontally-averaged equation is therefore
+\begin{equation}
+\frac{1}{\rho_0}\frac{d \overline{p}}{dz} = |\alpha| g \overline{T} - \overline{(\vec{u}\dot\grad)w} + \nu\overline{\grad_h^2 \vec{u}},
+\end{equation}
+where $\grad_h^2 = \partial_x^2 + \partial_y^2$.
+At this point we decompose $\overline{p} = \overline{p_s} + \overline{p_d}$, where $p_s$ is the ``structure'' component of of the pressure whose gradient balances the buoyant gradient (providing hydrostatic balance), and $p_d$ is the dynamical pressure whose mean balances the mean contributions of advection and dissipation.
+Accordingly, we define $\tilde{p} \equiv p - \overline{p_s}$, removing the mean structure component of the pressure.
+This construction leaves fluctuations ($p'$ and $\overline{p_d}$) which are set by the convective dynamics.
+Taking a time-average of Eqn.~\ref{eqn:momentum_z} and assuming that convection reaches a statistically stationary state and that viscous dissipation is unimportant \citep[which is a common assumption, but may not always apply in stellar contexts per][]{currie_browning_2017}, we retrieve
+\begin{equation}
+\frac{1}{\rho_0}\frac{\partial \tilde{p}}{\partial z} = |\alpha| g T' - (\vec{u}\dot\grad)w.
+\label{eqn:fluc_momentum_z}
+\end{equation}
+In other words, convection reaches a state in which fluctuating buoyancy forces and nonlinear advection come into a balance and saturate at similar magnitudes.
+The pressure gradient rises to a similar magnitude to regulate the flows and ensure Eqn.~\ref{eqn:incompressible} is satisfied (and a similar argument could be made for e.g., anelastic convection).
+As a result, we can estimate that each of the terms in this equation have similar magnitudes,
+\begin{equation}
+\frac{1}{\rho_0}\frac{\partial \tilde{p}}{\partial z} \sim |\alpha| g T' \sim (\vec{u}\dot\grad)w.
+\label{eqn:momentum_balance}
+\end{equation}
+
+
+\subsection{Kinetic energy \& the velocity-flux link}
+\label{sec:theory_energy}
+Taking an inner product of the velocity and Eqn.~\ref{eqn:momentum} (after removing $\overline{T}$ and $\overline{p_s}$, as in Eqn.~\ref{eqn:fluc_momentum_z}) reveals the kinetic energy equation,
+\begin{equation}
+\frac{\partial}{\partial t}\left(\frac{u^2}{2}\right) 
++ \grad\cdot\left[\vec{u}\left(\frac{u^2}{2} + \frac{\tilde{p}}{\rho_0}\right) - \nu\vec{u}\times\vec{\omega}\right]
+= \alpha g w T' - \nu\omega^2,
+\label{eqn:kinetic_energy}
+\end{equation}
+where $\vec{\omega} = \grad\times\vec{u}$ is the vorticity and $u^2 = \vec{u}\dot\vec{u}$ \& $\omega^2 = \vec{\omega}\dot\vec{\omega}$.
+Again neglecting viscosity, averaging horizontally and in time, and assuming a statistically stationary state, we retrieve
+\begin{equation}
+\frac{d}{dz}\left[\frac{\overline{w u^2}}{2} + \frac{\overline{w\tilde{p}}}{\rho_0}\right]
+= \alpha g \overline{\Fconv},
+\label{eqn:mean_ke}
+\end{equation}
+where $\overline{\Fconv} = \overline{w T'}$.
+At this point we now assume that the velocities are vertically dominated or isotropic so that $u^2 \sim w^2$.
+We furthermore assume that the balance in Eqn.~\ref{eqn:momentum_balance} is roughly correct, so that $\overline{w\tilde{p}} \sim \rho_0 \overline{w^3}$.
+Under these assumptions, we retrieve
+\begin{equation}
+\frac{d \overline{w^3}}{dz} \sim \alpha g \overline{\Fconv}
+\Rightarrow
+\frac{d \overline{w^3}}{dz} \approx \varsigma \alpha g \overline{\Fconv},
+\label{eqn:velocity_ode}
+\end{equation}
+where $\varsigma$ is a fudge factor which describes the quality of the assumptions we have made, and the fact that e.g., $w^2 < u^2$, the balance of Eqn.~\ref{eqn:momentum_balance} likely only holds to a factor of a few, etc..
+This equation is logically analagous to one used between Eqn.~3.8 \& 3.9 of \citet{zahn1991}, but we have not relied upon the assumption of a vertically invariant convective planform which likely does not hold for turbulent dynamics.
+Eqn.~\ref{eqn:velocity_ode} is also intuitively satisfying; it says that roughly $\overline{w^3} \sim \overline{\Fconv}$, which fits intuition from mixing length theory.
+
+\subsection{A flux-based penetration argument}
+According to an equation similar to Eqn.~\ref{eqn:velocity_ode}, \citet{zahn1991} theorized that the size of the convection zone is determined by the horizontally-averaged energy fluxes.
+Assuming convection reaches a time-stationary state, we horizontally-average and vertically integrate Eqn.~\ref{eqn:temperature} to find
 \begin{equation}
 \overline{\Ftot} = \overline{\Frad} + \overline{\Fconv} = \int Q dz + \Fbot,
 \end{equation}
-where $\overline{\Fconv} = \overline{w T}$, is $\Fbot$ the flux carried at the bottom of the considered domain, and $\overline{\Ftot}$ is the total flux, which can vary in height due to the heating $Q$.
+where $\Fbot$ is the flux carried at the bottom of the considered domain, and $\overline{\Ftot}$ is the total flux, which can vary in height due to the heating $Q$.
 We next assume that convection penetrates above the Schwarzschild boundary of the convection zone at $z = L_s$ and mixes the temperature gradient to the adiabatic in the region $z \in [L_s, L_s + \delp]$, where $\delp$ is the penetration depth.
 This assumption specifies the convective flux in the penetrative region,
 \begin{equation}
@@ -165,52 +229,54 @@ This assumption specifies the convective flux in the penetrative region,
 \end{equation}
 At this point it is useful to define the radiative gradient, $\grad_{\rm{rad}} = \Ftot/k$.
 Within the penetrative region, $\grad_{\rm{ad}} > \grad_{\rm{rad}}$, so Eqn.~\ref{eqn:fconv_pz} requires $\overline{\Fconv} < 0$.
-Following \citet{zahn1991}, we next assume that the velocity and horizontal temperature fluctuations are highly correlated and specified by a function $h(x,y)$,
+
+%Following \citet{zahn1991}, we next assume that the velocity and horizontal temperature fluctuations are highly correlated and specified by a function $h(x,y)$,
+%\begin{equation}
+%w(x,y,z) = W(z)h(x,y),
+%\qquad
+%T'(x,y,z) = \delta T(z)h(x,y).
+%\end{equation}
+%The incompressibility constraint (Eqn.~\ref{eqn:incompressible}) specifies $\overline{w} = 0$, so $\overline{h} = 0$.
+%However, nonlinear interactions do not disappear when horizontally averaged, so $\overline{h^2} \neq 0$.
+%A vertically-varying formulation of the mean convective flux follows from this formulation,
+%\begin{equation}
+%\overline{\Fconv} \equiv \overline{w T} = \overline{h^2} \, W(z) \, \delta T(z).
+%\label{eqn:Fconv_vertical}
+%\end{equation}
+%In the penetrative region, since $\Fconv < 0$, $W(z)$ and $\delta T(z)$ must have opposite signs; the buoyancy force will therefore decelerate penetrative flows.
+%In a stationary state, the penetrative zone is thus described by a balance between advection and buoyancy in the vertical momentum equation (Eqn.~\ref{eqn:momentum} with Eqn.~\ref{eqn:boussinesq}), 
+%\begin{equation}
+%\frac{1}{2}\frac{d w^2}{dz} \sim |\alpha| g T'.
+%\end{equation}
+%Multiplying both sides by $h(x,y)$, horizontally averaging, and then eliminating $\delta T(z)$ using Eqn.~\ref{eqn:Fconv_vertical}, we retrieve a simple ordinary differential equation describing convective dynamics,
+%\begin{equation}
+%\frac{\overline{h^3}}{6 |\alpha| g \overline{h^2}} dW^3 \sim \overline{\Fconv} dz.
+%\label{eqn:theory_ode}
+%\end{equation}
+%While we have derived this expression in the penetrative zone, it should be equally valid in a stationary convection zone; there, however, $\overline{\Fconv} > 0$.
+With the convective fluxes defined, Eqn.~\ref{eqn:velocity_ode} can be integrated over the depth of the convection zone (from $W = 0$ at $z = 0$ to $W = W_0$ at $z = L_s$), as well as over the penetration zone (from $W = W_0$ at $z = L_s$ to $W = 0$ at $z = L_s + \delp$).
+We assume however that the convective dynamics are not identical in the convection zone (CZ) and penetration zone (PZ), so that the fudge factor $\varsigma$ differs between the two zones.
+Taking the ratio of these two integrals, we find
 \begin{equation}
-w(x,y,z) = W(z)h(x,y),
-\qquad
-T'(x,y,z) = \delta T(z)h(x,y).
-\end{equation}
-The incompressibility constraint (Eqn.~\ref{eqn:incompressible}) specifies $\overline{w} = 0$, so $\overline{h} = 0$.
-However, nonlinear interactions do not disappear when horizontally averaged, so $\overline{h^2} \neq 0$.
-A vertically-varying formulation of the mean convective flux follows from this formulation,
-\begin{equation}
-\overline{\Fconv} \equiv \overline{w T} = \overline{h^2} \, W(z) \, \delta T(z).
-\label{eqn:Fconv_vertical}
-\end{equation}
-In the penetrative region, since $\Fconv < 0$, $W(z)$ and $\delta T(z)$ must have opposite signs; the buoyancy force will therefore decelerate penetrative flows.
-In a stationary state, the penetrative zone is thus described by a balance between advection and buoyancy in the vertical momentum equation (Eqn.~\ref{eqn:momentum} with Eqn.~\ref{eqn:boussinesq}), 
-\begin{equation}
-\frac{1}{2}\frac{d w^2}{dz} \sim |\alpha| g T'.
-\end{equation}
-Multiplying both sides by $h(x,y)$, horizontally averaging, and then eliminating $\delta T(z)$ using Eqn.~\ref{eqn:Fconv_vertical}, we retrieve a simple ordinary differential equation describing convective dynamics,
-\begin{equation}
-\frac{\overline{h^3}}{6 |\alpha| g \overline{h^2}} dW^3 \sim \overline{\Fconv} dz.
-\label{eqn:theory_ode}
-\end{equation}
-While we have derived this expression in the penetrative zone, it should be equally valid in a stationary convection zone; there, however, $\overline{\Fconv} > 0$.
-This equation can be integrated over the depth of the convection zone (from $W = 0$ at $z = 0$ to $W = W_0$ at $z = L_s$), as well as over the penetration zone (from $W = W_0$ at $z = L_s$ to $W = 0$ at $z = L_s + \delp$).
-We assume however that the horizontal structure $h$ of the flux-carrying flows is not identical in the convection zone (CZ) and the penetration zone (PZ).
-Taking the ratio of these two integrals of Eqn.~\ref{eqn:theory_ode}, we find
-\begin{equation}
-\mD \equiv \frac{(\overline{h^3}/\overline{h^2})_{\rm{PZ}}}{(\overline{h^3}/\overline{h^2})_{\rm{CZ}}},\qquad\qquad
-\frac{\int_{\rm{PZ}} \overline{\Fconv} dz}{\int_{\rm{CZ}} \overline{\Fconv} dz} = - \mD.
+\mD \equiv \frac{\varsigma_{\rm{CZ}}}{\varsigma_{\rm{PZ}}},\qquad\qquad
+\frac{\int_{\rm{PZ}} \overline{\Fconv} dz}{\int_{\rm{CZ}} \overline{\Fconv} dz} \approx - \mD.
 \label{eqn:theory_fraction}
 \end{equation}
-This equation represents the central result of \citet{zahn1991}'s theory: the ratio of the vertically integrated convective fluxes in the PZ and CZ is directly linked to some constant which is determined by the structure of the dynamics ($\mD$).
+This equation represents the central result of \citet{zahn1991}'s theory: the ratio of the vertically integrated convective fluxes in the PZ and CZ is directly linked to some constant which reflects the difference in the dynamics between the CZ and the PZ ($\mD$).
+More importantly, this integral ratio sets the size of the PZ.
 
-Eqn.~\ref{eqn:theory_fraction} is however not intuitively satisfying.
+Eqn.~\ref{eqn:theory_fraction} is unfortunately not intuitively satisfying.
 In order to derive a specific prediction for the PZ depth, it is necessary to specify the vertical shape of $\overline{\Fconv}$.
-We will study two cases in this work: a discontinuous jump in $\overline{\Fconv}$ at the convective boundary, and continuous piecewise-linear profile of $\overline{\Fconv}$ whose derivative may be discontinuous at the convective boundary.
+We will study two cases in this work, laid out below.
 In both of these cases, we will define a nondimensional ``Penetration Parameter,''
 \begin{equation}
 \mP \equiv -\frac{\overline{\Fconv}(z = L_s - \epsilon)}{\overline{\Fconv}(z = L_s + \epsilon)},
 \label{eqn:theory_P_defn}
 \end{equation}
-which is the negative ratio of the convective flux some equidistant length $\epsilon$ both above and below the Schwarzschild convective boundary (assuming the region above the boundary is an adiabatic penetrative zone).
+which is the negative ratio of the convective flux some equidistant length $\epsilon$ both above and below the Schwarzschild convective boundary $L_s$ (assuming the region above the boundary is an adiabatic penetrative zone).
 
 
-\subsection{Case I: Discontinuous flux}
+\subsubsection{Case I: Discontinuous flux}
 \label{sec:discontinuous_theory}
 We first consider a model which satisfies
 \begin{equation}
@@ -219,8 +285,8 @@ We first consider a model which satisfies
 -\mP_D^{-1}  & 	z > \Lcz 
 \end{cases}.
 \end{equation}
-Here, $\Fcz$ is a (constant) value of flux carried in the convection zone and $\mP_D^{-1}$ is the penetration parameter (subscript D for discontinuous case).
-Plugging this functional form of the flux into Eqn.~\ref{eqn:theory_fraction}, and integrating the convection zone from $z = 0$ to $z = L_p$ and the penetration zone from $z = L_p$ to $z = L_p + \delp$,
+Here, $\Fcz$ is a (constant) value of flux carried in the convection zone and $\mP_D$ is the penetration parameter (subscript D for discontinuous case).
+Plugging this functional form of the flux into Eqn.~\ref{eqn:theory_fraction}, and integrating the convection zone from $z = 0$ to $z = L_s$ and the penetration zone from $z = L_s$ to $z = L_s + \delp$,
 \begin{equation}
 \frac{\delp}{L_s} = \mP_D \mD.
 \label{eqn:discontinuous_prediction}
@@ -228,7 +294,7 @@ Plugging this functional form of the flux into Eqn.~\ref{eqn:theory_fraction}, a
 We see that the size of the penetration region is linearly proportional to $\mP_D$ and is a function of the structure of the convective dynamics ($\mD$).
 Intuitively, this result makes sense: as $\mP_D$ grows, the magnitude of $\overline{\Fconv}$ and the breaking force of buoyancy in the PZ shrink, resulting in larger penetrative regions.
 
-\subsection{Case II: Piecewise linear flux}
+\subsubsection{Case II: Piecewise linear flux}
 \label{sec:linear_theory}
 We next assume that $\overline{\Fconv}(z)$ is not discontinuous at the CZ-PZ boundary, but that its derivative may be,
 \begin{equation}
@@ -245,9 +311,10 @@ Again, solving Eqn.~\ref{eqn:theory_fraction} with this functional form of the f
 \frac{\delp}{L_p} = \sqrt{\mP_L \mD},
 \label{eqn:linear_prediction}
 \end{equation}
-which is identical to the prediction of \citet{zahn1991} when we take $\mP_L = 1$.
+which aligns with the prediction of \citet{zahn1991}'s Eqn.~3.13 when we take $\mP_L = 1$.
+
 In this work, we will test the predictions of Eqns.~\ref{eqn:discontinuous_prediction} and \ref{eqn:linear_prediction}.
-Our aim is to see if the predicted scalings with the penetration parameter $\mP$ are realized in direct numerical simulations, and to measure preliminary values for $\mD$ in local simulations.
+Our goals are to see if the predicted scalings with the penetration parameter $\mP$ are realized in simulations, and to measure preliminary values for $\mD$ in local simulations.
 
 \section{Simulation Details}
 We nondimensionalize Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq} on the length scale of the Schwarzschild-defined convection zone ($L_s$), the timescale of freefall across that convection zone ($\tau_{\rm{ff}}$), and the temperature scale of the internal heating over that freefall time ($\Delta T$),
