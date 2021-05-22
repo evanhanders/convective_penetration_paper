@@ -604,7 +604,6 @@ def run_cartesian_instability(args):
         last_height_t = 0
         completion_checks = np.zeros(int(args['--completion_checks']), dtype=bool)
 
-        adjusted_last_dt = False
         cz_bools = [None, None, None]
 
         delta_p01 = 0
@@ -615,7 +614,6 @@ def run_cartesian_instability(args):
             logger.info('Starting loop')
             start_iter = solver.iteration
             start_time = time.time()
-            shell_at_top = False
             while solver.ok and np.isfinite(Re_avg):
                 effective_iter = solver.iteration - start_iter
                 solver.step(dt)
@@ -720,7 +718,6 @@ def run_cartesian_instability(args):
                             transient_start = None
                             done_T_iters += 1
                             logger.info('T_adjust {}/{}: Adjusting mean state to have L_cz = {:.4f}'.format(done_T_iters, max_T_iters, L_cz_end))
-                            adjusted_last_dt = True
 
 
                 if effective_iter % 10 == 0:

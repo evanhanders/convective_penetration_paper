@@ -45,12 +45,15 @@ Options:
 
     --adiabatic_IC             If flagged, set the background profile as a pure adiabat (not thermal equilibrium in RZ)
     --predictive=<delta>       A guess for delta_P the penetration depth. The initial state grad(T) will be an erf from grad(T_ad) to grad(T_rad) centered at L_cz + delta_P
-    --T_iters=<N>              Number of times to iterate background profile before pure timestepping [default: 10]
-    --completion_checks=<N>    Number of times that dL_cz/dt signs have to differ to stop [default: 10]
-    --transient_wait=<t>       Number of sim times to wait for AE procedure after transient starts, an integer [default: 50]
-    --N_AE=<t>                 Number of sim times to calculate AE over, an integer. [default: 50]
     --plot_model               If flagged, create and plt.show() some plots of the 1D atmospheric structure.
 
+    --T_iters=<N>              Number of times to iterate background profile before pure timestepping [default: 100]
+    --completion_checks=<N>    If L_cz_change < min_L_cz change this many times, stop AE [default: 5]
+    --transient_wait=<t>       Number of sim times to wait for AE procedure after transient starts, an integer [default: 10]
+    --N_AE=<t>                 Number of sim times to calculate AE over, an integer. [default: 30]
+    --max_L_cz_change=<L>       Maximum delta_p change allowed on AE step [default: 0.05]
+    --min_L_cz_change=<L>       Minimum delta_p change allowed on AE step [default: 0.005] 
+    --time_step_AE_size=<N>    Size of an AE timestep in simulation units (new L_cz = (timestep size) * |dL_cz/dt|) [default: 500]
 """
 import logging
 import os
@@ -546,7 +549,7 @@ def run_cartesian_instability(args):
     analysis_tasks = initialize_output(solver, data_dir, mode=mode, output_dt=t_ff)
 
     T_rad_z0.set_scales(domain.dealias)
-    delta_grad_de = grad_ad - (-T_rad_z0['g'][0,0,:]) #negative in RZ, positive in CZ
+    delta_grad_de = grad_ad + T_rad_z0['g'][0,0,:] #= grad_ad - grad_rad; positive in RZ, negative in CZ
 
     dense_scales = 20
     z_dense = domain.grid(-1, scales=dense_scales)
@@ -566,34 +569,39 @@ def run_cartesian_instability(args):
     Hermitian_cadence = 100
 
     def main_loop(dt):
+        max_T_iters = int(args['--T_iters'])
+        transient_wait = int(args['--transient_wait'])
+        N = int(args['--N_AE'])
+        max_L_cz_change = float(args['--max_L_cz_change'])
+        min_L_cz_change = float(args['--min_L_cz_change'])
+        time_step_AE_size = float(args['--time_step_AE_size']) 
+
         T1 = solver.state['T1']
         T1_z = solver.state['T1_z']
         Re_avg = 0
-        max_T_iters = int(args['--T_iters'])
         done_T_iters = 0
 
-        transient_wait = int(args['--transient_wait'])
-        transient_start = None
-        N = int(args['--N_AE'])
         halfN = int(N/2)
-        avg_dLz_dt = 0
+        transient_start = None
+
         top_cz_times = np.zeros(N)
-        top_cz_z = np.zeros(N)
+        delta_p01_vals = np.zeros(N)
+        delta_p05_vals = np.zeros(N)
+        delta_p09_vals = np.zeros(N)
         good_times = np.zeros(N, dtype=bool)
         last_height_t = 0
         completion_checks = np.zeros(int(args['--completion_checks']), dtype=bool)
 
-        adjusted_last_dt = False
+        cz_bools = [None, None, None]
 
-        L_cz0 = None
-        zmax = 0
-        tol = 1e-8 #tolerance on magnitude of dLcz/dt
+        delta_p01 = 0
+        delta_p05 = 0
+        delta_p09 = 0
 
         try:
             logger.info('Starting loop')
             start_iter = solver.iteration
             start_time = time.time()
-            shell_at_top = False
             while solver.ok and np.isfinite(Re_avg):
                 effective_iter = solver.iteration - start_iter
                 solver.step(dt)
@@ -602,77 +610,84 @@ def run_cartesian_instability(args):
                     for f in solver.state.fields:
                         f.require_grid_space()
 
-                if adjusted_last_dt:
-                    if args['--SBDF2']:
-                        for fname in ['u', 'v', 'w', 'ωx', 'ωy', 'ωz', 'p']:
-                            solver.state[fname].set_scales(domain.dealias, keep_data=True)
-                            solver.state[fname]['g'] *= one_to_zero(z_de, 1, width=0.05)
-                        mean_T_z = -(grad_ad - zero_to_one(z_de, zmax, width=0.05)*delta_grad_de)
-                        mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
-                        T1_z['g'] -= flow.properties['mean_T1_z']['g']
-                        T1_z['g'] *= one_to_zero(z_de, 1, width=0.05)
-                        T1_z['g'] += mean_T1_z
-                        T1_z.antidifferentiate('z', ('right', 0), out=T1)
-                    adjusted_last_dt = False
-
                 if solver.sim_time > last_height_t + 1:
                     last_height_t = int(solver.sim_time)
-                    #Get departure point from grad_ad
+                    #Get departure points from grad_ad
                     grad = dense_handler['grad']['g'][0,0,:]
-                    cz_points = (grad > grad_ad - grad_departure_frac*delta_grad)*(delta_grad > 0)
-                    if np.sum(cz_points) > 0:
-                        zmax = z_dense.flatten()[cz_points].max()
-                    else:
-                        zmax = L_cz
-                    zmax = reducer.reduce_scalar(zmax, MPI.MAX)
-                    #Track trajectory of grad_ad->grad_rad departure over time
+                    for i, departure_frac in enumerate([0.1, 0.5, 0.9]):
+                        cz_bools[i] = (grad > grad_ad - departure_frac*delta_grad)*(delta_grad > 0)
+                    delta_p01 = 0
+                    delta_p05 = 0
+                    delta_p09 = 0
+                    if np.sum(cz_bools[0]) > 0:
+                        delta_p01 = z_dense.flatten()[cz_bools[0]].max()
+                    if np.sum(cz_bools[1]) > 0:
+                        delta_p05 = z_dense.flatten()[cz_bools[1]].max()
+                    if np.sum(cz_bools[2]) > 0:
+                        delta_p09 = z_dense.flatten()[cz_bools[2]].max()
+                    delta_p01 = reducer.reduce_scalar(delta_p01, MPI.MAX)
+                    delta_p05 = reducer.reduce_scalar(delta_p05, MPI.MAX)
+                    delta_p09 = reducer.reduce_scalar(delta_p09, MPI.MAX)
+
+                    #Store trajectory of grad_ad->grad_rad departure points over time
                     if Re_avg > 1:
                         if transient_start is None:
                             transient_start = int(solver.sim_time)
                         if solver.sim_time > transient_start + transient_wait:
-                            top_cz_z[:-1] = top_cz_z[1:]
+                            #Shift old points
+                            delta_p01_vals[:-1] = delta_p01_vals[1:]
+                            delta_p05_vals[:-1] = delta_p05_vals[1:]
+                            delta_p09_vals[:-1] = delta_p09_vals[1:]
                             top_cz_times[:-1] = top_cz_times[1:]
                             good_times[:-1] = good_times[1:]
-                            top_cz_z[-1] = zmax
+                            #Store new points
+                            delta_p01_vals[-1] = delta_p01
+                            delta_p05_vals[-1] = delta_p05
+                            delta_p09_vals[-1] = delta_p09
                             top_cz_times[-1] = solver.sim_time
                             good_times[-1] = True
-                            if L_cz0 is None:
-                                L_cz0 = top_cz_z[-1]
-
-                            if good_times[-2] == True:
-                                dLz_dt = np.gradient(top_cz_z[good_times], top_cz_times[good_times])
-                                avg_dLz_dt = np.mean(dLz_dt)
 
                     #Adjust background thermal profile
-                    if done_T_iters < max_T_iters and np.sum(good_times) == N and np.abs(avg_dLz_dt) > tol:
-                        dLz_dt_beg = np.mean(dLz_dt[:halfN])
-                        dLz_dt_end = np.mean(dLz_dt[halfN:])
-                        Lz_beg = np.mean(top_cz_z[:halfN])
-                        Lz_end = np.mean(top_cz_z[halfN:])
-                        delta_Lz = Lz_end - Lz_beg
-                        delta_dLz_dt = dLz_dt_end - dLz_dt_beg
-                        avg_Lz = Lz_beg + delta_Lz/2
-                        logger.info('Lz: {:.3f}/{:.3f}, deltaLz: {:.3e}'.format(Lz_beg, Lz_end, delta_Lz))
-                        logger.info("dLz/dt: {:.3e}/{:.3e}, deltadLz/dt: {:.3e}".format(dLz_dt_beg, dLz_dt_end, delta_dLz_dt))
+                    if done_T_iters < max_T_iters and np.sum(good_times) == N:
+                        #Linear fit to 0.1, 0.5, 0.9 penetration depths vs time
+                        nice_times = top_cz_times - top_cz_times[0]
+                        delta_p01_fit = np.polyfit(nice_times, delta_p01_vals, 1) #fits y = ax + b, returns [a,b]
+                        ddelta_p01_dt_linfit = delta_p01_fit[0]
+                        delta_p05_fit = np.polyfit(nice_times, delta_p05_vals, 1) #fits y = ax + b, returns [a,b]
+                        ddelta_p05_dt_linfit = delta_p05_fit[0]
+                        delta_p09_fit = np.polyfit(nice_times, delta_p09_vals, 1) #fits y = ax + b, returns [a,b]
+                        ddelta_p09_dt_linfit = delta_p09_fit[0]
 
-                        if dLz_dt_beg / dLz_dt_end <= 0:
+                        #Current L_cz = avg of delta_p0.5 over the AE window; 
+                        avg_L_cz = np.mean(delta_p05_vals)
+                        #transition width = mean distance between 0.9 and 0.5 or 0.5 and 0.1 (whichever is smaller). Adjust to erf units (thus the 0.906).
+                        avg_width_up   = np.mean(delta_p09_vals - delta_p05_vals)/0.906 #Erf Heaviside drops to 0.1 or 0.9 at z = z_0 +/- 0.906 * w, for width w
+                        avg_width_down = np.mean(delta_p05_vals - delta_p01_vals)/0.906 #Erf Heaviside drops to 0.1 or 0.9 at z = z_0 +/- 0.906 * w, for width w
+                        avg_width = np.min((avg_width_down, avg_width_up))
+
+                        #Propagation speed of CZ front is avg propagation speed of delta_p0.1 and delta_p0.5
+                        avg_dL_cz_dt = (ddelta_p01_dt_linfit + ddelta_p05_dt_linfit)/2
+                        delta_L_cz = time_step_AE_size*avg_dL_cz_dt
+                        if np.abs(delta_L_cz) > max_L_cz_change:
+                            delta_L_cz *= max_L_cz_change/np.abs(delta_L_cz)
+
+                        logger.info('L_cz: {:.3f}, delta_L_cz: {:.3f}, avg width: {:.3f}'.format(avg_L_cz, delta_L_cz, avg_width))
+                        logger.info("ddelta_p01_dt {:.3e}".format(ddelta_p01_dt_linfit))
+                        logger.info("ddelta_p05_dt {:.3e}".format(ddelta_p05_dt_linfit))
+                        logger.info("ddelta_p09_dt {:.3e}".format(ddelta_p09_dt_linfit))
+
+                        if np.abs(delta_L_cz) < min_L_cz_change:
+                            #Too small of a jump; don't adjust, count towards completion
                             completion_checks[int(np.sum(completion_checks))] = True
                             logger.info("{} completion checks done".format(np.sum(completion_checks)))
                             good_times[:halfN] = False
                             if np.sum(completion_checks) == completion_checks.shape[0]:
                                 logger.info("{} completion checks done; finishing AE.".format(completion_checks.shape[0]))
                                 done_T_iters = max_T_iters
-                        elif delta_Lz != 0 and delta_dLz_dt != 0:
-                            delta_L_cz = avg_dLz_dt * np.abs(delta_Lz / delta_dLz_dt)
-                            max_delta_L_cz = np.abs(5*(transient_wait+N)*avg_dLz_dt)
-                            if np.abs(delta_L_cz) > max_delta_L_cz:
-                                delta_L_cz *= max_delta_L_cz/np.abs(delta_L_cz)
-                            if delta_L_cz > 0:
-                                Lz_start = np.max(top_cz_z)
-                            else:
-                                Lz_start = np.min(top_cz_z)
-                            L_cz1 = Lz_start + delta_L_cz
-                            mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz1, width=0.05)*delta_grad_de)
+                        else:
+                            #AE -- adjust mean temperature profile.
+                            L_cz_end   = avg_L_cz + delta_L_cz
+                            mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz_end, width=avg_width)*delta_grad_de)
                             mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
                             T1_z['g'] -= flow.properties['mean_T1_z']['g']
                             T1_z['g'] *= one_to_zero(z_de, 1, width=0.05)
@@ -683,12 +698,13 @@ def run_cartesian_instability(args):
                                 solver.state[fname].set_scales(domain.dealias, keep_data=True)
                                 solver.state[fname]['g'] *= one_to_zero(z_de, 1, width=0.05)
 
-                            L_cz0 = zmax = L_cz1
+                            if args['--SBDF2']:
+                                solver.timestepper._iteration = 0
+
                             good_times[:] = False
                             transient_start = None
                             done_T_iters += 1
-                            logger.info('T_adjust {}/{}: Adjusting mean state to have L_cz = {:.4f}'.format(done_T_iters, max_T_iters, L_cz1))
-                            adjusted_last_dt = True
+                            logger.info('T_adjust {}/{}: Adjusting mean state to have L_cz = {:.4f}'.format(done_T_iters, max_T_iters, L_cz_end))
 
 
                 if effective_iter % 10 == 0:
@@ -697,8 +713,7 @@ def run_cartesian_instability(args):
                     log_string =  'Iteration: {:7d}, '.format(solver.iteration)
                     log_string += 'Time: {:8.3e} ({:8.3e} therm), dt: {:8.3e}, '.format(solver.sim_time/t_ff, solver.sim_time/Pe0,  dt/t_ff)
                     log_string += 'Pe: {:8.3e}/{:8.3e}, '.format(flow.grid_average('Pe'), flow.max('Pe'))
-                    log_string += 'CZ_zmax: {:.03f}, '.format(zmax)
-                    log_string += 'avg_dLz_dt: {:.01e}, '.format(avg_dLz_dt)
+                    log_string += 'deltap (0.1, 0.5, 0.9): {:.03f}/{:.03f}/{:.03f} '.format(delta_p01, delta_p05, delta_p09)
                     log_string += 'stiffness: {:.01e}'.format(flow.grid_average('stiffness'))
                     logger.info(log_string)
 
