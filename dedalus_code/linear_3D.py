@@ -48,12 +48,12 @@ Options:
     --plot_model               If flagged, create and plt.show() some plots of the 1D atmospheric structure.
 
     --T_iters=<N>              Number of times to iterate background profile before pure timestepping [default: 100]
-    --completion_checks=<N>    If L_cz_change < min_L_cz change this many times, stop AE [default: 5]
+    --completion_checks=<N>    If L_cz_change < min_L_cz change this many times, stop AE [default: 10]
     --transient_wait=<t>       Number of sim times to wait for AE procedure after transient starts, an integer [default: 10]
     --N_AE=<t>                 Number of sim times to calculate AE over, an integer. [default: 30]
     --max_L_cz_change=<L>       Maximum delta_p change allowed on AE step [default: 0.05]
     --min_L_cz_change=<L>       Minimum delta_p change allowed on AE step [default: 0.005] 
-    --time_step_AE_size=<N>    Size of an AE timestep in simulation units (new L_cz = (timestep size) * |dL_cz/dt|) [default: 500]
+    --time_step_AE_size=<N>    Size of an AE timestep in simulation units (new L_cz = (timestep size) * |dL_cz/dt|) [default: 200]
 """
 import logging
 import os
