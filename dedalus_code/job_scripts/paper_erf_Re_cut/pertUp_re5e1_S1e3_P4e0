@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N erf_step_3D_turb_pertDown_re1e2_P4e0_S_1e3
+#PBS -N erf_step_3D_turb_pertUp_re5e1_P4e0_S_1e3
 #PBS -l select=3:ncpus=28:mpiprocs=28:model=bro
 #PBS -l walltime=120:00:00
 #PBS -j oe
@@ -10,11 +10,11 @@ source /swbuild/eanders/miniconda3/etc/profile.d/conda.sh
 conda activate dedalus
 cd $PBS_O_WORKDIR
 
-RE=1e2
+RE=5e1
 PEN=4e0
 STIFF=1e3
-CONF=config/paper_erf_Re_cut/pertDown_erf_re1e2_P4e0_S1e3
+CONF=config/paper_erf_Re_cut/pertUp_erf_re5e1_P4e0_S1e3
 
 date
-mpiexec_mpt -n 64 python3 erf_step_3D.py  $CONF  > out.paper_re_cut_pertDown.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
+mpiexec_mpt -n 64 python3 erf_step_3D.py  $CONF  > out.paper_re_cut_pertUp.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
 date

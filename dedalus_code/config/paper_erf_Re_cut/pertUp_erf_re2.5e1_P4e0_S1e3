@@ -1,14 +1,14 @@
 [parameters]
-Re = 2e2
+Re = 2.5e1
 S = 1e3
 P = 4e0
 Lz = 2
 nz = 256
-nx = 64
+nx = 16
 run_time_wall = 119.5
 run_time_ff = 3e3
 
-predictive=0.4
+predictive=0.7
 T_iters=200
 
 SBDF2=true

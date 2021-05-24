@@ -8,7 +8,7 @@ nx = 64
 run_time_wall = 119.5
 run_time_ff = 3e3
 
-predictive=0.4
+predictive=0.7
 T_iters=200
 
 SBDF2=true

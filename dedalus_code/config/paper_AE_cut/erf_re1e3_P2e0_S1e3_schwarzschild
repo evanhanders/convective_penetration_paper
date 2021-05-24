@@ -12,3 +12,6 @@ label=schwarzschild_restart
 T_iters=0
 
 restart=paper_erf_AE_cut/erf_step_3D_Re4e2_P2e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild/final_checkpoint/final_checkpoint_s1.h5
+
+SBDF2=true
+safety=0.35
