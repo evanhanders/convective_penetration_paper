@@ -51,16 +51,12 @@ fig_name   = args['--fig_name']
 logger.info("reading data from {}".format(root_dir))
 
 #therm_mach2 = float(root_dir.split("Ma2t")[-1].split("_")[0])
+Re_in = float(root_dir.split('Re')[-1].split('_')[0])
 Lz = float(root_dir.split('Lz')[-1].split('_')[0])
 nz = int(root_dir.split('Titer')[-1].split('x')[-1].split('_')[0].split('/')[0])
 z_basis = de.Chebyshev('z', nz, interval=(0,Lz), dealias=1)
 domain = de.Domain([z_basis,], grid_dtype=np.float64, mesh=None, comm=MPI.COMM_SELF)
 dense_scales=20
-Tz_field = domain.new_field()
-grad_ad_field = domain.new_field()
-delta_grad_field = domain.new_field()
-vel_field = domain.new_field()
-vel_integ_field = domain.new_field()
 z_dense = domain.grid(0, scales=dense_scales)
 
 plotter = SFP(root_dir, file_dir='profiles', fig_name=fig_name, start_file=start_file, n_files=n_files, distribution='even')
@@ -121,14 +117,27 @@ class RollingProfileAverager:
             
 roller = RollingProfileAverager(start_file, n_files)            
 
-write_nums = []
-times = []
-cross_z = []
-vel_cross_z = []
-z_departure = []
-z_overshoot = []
-cz_velocities = []
+data_cube = []
+#Needed data:
+#write_nums, times, 
+#delta_0.1, delta_0.5, delta_0.9, 
+#enstrophy: full domain, below Ls, below delta0.1
+#velocity: full domain, below Ls, below delta0.1
+#Fconv: full domain, below Ls, below delta0.1
+#|grad| above delta0.5, |gradrad| above delta0.5
 
+grad_field = domain.new_field()
+grad_integ_field = domain.new_field()
+grad_ad_field = domain.new_field()
+grad_rad_field = domain.new_field()
+grad_rad_integ_field = domain.new_field()
+delta_grad_field = domain.new_field()
+vel_field = domain.new_field()
+vel_integ_field = domain.new_field()
+enstrophy_field = domain.new_field()
+enstrophy_integ_field = domain.new_field()
+fconv_field = domain.new_field()
+fconv_integ_field = domain.new_field()
 
 bases_names = ['z',]
 fields = ['T', 'T_z', 'bruntN2', 'bruntN2_structure', 'F_rad', 'F_conv', 'T_rad_z', 'T_rad_z_IH', 'advection', 'vel_rms', 'effective_heating', 'T1', 'T1_z', 'heat_fluc_rad', 'heat_fluc_conv', 'T1_fluc', 'enstrophy']
@@ -144,16 +153,23 @@ if not plotter.idle:
         bases, tasks, write_num, sim_time = plotter.read_next_file()
         z = bases['z'].squeeze()
 
-        Tz_rad0 = first_tasks['T_rad_z'][0,:].squeeze()
         Tz_rad_IH0 = first_tasks['T_rad_z_IH'][0,:].squeeze()
         grad_ad = -first_tasks['T_ad_z'][0,:].squeeze()
         grad_rad = -Tz_rad_IH0
+
         grad_ad_field.set_scales(1)
-        grad_ad_field['g'] = grad_ad
+        grad_rad_field.set_scales(1)
         delta_grad_field.set_scales(1)
+        grad_ad_field['g'] = grad_ad
         delta_grad_field['g'] = grad_ad - grad_rad
+        grad_rad_field['g'] = grad_rad
+        grad_rad_field.antidifferentiate('z', ('left', 0), out=grad_rad_integ_field)
         grad_ad_field.set_scales(dense_scales, keep_data=True)
         delta_grad_field.set_scales(dense_scales, keep_data=True)
+
+        #Find Ls
+        Ls = z_dense[delta_grad_field['g'] < 0][-1]
+
         system_flux = first_tasks['flux_of_z'][0,:].squeeze()[-1] #get flux at top of domain
         system_flux_prof = first_tasks['flux_of_z'][0,:].squeeze() / system_flux
         fluxrange = np.abs(first_tasks['F_rad'][0,:].squeeze()/system_flux - system_flux_prof).max() * 1.5
@@ -176,75 +192,57 @@ if not plotter.idle:
             T_z = tasks['T_z'][i]
             T1 = T - first_tasks['T'][0]
 
+            grad_field.set_scales(1)
+            grad_field['g'] = -T_z
+            grad_field.antidifferentiate('z', ('left', 0), out=grad_integ_field)
+            grad_field.set_scales(dense_scales, keep_data=True)
             vel_field['g'] = roller.rolled_averages['vel_rms']
             vel_field.antidifferentiate('z', ('left', 0), out=vel_integ_field)
-            cz_vel = (vel_integ_field.interpolate(z=0.9)['g'].min() - vel_integ_field.interpolate(z=0.2)['g'].min())/0.7
+            enstrophy_field['g'] = roller.rolled_averages['enstrophy']
+            enstrophy_field.antidifferentiate('z', ('left', 0), out=enstrophy_integ_field)
+            fconv_field['g'] = roller.rolled_averages['F_conv']
+            fconv_field.antidifferentiate('z', ('left', 0), out=fconv_integ_field)
 
-            cz_velocities.append(cz_vel)
+            #departure from grad_ad: 0.1, 0.5, 0.9
+            departures = []
+            for departure_factor in [0.1, 0.5, 0.9]:
+                T_z_departure = (z_dense > 0.9)*(grad_field['g'] > grad_ad_field['g'] - departure_factor*delta_grad_field['g'])*(delta_grad_field['g'] > 0)
+                if np.sum(T_z_departure) > 0:
+                    z_T_departure = z_dense[T_z_departure].max()
+                else:
+                    z_T_departure = z.max()
+                departures.append(z_T_departure)
 
-            #Find top of CZ according to different measures
+            L_d01 = departures[0]
+            L_d05 = departures[1]
+            L_d09 = departures[2]
 
-            #departure from grad_ad
-            Tz_field.set_scales(1)
-            Tz_field['g'] = T_z
-            Tz_field.set_scales(dense_scales, keep_data=True)
-            departure_factor = 0.1
-            T_z_departure = (z_dense > 0.9)*(-Tz_field['g'] > grad_ad_field['g'] - departure_factor*delta_grad_field['g'])*(delta_grad_field['g'] > 0)
-            if np.sum(T_z_departure) > 0:
-                z_T_departure_guess = z_dense[T_z_departure].max()
-                root_zd = z_T_departure_guess
-#                x1 = z_T_departure_guess * 0.9
-#                func_zd = interp1d(z, -T_z - (grad_ad - departure_factor*delta_grad), bounds_error=False, fill_value='extrapolate')
-#                root_zd = sop.root_scalar(func_zd, x0=z_T_departure_guess, x1=x1).root
-            else:
-                z_T_departure_guess = root_zd = z.max()
+            enstrophy_full_domain = enstrophy_integ_field.interpolate(z=Lz)['g'].min() / Lz
+            enstrophy_full_cz     = enstrophy_integ_field.interpolate(z=L_d05)['g'].min() / L_d05
+            enstrophy_below_Ls    = enstrophy_integ_field.interpolate(z=Ls)['g'].min() / Ls
+            vel_full_domain = vel_integ_field.interpolate(z=Lz)['g'].min() / Lz
+            vel_full_cz     = vel_integ_field.interpolate(z=L_d05)['g'].min() / L_d05
+            vel_below_Ls    = vel_integ_field.interpolate(z=Ls)['g'].min() / Ls
+            fconv_full_domain = fconv_integ_field.interpolate(z=Lz)['g'].min() / Lz
+            fconv_full_cz     = fconv_integ_field.interpolate(z=L_d05)['g'].min() / L_d05
+            fconv_below_Ls    = fconv_integ_field.interpolate(z=Ls)['g'].min() / Ls
 
-            overshoot_factor = 0.9
-            T_z_overshoot = (z_dense > 0.9)*(-Tz_field['g'] > grad_ad_field['g'] - overshoot_factor*delta_grad_field['g'])*(delta_grad_field['g'] > 0)
-            if np.sum(T_z_overshoot) > 0:
-                z_T_overshoot_guess = z_dense[T_z_overshoot].max()
-            else:
-                z_T_overshoot_guess = root_zd = z.max()
+            grad_above05 = grad_integ_field.interpolate(z=L_d05)['g'].min() - grad_integ_field.interpolate(z=Lz)['g'].min()
+            grad_rad_above05 = grad_rad_integ_field.interpolate(z=L_d05)['g'].min() - grad_rad_integ_field.interpolate(z=Lz)['g'].min()
+            grad_above05 /= (Lz - L_d05)
+            grad_rad_above05 /= (Lz - L_d05)
 
-
-
-            #brunt minus measures of f_conv
-            brunt_sub_enstrophy = roller.rolled_averages['bruntN2'] - roller.rolled_averages['enstrophy']
-            brunt_sub_vel2 = roller.rolled_averages['bruntN2'] - roller.rolled_averages['vel_rms']**2
-            cz_sign = np.mean(brunt_sub_enstrophy[(z > 0.1)*(z < 0.9)])
-            if np.sum((z > 0.5)*(brunt_sub_enstrophy/cz_sign < 0)) > 0:
-                cross_guess = z[(z > 0.5)*(brunt_sub_enstrophy/cz_sign < 0)][0]
-                x1 = 1
-            else:
-                cross_guess = 1
-                x1 = 1.1
-
-            func_bse = interp1d(z, brunt_sub_enstrophy, bounds_error=False, fill_value='extrapolate')
-            func_bsv2 = interp1d(z, brunt_sub_vel2, bounds_error=False, fill_value='extrapolate')
-            root = sop.root_scalar(func_bse, x0=cross_guess, x1=x1).root
-            root_vel2 = sop.root_scalar(func_bsv2, x0=cross_guess, x1=x1).root
-            
-            #If the root finder broke, just use the grid-based guess
-            if root_zd > z.max() or root_zd < 0:
-                root_zd = z_T_departure_guess
-            if root > z.max() or root < 0:
-                root = cross_guess
-            if root_vel2 > z.max() or root_vel2 < 0:
-                root_vel2 = cross_guess
-            
-            times.append(sim_time[i])
-            write_nums.append(write_num[i])
-            cross_z.append(root)
-            vel_cross_z.append(root_vel2)
-            z_departure.append(root_zd)
-            z_overshoot.append(z_T_overshoot_guess)
+            data_list = [sim_time[i], write_num[i], L_d01, L_d05, L_d09]
+            data_list += [enstrophy_full_domain, enstrophy_full_cz, enstrophy_below_Ls]
+            data_list += [vel_full_domain, vel_full_cz, vel_below_Ls]
+            data_list += [fconv_full_domain, fconv_full_cz, fconv_below_Ls]
+            data_list += [grad_above05, grad_rad_above05]
+            data_cube.append(data_list)
 
             ax1.plot(z, roller.rolled_averages['bruntN2'],             c='k', label=r'$N^2$')
             ax1.plot(z, -roller.rolled_averages['bruntN2'],             c='k', ls='--')
             ax1.plot(z, roller.rolled_averages['vel_rms']**2, c='green', label=r'$u^2$')
             ax1.plot(z, roller.rolled_averages['enstrophy'], c='indigo', label=r'$\omega^2$')
-            ax1.axvline(root, c='indigo')
-            ax1.axvline(root_vel2, c='green')
             ax1.set_yscale('log')
             ax1.legend(loc='upper left')
             ax1.set_ylabel(r'$N^2$')
@@ -258,12 +256,13 @@ if not plotter.idle:
             ax2.set_ylim(np.abs(grad_ad).max() - deltay*1.25, np.abs(grad_ad).max() + deltay*1.25)
             ax2.legend(loc='upper right')
             ax2.set_ylabel('-dz(T)')
-            ax2.axvline(z_T_departure_guess, c='pink')
-            ax2.axvline(root_zd, c='purple')
 
             for ax in axs:
                 ax.set_xlabel('z')
                 ax.set_xlim(z.min(), z.max())
+                ax.axvline(L_d01, c='red')
+                ax.axvline(L_d05, c='k')
+                ax.axvline(L_d09, c='red')
 
             plt.suptitle('sim_time = {:.2f}'.format(sim_time[i]))
 
@@ -271,13 +270,8 @@ if not plotter.idle:
             for ax in axs:
                 ax.cla()
         F_conv_avg_first = True
-    write_nums = np.array(write_nums)
-    times = np.array(times)
-    cross_z = np.array(cross_z)
-    vel_cross_z = np.array(vel_cross_z)
-    z_departure = np.array(z_departure)
-    z_overshoot = np.array(z_overshoot)
-    cz_velocities = np.array(cz_velocities)
+    data_cube = np.array(data_cube)
+    write_nums = np.array(data_cube[:,1], dtype=int)
 buffer = np.zeros(1, dtype=int)
 if plotter.idle:
     buffer[0] = 0
@@ -291,48 +285,88 @@ else:
     buffer[0] = int(write_nums.min())
 plotter.reader.comm.Allreduce(MPI.IN_PLACE, buffer, op=MPI.MIN)
 global_min_write = buffer[0]
-data = np.zeros((7, int(global_max_write - global_min_write + 1)))
+if plotter.idle:
+    buffer[0] = 0
+else:
+    buffer[0] = data_cube.shape[1]
+plotter.reader.comm.Allreduce(MPI.IN_PLACE, buffer, op=MPI.MAX)
+num_fields = buffer[0]
+
+global_data = np.zeros((int(global_max_write - global_min_write + 1), num_fields))
 if not plotter.idle:
     write_nums -= int(global_min_write)
-    data[0, write_nums] = write_nums
-    data[1, write_nums] = times
-    data[2, write_nums] = cross_z
-    data[3, write_nums] = vel_cross_z
-    data[4, write_nums] = z_departure
-    data[5, write_nums] = cz_velocities
-    data[6, write_nums] = z_overshoot
-plotter.reader.comm.Allreduce(MPI.IN_PLACE, data, op=MPI.SUM)
-write_nums = data[0,:]
-times   = data[1,:]
-cross_z = data[2,:]
-vel_cross_z = data[3,:]
-z_departure = data[4,:]
-cz_velocities = data[5,:]
-z_overshoot = data[6,:]
+    global_data[write_nums,:] = data_cube
+plotter.reader.comm.Allreduce(MPI.IN_PLACE, global_data, op=MPI.SUM)
+times      = global_data[:,0]
+write_nums = global_data[:,1]
+L_d01s     = global_data[:,2]
+L_d05s     = global_data[:,3]
+L_d09s     = global_data[:,4]
+enstrophy_full = global_data[:,5]
+enstrophy_cz   = global_data[:,6]
+enstrophy_Ls   = global_data[:,7]
+vel_full = global_data[:,8]
+vel_cz   = global_data[:,9]
+vel_Ls   = global_data[:,10]
+fconv_full = global_data[:,11]
+fconv_cz   = global_data[:,12]
+fconv_Ls   = global_data[:,13]
+grad_above = global_data[:,14]
+grad_rad_above = global_data[:,15]
 
 if plotter.reader.comm.rank == 0:
     fig = plt.figure()
-#    plt.plot(times, cross_z, c='indigo', label=r'zero of $N^2 - \omega^2$')
-#    plt.plot(times, vel_cross_z, c='green', label=r'zero of $N^2 - u^2$')
-    plt.plot(times, z_departure - 1, c='k', label=r'10% departure from grad_ad')
-    plt.plot(times, z_overshoot - 1, c='red', label=r'90% departure from grad_ad')
+    plt.plot(times, L_d01s - Ls, c='k', label=r'10% departure from grad_ad')
+    plt.plot(times, L_d05s - Ls, c='red', label=r'50% departure from grad_ad')
+    plt.plot(times, L_d09s - Ls, c='k', label=r'90% departure from grad_ad')
     plt.legend(loc='best')
     plt.xlabel('time')
     plt.ylabel(r'$\delta_p$')
     fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'trace_top_cz'), dpi=400, bbox_inches='tight')
 
     fig = plt.figure()
-    plt.plot(times, cz_velocities, c='k')
+    plt.plot(times, vel_Ls, c='k')
     plt.xlabel('time')
-    plt.ylabel(r'$|u_{\rm{cz}}|$')
+    plt.ylabel(r'$|u_{\rm{cz}}|$ (below Ls)')
     fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'cz_velocities'), dpi=400, bbox_inches='tight')
 
+    fig = plt.figure()
+    plt.plot(times, enstrophy_full/Re_in, c='k', label=r'$\langle \omega^2 \rangle / \mathcal{R}$')
+    plt.plot(times, fconv_full,   c='orange', label=r'$\langle F_{\rm{conv}} \rangle$')
+    plt.plot(times, enstrophy_cz/Re_in, c='blue', ls=':', label=r'$\langle \omega^2 \rangle / \mathcal{R}$ (cz)')
+    plt.plot(times, fconv_cz,   c='red', ls=':', label=r'$\langle F_{\rm{conv}} \rangle$ (cz)')
+    plt.legend(loc='best')
+    plt.xlabel('time')
+    plt.ylabel(r'KE balances')
+    fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'ke_balances'), dpi=400, bbox_inches='tight')
+
+    fig = plt.figure()
+    plt.plot(times, grad_above, c='blue', label='grad_above')
+    plt.plot(times, grad_rad_above, c='red', label='grad_rad_above')
+    plt.legend(loc='best')
+    plt.xlabel('time')
+    plt.ylabel(r'Avg grad above')
+    fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'avg_grad_above'), dpi=400, bbox_inches='tight')
 
 
     with h5py.File('{:s}/data_top_cz.h5'.format(plotter.out_dir), 'w') as f:
-        f['times'] = times
-        f['cross_z'] = cross_z
-        f['vel_cross_z'] = vel_cross_z
-        f['cz_velocities'] = cz_velocities
-        f['z_departure'] = z_departure
-        f['z_overshoot'] = z_overshoot
+        f['times'] = times     
+        f['write_nums'] = write_nums
+        f['L_d01s'] = L_d01s    
+        f['L_d05s'] = L_d05s    
+        f['L_d09s'] = L_d09s    
+        f['enstrophy_full'] = enstrophy_full
+        f['enstrophy_cz'] = enstrophy_cz  
+        f['enstrophy_Ls'] = enstrophy_Ls  
+        f['vel_full'] = vel_full 
+        f['vel_cz'] = vel_cz   
+        f['vel_Ls'] = vel_Ls   
+        f['fconv_full'] = fconv_full 
+        f['fconv_cz'] = fconv_cz   
+        f['fconv_Ls'] = fconv_Ls   
+        f['grad_above'] = grad_above 
+        f['grad_rad_above'] = grad_rad_above 
+        f['Ls'] = Ls
+        f['Lz'] = Lz
+        f['Re_in'] = Re_in
+
