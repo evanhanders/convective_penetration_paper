@@ -218,13 +218,13 @@ if not plotter.idle:
             L_d09 = departures[2]
 
             enstrophy_full_domain = enstrophy_integ_field.interpolate(z=Lz)['g'].min() / Lz
-            enstrophy_full_cz     = enstrophy_integ_field.interpolate(z=L_d05)['g'].min() / L_d05
+            enstrophy_full_cz     = enstrophy_integ_field.interpolate(z=L_d09)['g'].min() / L_d09
             enstrophy_below_Ls    = enstrophy_integ_field.interpolate(z=Ls)['g'].min() / Ls
             vel_full_domain = vel_integ_field.interpolate(z=Lz)['g'].min() / Lz
-            vel_full_cz     = vel_integ_field.interpolate(z=L_d05)['g'].min() / L_d05
+            vel_full_cz     = vel_integ_field.interpolate(z=L_d09)['g'].min() / L_d09
             vel_below_Ls    = vel_integ_field.interpolate(z=Ls)['g'].min() / Ls
             fconv_full_domain = fconv_integ_field.interpolate(z=Lz)['g'].min() / Lz
-            fconv_full_cz     = fconv_integ_field.interpolate(z=L_d05)['g'].min() / L_d05
+            fconv_full_cz     = fconv_integ_field.interpolate(z=L_d09)['g'].min() / L_d09
             fconv_below_Ls    = fconv_integ_field.interpolate(z=Ls)['g'].min() / Ls
 
             grad_above05 = grad_integ_field.interpolate(z=L_d05)['g'].min() - grad_integ_field.interpolate(z=Lz)['g'].min()
@@ -331,8 +331,8 @@ if plotter.reader.comm.rank == 0:
     fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'cz_velocities'), dpi=400, bbox_inches='tight')
 
     fig = plt.figure()
-    plt.plot(times, enstrophy_full/Re_in, c='k', label=r'$\langle \omega^2 \rangle / \mathcal{R}$')
-    plt.plot(times, fconv_full,   c='orange', label=r'$\langle F_{\rm{conv}} \rangle$')
+    plt.plot(times, enstrophy_Ls/Re_in, c='k', label=r'$\langle \omega^2 \rangle / \mathcal{R}$ (Ls)')
+    plt.plot(times, fconv_Ls,   c='orange', label=r'$\langle F_{\rm{conv}} \rangle$ (Ls)')
     plt.plot(times, enstrophy_cz/Re_in, c='blue', ls=':', label=r'$\langle \omega^2 \rangle / \mathcal{R}$ (cz)')
     plt.plot(times, fconv_cz,   c='red', ls=':', label=r'$\langle F_{\rm{conv}} \rangle$ (cz)')
     plt.legend(loc='best')
@@ -347,6 +347,18 @@ if plotter.reader.comm.rank == 0:
     plt.xlabel('time')
     plt.ylabel(r'Avg grad above')
     fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'avg_grad_above'), dpi=400, bbox_inches='tight')
+
+    fig = plt.figure()
+    f_theory_enstrophy = (1/Re_in)*(L_d09s) * enstrophy_cz / (Ls * fconv_Ls)
+    f_theory_flux = (fconv_cz / fconv_Ls) * ( L_d09s/Ls )
+    plt.plot(times, f_theory_enstrophy, c='k', label='enstrophy')
+    plt.plot(times, f_theory_flux, c='r', label='flux')
+    plt.ylim(0.5, 1)
+    plt.legend(loc='best')
+    plt.xlabel('time')
+    plt.ylabel(r'$f$ from theory')
+    fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'theory_f'), dpi=400, bbox_inches='tight')
+
 
 
     with h5py.File('{:s}/data_top_cz.h5'.format(plotter.out_dir), 'w') as f:
@@ -366,6 +378,8 @@ if plotter.reader.comm.rank == 0:
         f['fconv_Ls'] = fconv_Ls   
         f['grad_above'] = grad_above 
         f['grad_rad_above'] = grad_rad_above 
+        f['f_theory_enstrophy'] = f_theory_enstrophy
+        f['f_theory_flux'] = f_theory_flux
         f['Ls'] = Ls
         f['Lz'] = Lz
         f['Re_in'] = Re_in
