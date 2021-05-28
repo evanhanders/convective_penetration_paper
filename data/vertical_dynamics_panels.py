@@ -66,26 +66,26 @@ with h5py.File(dynamics_file, 'r') as f:
     vert_field['g'] /= T1_fluc 
     vert_field.set_scales(hires_scales, keep_data=True)
     T_cbar_scale = np.max(np.abs(vert_field['g']))/7
-    pT = axs[0].pcolormesh(xx_tb,  zz_tb,  np.copy(vert_field['g']),  cmap='RdBu_r', rasterized=True, shading="nearest", vmin=-T_cbar_scale, vmax=T_cbar_scale)
+    pT = axs[1].pcolormesh(xx_tb,  zz_tb,  np.copy(vert_field['g']),  cmap='RdBu_r', rasterized=True, shading="nearest", vmin=-T_cbar_scale, vmax=T_cbar_scale)
     vert_field.set_scales(1)
 
     #Vel plots
     vert_field['g'] = f['tasks']['w_y_mid'][plot_ind,:].squeeze()
     vert_field.set_scales(hires_scales, keep_data=True)
     w_cbar_scale = np.max(np.abs(vert_field['g']))
-    pW = axs[1].pcolormesh(xx_tb,  zz_tb,  np.copy(vert_field['g']),  cmap='PuOr_r', rasterized=True, shading="nearest", vmin=-w_cbar_scale, vmax=w_cbar_scale)
+    pW = axs[0].pcolormesh(xx_tb,  zz_tb,  np.copy(vert_field['g']),  cmap='PuOr_r', rasterized=True, shading="nearest", vmin=-w_cbar_scale, vmax=w_cbar_scale)
     vert_field.set_scales(1)
 
-cbar_T = plt.colorbar(pT, cax=caxs[0], orientation='horizontal')
-cbar_w = plt.colorbar(pW, cax=caxs[1], orientation='horizontal')
+cbar_w = plt.colorbar(pW, cax=caxs[0], orientation='horizontal')
+cbar_T = plt.colorbar(pT, cax=caxs[1], orientation='horizontal')
 
-caxs[0].text(0.5, 0.4, r"$T'$", transform=caxs[0].transAxes, va='center', ha='center')
-caxs[1].text(0.5, 0.5, r"$w$", transform=caxs[1].transAxes, va='center', ha='center')
+caxs[0].text(0.5, 0.5, r"$w$", transform=caxs[0].transAxes, va='center', ha='center')
+caxs[1].text(0.5, 0.4, r"$T'$", transform=caxs[1].transAxes, va='center', ha='center')
 
 for ind in [0, 1]:
     ax = axs[ind]
-    ax.axhline(1, c='k', lw=0.5, ls='--')
-    ax.axhline(departure_point, c='k')
+    ax.axhline(1, lw=0.5, ls='--', color='xkcd:dark grey')
+    ax.axhline(departure_point,  color='dimgrey')
 
 
 for ax in axs:
@@ -95,3 +95,4 @@ for ax in axs:
 
 
 fig.savefig('vertical_dynamics_panels.png', dpi=300, bbox_inches='tight')
+fig.savefig('../manuscript/vertical_dynamics_panels.pdf', dpi=300, bbox_inches='tight')

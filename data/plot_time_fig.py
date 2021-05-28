@@ -7,6 +7,7 @@ plt.style.use('apj')
 import h5py
 
 from scipy.interpolate import interp1d
+import pandas as pd
 
 
 col_width = 3.25
@@ -16,9 +17,10 @@ dirs = ["erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer
         "erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart"]
 
 fig = plt.figure(figsize=(2*col_width, col_width/golden_ratio))
-ax1 = fig.add_axes([0,    0.5, 0.45, 0.5])
-ax2 = fig.add_axes([0,    0, 0.45, 0.5])
-ax3 = fig.add_axes([0.50, 0, 0.45, 1])
+ax1 = fig.add_axes([0,    0.67, 0.45, 0.33])
+ax2 = fig.add_axes([0,    0.34, 0.45, 0.33])
+ax3 = fig.add_axes([0,    0.00, 0.45, 0.34])
+ax4 = fig.add_axes([0.50,    0, 0.45, 1])
 
 
 data = OrderedDict()
@@ -45,6 +47,8 @@ L_d05s = []
 L_d09s = []
 grad_above = []
 grad_rad_above = []
+theory_f_enstrophy = []
+theory_f_flux = []
 grad = []
 prof_times = []
 for i, d in enumerate(dirs):
@@ -59,6 +63,8 @@ for i, d in enumerate(dirs):
         L_d09s.append(f['L_d09s'][()][skip_points:])
         grad_above.append(f['grad_above'][()][skip_points:])
         grad_rad_above.append(f['grad_rad_above'][()][skip_points:])
+        theory_f_enstrophy.append(f['f_theory_enstrophy'][()][skip_points:])
+        theory_f_flux.append(f['f_theory_flux'][()][skip_points:])
         Ls = f['Ls'][()]
     with h5py.File('{:s}/avg_profs/averaged_avg_profs.h5'.format(d), 'r') as f:
         z = f['z'][()]
@@ -79,7 +85,19 @@ grad_above     = np.array(np.concatenate(grad_above))
 grad_rad_above = np.array(np.concatenate(grad_rad_above))
 grad           = np.array(np.concatenate(grad, axis=0))
 prof_times     = np.array(np.concatenate(prof_times))
+theory_f_enstrophy     = np.array(np.concatenate(theory_f_enstrophy))
+theory_f_flux          = np.array(np.concatenate(theory_f_flux))
 
+
+f_data = dict()
+f_data['sim_time'] = times
+f_data['f'] = theory_f_enstrophy
+f_df = pd.DataFrame(data=f_data)
+rolledf = f_df.rolling(window=50, min_periods=25).mean()
+
+final_f = np.mean(theory_f_enstrophy[-500:])
+error = np.abs(1 - rolledf['f']/final_f)
+time_cross = times[error < 0.01][0]
 
 
 cmap = mpl.cm.viridis
@@ -91,15 +109,21 @@ for i in range(int(len(times)/10)-1):
 #    ax1.plot(times[i*10:(i+1)*10], (L_d01s[i*10:(i+1)*10]-Ls)/Lcz_norm, c=sm.to_rgba(times[int((i+0.5)*10)]))
     ax1.plot(times[i*10:(i+1)*10]/t_diff, (L_d05s[i*10:(i+1)*10]-Ls)/Lcz_norm, c=sm.to_rgba(times[int((i+0.5)*10)]))
     ax2.plot(times[i*10:(i+1)*10], ((np.abs(grad_above)-np.abs(grad_rad_above))/np.abs(grad_rad_above))[i*10:(i+1)*10], c=sm.to_rgba(times[int((i+0.5)*10)]))
+    ax3.plot(rolledf['sim_time'][i*10:(i+1)*10], rolledf['f'][i*10:(i+1)*10], c=sm.to_rgba(times[int((i+0.5)*10)]))
+#    ax3.plot(times[i*10:(i+1)*10], theory_f_enstrophy[i*10:(i+1)*10], c=sm.to_rgba(times[int((i+0.5)*10)]))
+ax3.axvline(time_cross, color='xkcd:dark grey')
 ax1.set_ylim(0, 0.6)
 ax1.set_xlim(0, times.max()/t_diff)
+ax2.set_xlim(0, times.max())
+ax3.set_xlim(0, times.max())
 ax1.xaxis.set_label_position('top')
 ax1.xaxis.set_ticks_position('top')
+ax2.set_xticklabels(())
 ax1.set_yticks((0.2, 0.4, 0.6))
 ax1.set_ylabel(r'$\delta_{0.5}/L_s$')
-ax2.set_xlim(0, times.max())
 ax2.set_ylabel(r'$\frac{\nabla - \nabla_{\rm{rad}}}{\nabla_{\rm{rad}}}|_{z > \delta_{\rm{0.5}}}$')
-ax2.set_xlabel('simulation time (freefall units)')
+ax3.set_ylabel(r'$f$')
+ax3.set_xlabel('simulation time (freefall units)')
 ax1.set_xlabel('simulation time (diffusion units)')
 
 
@@ -107,10 +131,10 @@ delta_grad = grad_ad - grad_rad
 delta_grad_func = interp1d(z, delta_grad, bounds_error=False, fill_value='extrapolate')
 y_min = (grad_ad[-1] - delta_grad[-1]*1.5)/grad_ad[-1]
 y_max = (grad_ad[-1] + delta_grad[-1]*1.1)/grad_ad[-1]
-ax3.plot(z, grad_ad/grad_ad, c='grey', ls='--')
-ax3.plot(z, grad_rad/grad_ad, c='grey')
+ax4.plot(z, grad_ad/grad_ad, c='grey', ls='--')
+ax4.plot(z, grad_rad/grad_ad, c='grey')
 for i in range(grad.shape[0]):
-    ax3.plot(z, grad[i,:]/grad_ad, c=sm.to_rgba(np.mean(prof_times[i])))
+    ax4.plot(z, grad[i,:]/grad_ad, c=sm.to_rgba(np.mean(prof_times[i])))
 
 
 for i in range(int(len(times)/10)-1):
@@ -119,15 +143,15 @@ for i in range(int(len(times)/10)-1):
     grad_01 = grad_ad[-1] - 0.1*delta_grad_func(L_d01s)
     grad_05 = grad_ad[-1] - 0.5*delta_grad_func(L_d05s)
     grad_09 = grad_ad[-1] - 0.9*delta_grad_func(L_d09s)
-    ax3.plot(L_d01s[i*10:(i+1)*10], grad_01[i*10:(i+1)*10]/grad_ad[-1], c='r')
-    ax3.plot(L_d05s[i*10:(i+1)*10], grad_05[i*10:(i+1)*10]/grad_ad[-1], c='k')
-    ax3.plot(L_d09s[i*10:(i+1)*10], grad_09[i*10:(i+1)*10]/grad_ad[-1], c='r')
-ax3.set_ylim(y_min, y_max)
-ax3.set_xlim(0.9, 1.65)
-ax3.set_xlabel('z')
-ax3.set_ylabel(r'$\nabla/\nabla_{\rm{ad}}$')
-ax3.yaxis.set_ticks_position('right')
-ax3.yaxis.set_label_position('right')
+    ax4.plot(L_d01s[i*10:(i+1)*10], grad_01[i*10:(i+1)*10]/grad_ad[-1], c='r')
+    ax4.plot(L_d05s[i*10:(i+1)*10], grad_05[i*10:(i+1)*10]/grad_ad[-1], c='k')
+    ax4.plot(L_d09s[i*10:(i+1)*10], grad_09[i*10:(i+1)*10]/grad_ad[-1], c='r')
+ax4.set_ylim(y_min, y_max)
+ax4.set_xlim(0.9, 1.65)
+ax4.set_xlabel('z')
+ax4.set_ylabel(r'$\nabla/\nabla_{\rm{ad}}$')
+ax4.yaxis.set_ticks_position('right')
+ax4.yaxis.set_label_position('right')
 
 plt.savefig('time_evolution.png', dpi=300, bbox_inches='tight')
 plt.savefig('../manuscript/time_evolution.pdf', dpi=300, bbox_inches='tight')
