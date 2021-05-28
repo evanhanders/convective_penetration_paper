@@ -5,15 +5,22 @@ import matplotlib.pyplot as plt
 plt.style.use('apj')
 import h5py
 
+import pandas as pd
+
 col_width = 3.25
 golden_ratio = 1.61803398875
 
 dirs = glob.glob('erf_AE_cut/erf*/')
-dirs.append('erf_P_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer100_64x64x256_predictive0.55/')
 
 
 
-plt.figure(figsize=(col_width, col_width/golden_ratio))
+fig = plt.figure(figsize=(2*col_width, col_width/golden_ratio))
+ax1 = fig.add_axes([0.00,    0.5, 0.33, 0.5])
+ax2 = fig.add_axes([0.00,    0.0, 0.33, 0.5])
+ax3 = fig.add_axes([0.33,    0.5, 0.33, 0.5])
+ax4 = fig.add_axes([0.33,    0.0, 0.33, 0.5])
+ax5 = fig.add_axes([0.66,    0.5, 0.33, 0.5])
+ax6 = fig.add_axes([0.66,    0.0, 0.33, 0.5])
 
 data = OrderedDict()
 for d in dirs:
@@ -33,71 +40,110 @@ for d in dirs:
 
     with h5py.File('{:s}/data_top_cz.h5'.format(d), 'r') as f:
         times = f['times'][()]
-        z_departure = f['z_departure'][()]
-        z_overshoot = f['z_overshoot'][()]
-    data[d] = [S, P, Re, threeD, Lz, erf, times, z_departure, z_overshoot]
+        L_d01s = f['L_d01s'][()]
+        L_d05s = f['L_d05s'][()]
+        L_d09s = f['L_d09s'][()]
+        Ls = f['Ls'][()]
+        f_theory_enstrophy = f['f_theory_enstrophy'][()]
+
+
+    data[d] = [S, P, Re, threeD, Lz, erf, times, L_d01s, L_d05s, L_d09s, f_theory_enstrophy, Ls]
 
 for d in dirs:
-    times = np.copy(data[d][-3])
-    z_departure = data[d][-2]
-    z_overshoot = data[d][-1]
-    if 'predictive0.4_noiters/' in d:
+    P = data[d][1]
+    times = np.copy(data[d][6])
+    L_d01 = data[d][7]
+    L_d05 = data[d][8]
+    L_d09 = data[d][9]
+    f_enstrophy    = data[d][10]
+    N_skip = 0
+
+    if 'predictive0.4_noiters/' in d or 'pertUpContinued/' in d:
         color = 'blue'
         times -= times[-1]
+        continue
     elif 'schwarzschild/' in d or 'schwarzschild_restart/' in d:
         color = 'k'
-        for d2 in dirs:
-            times2 = data[d2][-3]
-            if 'schwarzschild_restart/' in d2:
-                times -= times2[-1]
-                print(d, d2, times[-1])
-    elif 'predictive0.7/' in d or 'pertUpContinued/' in d:
+        zorder = 100
+
+        if P == 4:
+            for d2 in dirs:
+                times2 = data[d2][6]
+                if 'schwarzschild_restart/' in d2:
+                    times -= times2[-1]
+                    print(d, d2, times[-1])
+                    if 'schwarzschild/' in d:
+                        N_skip = 100
+        else:
+            times -= times[-1]
+            if P == 1:
+                N_skip = 300
+            elif P == 2:
+                N_skip = 150
+    elif ('predictive0.7/' in d and P == 4) or ('predictive0.45' in d and P == 2) or ('predictive0.3' in d and P == 1):
         color = 'green'
-        for d2 in dirs:
-            times2 = data[d2][-3]
-            if 'pertUpContinued/' in d2:
-                times -= times2[-1]
-    elif 'predictive0.4/' in d:
+        zorder = 2
+        times -= times[-1]
+        if P == 1:
+            N_skip = 0#10
+        if P == 2:
+            N_skip = 10
+    elif ('predictive0.4/' in d and P == 4) or ('predictive0.1' in d and P == 2) or ('predictive0' in d and P == 1):
         color = 'indigo'
+        zorder = 1
         times -= times[-1]
-    elif 'erf_P_cut' in d:
-        color = 'orange'
-        times -= times[-1]
+        if P == 1:
+            N_skip = 10
+        if P == 2:
+            N_skip = 10
     else:
+        zorder = 0
         color = 'red'
         times -= times[-1]
+    times = times[N_skip:]
+    L_d01 = L_d01[N_skip:]
+    L_d05 = L_d05[N_skip:]
+    L_d09 = L_d09[N_skip:]
+    f_enstrophy = f_enstrophy[N_skip:]
 
-    if data[d][1] == 4:
-        plt.plot(times, z_departure-1, color=color)
-        plt.plot(times, z_overshoot-1, color=color)
 
-plt.ylim(0, 0.7)
-plt.show()
-#
-#S = data[:,0]
-#P = data[:,1]
-#Re = data[:,2]
-#threeD = data[:,3]
-#z_top = data[:,4]
-#z_ov  = data[:,5]
-#z_av = (z_top + z_ov)/2
-#Lz = data[:,6]
-#erf = data[:,7]
-#
-#plt.figure(figsize=(col_width, col_width/golden_ratio))
-#good = (erf == 0)
-#plt.scatter(P[good], z_top[good] - 1, c='k', label=r"Simulations ($\delta_p$)", zorder=100, marker='^')
-#plt.scatter(P[good], z_ov[good] - 1, c='k', label=r"Simulations ($\delta_{\rm{ov}}$)", zorder=100, marker='v')
-#plt.scatter(P[good], z_av[good] - 1, c='k', zorder=100, marker='o')
-#plt.xscale('log')
-#plt.yscale('log')
-#
-#x = np.logspace(-3, 2, 100)
-#y1 = 0.23*x**(1/2)
-#plt.plot(x, y1, c='orange', label=r'Theory$\,\,(0.25 \mathcal{P}_L^{1/2})$')
-#plt.legend(frameon=True, fontsize=8, loc='upper left')
-#plt.xlabel('$\mathcal{P}_L$')
-#plt.ylabel('$\delta_p$')
-#plt.xlim(8e-3, 2e1)
-#
-#plt.savefig('linear_3D_penetration_depths.png', dpi=300, bbox_inches='tight')
+    f_data = dict()
+    f_data['sim_time'] = times
+    f_data['f'] = f_enstrophy
+    f_df = pd.DataFrame(data=f_data)
+    rolledf = f_df.rolling(window=50, min_periods=25).mean()
+
+    if P == 1:
+        ax1.plot(times, (L_d01-Ls)/(Ls-0.2), color=color, zorder=zorder)
+        ax1.plot(times, (L_d09-Ls)/(Ls-0.2), color=color, zorder=zorder)
+        ax2.plot(rolledf['sim_time'], rolledf['f'], color=color, zorder=zorder)
+    elif P == 2:
+        ax3.plot(times, (L_d01-Ls)/(Ls-0.2), color=color, zorder=zorder)
+        ax3.plot(times, (L_d09-Ls)/(Ls-0.2), color=color, zorder=zorder)
+        ax4.plot(rolledf['sim_time'], rolledf['f'], color=color, zorder=zorder)
+    elif P == 4:
+        ax5.plot(times, (L_d01-Ls)/(Ls-0.2), color=color, zorder=zorder)
+        ax5.plot(times, (L_d09-Ls)/(Ls-0.2), color=color, zorder=zorder)
+        ax6.plot(rolledf['sim_time'], rolledf['f'], color=color, zorder=zorder)
+
+ax1.set_ylim(-0.05, 0.8)
+ax3.set_ylim(-0.05, 0.8)
+ax5.set_ylim(-0.05, 0.8)
+for ax in [ax2, ax4, ax6]:
+    ax2.set_ylim(0.75, 0.95)
+for ax in [ax3, ax4, ax6]:
+    ax.set_yticks(())
+for ax in [ax1, ax3, ax5]:
+    ax.set_xticks(())
+
+ax5.yaxis.set_ticks_position('right')
+ax2.set_xlabel(r'$t - t_{\rm{end}}$')
+ax1.set_ylabel(r'$\delta_{\rm{p}}/L_s$')
+ax2.set_ylabel(r'$\langle f \rangle$')
+
+ax1.text(0.03, 0.85, r'$\mathcal{P} = 1$', transform=ax1.transAxes)
+ax3.text(0.03, 0.85, r'$\mathcal{P} = 2$', transform=ax3.transAxes)
+ax5.text(0.03, 0.85, r'$\mathcal{P} = 4$', transform=ax5.transAxes)
+
+fig.savefig('AE_time_figure.png', dpi=300, bbox_inches='tight')
+plt.savefig('../manuscript/AE_time_figure.pdf', dpi=300, bbox_inches='tight')
