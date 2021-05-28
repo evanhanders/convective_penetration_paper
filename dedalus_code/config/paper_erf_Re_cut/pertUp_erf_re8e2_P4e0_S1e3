@@ -1,15 +1,15 @@
 [parameters]
-Re = 2.5e1
+Re = 8e2
 S = 1e3
 P = 4e0
 Lz = 2
 nz = 256
-nx = 16
-run_time_wall = 23.5
+nx = 128
+run_time_wall = 119.5
 run_time_ff = 3e3
 
-predictive=0.2
-T_iters=200
+predictive=0.6
+T_iters=25
 
 SBDF2=true
 safety=0.35
