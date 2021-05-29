@@ -96,8 +96,13 @@ f_df = pd.DataFrame(data=f_data)
 rolledf = f_df.rolling(window=50, min_periods=25).mean()
 
 final_f = np.mean(theory_f_enstrophy[-500:])
-error = np.abs(1 - rolledf['f']/final_f)
-time_cross = times[error < 0.01][0]
+error_f = np.abs(1 - rolledf['f']/final_f)
+time_cross_f = times[error_f < 0.01][0]
+
+delta_d05 = (L_d05s - Ls)/Lcz_norm
+final_d05 = np.mean(delta_d05[-500:])
+error_d05 = np.abs(1 - (delta_d05/final_d05))
+time_cross_d05 = times[error_d05 < 0.01][0]
 
 
 cmap = mpl.cm.viridis
@@ -111,7 +116,8 @@ for i in range(int(len(times)/10)-1):
     ax2.plot(times[i*10:(i+1)*10], ((np.abs(grad_above)-np.abs(grad_rad_above))/np.abs(grad_rad_above))[i*10:(i+1)*10], c=sm.to_rgba(times[int((i+0.5)*10)]))
     ax3.plot(rolledf['sim_time'][i*10:(i+1)*10], rolledf['f'][i*10:(i+1)*10], c=sm.to_rgba(times[int((i+0.5)*10)]))
 #    ax3.plot(times[i*10:(i+1)*10], theory_f_enstrophy[i*10:(i+1)*10], c=sm.to_rgba(times[int((i+0.5)*10)]))
-ax3.axvline(time_cross, color='xkcd:dark grey')
+ax1.axvline(time_cross_d05/t_diff, color='xkcd:dark grey')
+ax3.axvline(time_cross_f, color='xkcd:dark grey')
 ax1.set_ylim(0, 0.6)
 ax1.set_xlim(0, times.max()/t_diff)
 ax2.set_xlim(0, times.max())
@@ -120,9 +126,9 @@ ax1.xaxis.set_label_position('top')
 ax1.xaxis.set_ticks_position('top')
 ax2.set_xticklabels(())
 ax1.set_yticks((0.2, 0.4, 0.6))
-ax1.set_ylabel(r'$\delta_{0.5}/L_s$')
-ax2.set_ylabel(r'$\frac{\nabla - \nabla_{\rm{rad}}}{\nabla_{\rm{rad}}}|_{z > \delta_{\rm{0.5}}}$')
-ax3.set_ylabel(r'$f$')
+ax1.set_ylabel(r'$\frac{\delta_{0.5}}{\tilde{L_s}}$')
+ax2.set_ylabel(r'$\left\langle\frac{\nabla - \nabla_{\rm{rad}}}{\nabla_{\rm{rad}}}\right\rangle_{\rm{PZ}}$')
+ax3.set_ylabel(r'$\langle f\rangle$')
 ax3.set_xlabel('simulation time (freefall units)')
 ax1.set_xlabel('simulation time (diffusion units)')
 
@@ -130,7 +136,7 @@ ax1.set_xlabel('simulation time (diffusion units)')
 delta_grad = grad_ad - grad_rad
 delta_grad_func = interp1d(z, delta_grad, bounds_error=False, fill_value='extrapolate')
 y_min = (grad_ad[-1] - delta_grad[-1]*1.5)/grad_ad[-1]
-y_max = (grad_ad[-1] + delta_grad[-1]*1.1)/grad_ad[-1]
+y_max = (grad_ad[-1] + delta_grad[-1]*0.25)/grad_ad[-1]
 ax4.plot(z, grad_ad/grad_ad, c='grey', ls='--')
 ax4.plot(z, grad_rad/grad_ad, c='grey')
 for i in range(grad.shape[0]):

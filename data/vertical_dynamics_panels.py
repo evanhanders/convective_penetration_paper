@@ -79,8 +79,8 @@ with h5py.File(dynamics_file, 'r') as f:
 cbar_w = plt.colorbar(pW, cax=caxs[0], orientation='horizontal')
 cbar_T = plt.colorbar(pT, cax=caxs[1], orientation='horizontal')
 
-caxs[0].text(0.5, 0.5, r"$w$", transform=caxs[0].transAxes, va='center', ha='center')
-caxs[1].text(0.5, 0.4, r"$T'$", transform=caxs[1].transAxes, va='center', ha='center')
+caxs[0].text(0.5, 0.5, r"$w$", transform=caxs[0].transAxes, va='center', ha='center', fontsize=10)
+caxs[1].text(0.5, 0.4, r"$T' / \overline{|T'|}$", transform=caxs[1].transAxes, va='center', ha='center', fontsize=8)
 
 for ind in [0, 1]:
     ax = axs[ind]

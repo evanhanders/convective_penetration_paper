@@ -114,3 +114,4 @@ for ax in axs:
 
 
 fig.savefig('turbulent_dynamics_panels.png', dpi=300, bbox_inches='tight')
+fig.savefig('../manuscript/turbulent_dynamics_panels.pdf', dpi=300, bbox_inches='tight')
