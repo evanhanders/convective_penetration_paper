@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import scipy.optimize as sop
 from scipy.interpolate import interp1d
+from scipy.optimize import brentq
 import logging
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,7 @@ logger.info("reading data from {}".format(root_dir))
 Re_in = float(root_dir.split('Re')[-1].split('_')[0])
 Lz = float(root_dir.split('Lz')[-1].split('_')[0])
 nz = int(root_dir.split('Titer')[-1].split('x')[-1].split('_')[0].split('/')[0])
+P = float(root_dir.split('_Pr')[0].split('_P')[-1].split('_')[0])
 
 plotter = SFP(root_dir, file_dir='profiles', fig_name=fig_name, start_file=start_file, n_files=n_files, distribution='even')
 MPI.COMM_WORLD.barrier()
@@ -63,6 +65,12 @@ ax1 = fig.add_subplot(3,1,1)
 ax2 = fig.add_subplot(3,1,2)
 ax3 = fig.add_subplot(3,1,3)
 axs = [ax1, ax2, ax3]
+
+if 'erf' in root_dir:
+    theory_func = lambda f: P*(1-f)/(1 + P*f/2)
+elif 'linear' in root_dir:
+    theory_func = lambda f: np.sqrt((1-f)*P) * ( np.sqrt(1 + (f/4)**2*(P/(1-f))) - (f/4)*np.sqrt(P/(1-f)) )
+    
 
 class RollingProfileAverager:
     
@@ -130,6 +138,7 @@ if not plotter.idle:
         Tz_rad_IH0 = first_tasks['T_rad_z_IH'][0,:].squeeze()
         grad_ad = -first_tasks['T_ad_z'][0,:].squeeze()
         grad_rad = -Tz_rad_IH0
+        delta_grad = grad_ad - grad_rad
 
         for k in fields:
             tasks[k] = tasks[k].squeeze()
@@ -147,7 +156,7 @@ if not plotter.idle:
 
             F_KE = roller.rolled_averages['F_KE'] # w * u^2 / 2
             F_KE_w = roller.rolled_averages['F_KE_vert'] # w^3 / 2
-            F_KE_p = roller.rolled_averages['F_KE_p'] # w * p 
+            F_KE_p = roller.rolled_averages['F_KE_p'] # w * (p + u^2 / 2) 
 
             velocity = roller.rolled_averages['vel_rms']
             approx_Re_micro = Re_in * velocity**2 / roller.rolled_averages['enstrophy']**(1/2)
@@ -159,12 +168,42 @@ if not plotter.idle:
             ax1.set_ylabel(r'KE forcings')
             ax1.set_ylim(-0.25, 0.25)
 
+
+            #Need to find roots of F_KE_p
+            Ls = z[delta_grad < 0][-1]
+            flux_func = interp1d(z, F_KE_p)
+            z1 = 0
+            try:
+                z2 = brentq(flux_func, 0.05, 0.9)
+            except:
+                z2 = z1
+            try:
+                z3 = z[np.abs(F_KE_p/F_KE_p.max()) > 1e-2][-1]
+            except:
+                z3 = z.max()
+
+            good_cz = (z > z2)*(z <= Ls)
+            good_pz = (z > Ls)*(z <= z3)
+            dz = np.gradient(z)
+            f = np.sum((enstrophy_div_R*dz)[good_cz])/np.sum((F_conv*dz)[good_cz])
+
+            theory_z3 = Ls + (Ls - z2)*theory_func(f)
+            dissipation_cz = np.sum((enstrophy_div_R*dz)[good_cz]) / np.sum((dz)[good_cz])
+            dissipation_model = np.zeros_like(z)
+            dissipation_model[z < Ls] = dissipation_cz
+            dissipation_model[(z >= Ls)*(z < z3)] = dissipation_cz*(1 - (z - Ls)/(z3-Ls))[(z >= Ls)*(z < z3)]
+            ax1.plot(z, dissipation_model, c='indigo', ls='--', lw=0.5)
+            
+
             ax2.plot(z, F_KE, c='k', label=r'$w |u^2| / 2$')
-            ax2.plot(z, F_KE_p, c='green',  label=r'$w \varpi$')
-            ax2.plot(z, F_KE_p+F_KE, c='red',  label=r'$w \varpi + w |u^2| / 2$')
-            ax2.plot(z, F_KE_w * (F_KE_p+F_KE).max()/F_KE_w.max(), c='orange', label=r'$f w^3 / 2$')
+            ax2.plot(z, F_KE_p - F_KE, c='green',  label=r'$w \varpi$') #p contains the u^2 part due to eqn formulation
+            ax2.plot(z, F_KE_p, c='red',  label=r'$w \varpi + w |u^2| / 2$') #p contains the u^2 part due to eqn formulation
+#            match_const = (F_KE_p+F_KE).max()/F_KE_w.max()
+#            ax2.plot(z, 2.5*F_KE_w, c='orange', label=r'$2.5 w^3$')
+#            ax2.plot(z, match_const * F_KE_w, c='orange', ls='--', label='({:.2f}) '.format(match_const) + r'$w^3$')
             ax2.legend(loc='upper right')
             ax2.set_ylabel('KE fluxes')
+
 
             ax3.plot(z, approx_Re_micro, c='k')
             ax3.set_ylabel(r'$\mathcal{R} u^2 / |\omega|$')
@@ -176,6 +215,11 @@ if not plotter.idle:
                 ax.set_xlabel('z')
                 ax.set_xlim(z.min(), z.max())
                 ax.axhline(0, c='k', lw=0.5)
+                ax.axvline(z1, c='k', lw=0.5)
+                ax.axvline(z2, c='k', lw=0.5)
+                ax.axvline(z3, c='k', lw=0.5)
+                ax.axvline(Ls, c='k', lw=0.5, ls='--')
+                ax.axvline(theory_z3, c='pink', lw=1)
 
             plt.suptitle('sim_time = {:.2f}'.format(sim_time[i]))
 

@@ -5,9 +5,12 @@ P = 1.6e1
 Lz = 2.1
 nz = 256
 nx = 128
-run_time_wall = 64.5
-run_time_ff = 5e3
-
-predictive = 0.85
+run_time_wall = 119.5
+run_time_ff = 8e3
 
 T_iters = 0
+
+restart=for_sorting/linear_3D_Re8e2_P1.6e1_zeta1e-3_S1e3_Lz2.1_Lcz1_Pr0.5_a2_Titer100_128x128x256_predictive0.7/final_checkpoint/final_checkpoint_s1.h5
+
+SBDF2=true
+safety=0.35

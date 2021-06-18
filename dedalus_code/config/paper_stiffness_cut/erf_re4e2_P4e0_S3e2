@@ -8,5 +8,8 @@ nx = 64
 run_time_wall = 119
 run_time_ff = 5e3
 
-predictive=0.55
-T_iters=100
+T_iters=0
+restart=for_sorting/erf_step_3D_Re4e2_P4e0_zeta1e-3_S3e2_Lz2_Lcz1_Pr0.5_a2_Titer100_64x64x256_predictive0.4/final_checkpoint/final_checkpoint_s1.h5
+
+SBDF2=true
+safety=0.35

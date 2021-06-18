@@ -21,10 +21,13 @@ from docopt import docopt
 args = docopt(__doc__)
 from plotpal.file_reader import SingleFiletypePlotter as SFP
 import numpy as np
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import scipy.optimize as sop
 from scipy.interpolate import interp1d
+from scipy.optimize import brentq
 import logging
 logger = logging.getLogger(__name__)
 
@@ -109,9 +112,15 @@ class RollingProfileAverager:
                 if self.before_tasks is None:
                     self.rolled_averages[k] = np.mean(self.current_tasks[k][:index+1,:], axis=0)
                 else:
-                    roll_arr = np.zeros((avg_num, self.current_tasks[k].shape[1]))
-                    roll_arr[:avg_num-(index+1),:] = self.before_tasks[k][(index+1)-avg_num:,:]
-                    roll_arr[avg_num-(index+1):,:] = self.current_tasks[k][:(index+1)]
+                    if self.before_tasks[k].shape[0] < avg_num:
+                        shape1 = self.before_tasks[k].shape[0]
+                        if index > shape1 - 2:
+                            index = shape1 - 2
+                    else:
+                        shape1 = avg_num
+                    roll_arr = np.zeros((shape1, self.current_tasks[k].shape[1]))
+                    roll_arr[:shape1-(index+1),:] = self.before_tasks[k][(index+1)-shape1:,:]
+                    roll_arr[shape1-(index+1):,:] = self.current_tasks[k][:(index+1)]
                     self.rolled_averages[k] = np.mean(roll_arr, axis=0)
             
             
@@ -140,7 +149,7 @@ fconv_field = domain.new_field()
 fconv_integ_field = domain.new_field()
 
 bases_names = ['z',]
-fields = ['T', 'T_z', 'bruntN2', 'bruntN2_structure', 'F_rad', 'F_conv', 'T_rad_z', 'T_rad_z_IH', 'advection', 'vel_rms', 'effective_heating', 'T1', 'T1_z', 'heat_fluc_rad', 'heat_fluc_conv', 'T1_fluc', 'enstrophy']
+fields = ['T', 'T_z', 'bruntN2', 'bruntN2_structure', 'F_rad', 'F_conv', 'T_rad_z', 'T_rad_z_IH', 'advection', 'vel_rms', 'effective_heating', 'T1', 'T1_z', 'heat_fluc_rad', 'heat_fluc_conv', 'T1_fluc', 'enstrophy', 'F_KE_p']
 if not plotter.idle:
     init_fields = ['T_rad_z', 'T_rad_z_IH', 'F_rad', 'T', 'T_ad_z', 'flux_of_z', 'T_z']
     plotterOne.set_read_fields(bases_names, init_fields)
@@ -217,15 +226,30 @@ if not plotter.idle:
             L_d05 = departures[1]
             L_d09 = departures[2]
 
+            #dissipation theory stuff
+            F_KE_p = roller.rolled_averages['F_KE_p'] # w * (p + u^2 / 2) 
+            flux_func = interp1d(z, F_KE_p)
+            z1 = 0
+            try:
+                z2 = brentq(flux_func, 0.05, 0.9)
+            except:
+                z2 = z1
+            try:
+                z3 = z[np.abs(F_KE_p/F_KE_p.max()) > 1e-2][-1]
+            except:
+                z3 = z.max()
+
             enstrophy_full_domain = enstrophy_integ_field.interpolate(z=Lz)['g'].min() / Lz
             enstrophy_full_cz     = enstrophy_integ_field.interpolate(z=L_d09)['g'].min() / L_d09
             enstrophy_below_Ls    = enstrophy_integ_field.interpolate(z=Ls)['g'].min() / Ls
+            enstrophy_theory_cz   = (Ls*enstrophy_below_Ls) - enstrophy_integ_field.interpolate(z=z2)['g'].min()
             vel_full_domain = vel_integ_field.interpolate(z=Lz)['g'].min() / Lz
             vel_full_cz     = vel_integ_field.interpolate(z=L_d09)['g'].min() / L_d09
             vel_below_Ls    = vel_integ_field.interpolate(z=Ls)['g'].min() / Ls
             fconv_full_domain = fconv_integ_field.interpolate(z=Lz)['g'].min() / Lz
             fconv_full_cz     = fconv_integ_field.interpolate(z=L_d09)['g'].min() / L_d09
             fconv_below_Ls    = fconv_integ_field.interpolate(z=Ls)['g'].min() / Ls
+            fconv_theory_cz   = (Ls*fconv_below_Ls) - fconv_integ_field.interpolate(z=z2)['g'].min()
 
             grad_above05 = grad_integ_field.interpolate(z=L_d05)['g'].min() - grad_integ_field.interpolate(z=Lz)['g'].min()
             grad_rad_above05 = grad_rad_integ_field.interpolate(z=L_d05)['g'].min() - grad_rad_integ_field.interpolate(z=Lz)['g'].min()
@@ -237,6 +261,7 @@ if not plotter.idle:
             data_list += [vel_full_domain, vel_full_cz, vel_below_Ls]
             data_list += [fconv_full_domain, fconv_full_cz, fconv_below_Ls]
             data_list += [grad_above05, grad_rad_above05]
+            data_list += [enstrophy_theory_cz, fconv_theory_cz, z1, z2, z3]
             data_cube.append(data_list)
 
             ax1.plot(z, roller.rolled_averages['bruntN2'],             c='k', label=r'$N^2$')
@@ -292,6 +317,7 @@ else:
 plotter.reader.comm.Allreduce(MPI.IN_PLACE, buffer, op=MPI.MAX)
 num_fields = buffer[0]
 
+
 global_data = np.zeros((int(global_max_write - global_min_write + 1), num_fields))
 if not plotter.idle:
     write_nums -= int(global_min_write)
@@ -313,6 +339,11 @@ fconv_cz   = global_data[:,12]
 fconv_Ls   = global_data[:,13]
 grad_above = global_data[:,14]
 grad_rad_above = global_data[:,15]
+enstrophy_theory_cz = global_data[:,16]
+fconv_theory_cz = global_data[:,17]
+z1 = global_data[:,18]
+z2 = global_data[:,19]
+z3 = global_data[:,20]
 
 if plotter.reader.comm.rank == 0:
     fig = plt.figure()
@@ -348,16 +379,41 @@ if plotter.reader.comm.rank == 0:
     plt.ylabel(r'Avg grad above')
     fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'avg_grad_above'), dpi=400, bbox_inches='tight')
 
-    fig = plt.figure()
+#    fig = plt.figure()
     f_theory_enstrophy = (1/Re_in)*(L_d09s) * enstrophy_cz / (Ls * fconv_Ls)
     f_theory_flux = (fconv_cz / fconv_Ls) * ( L_d09s/Ls )
-    plt.plot(times, f_theory_enstrophy, c='k', label='enstrophy')
-    plt.plot(times, f_theory_flux, c='r', label='flux')
-    plt.ylim(0.5, 1)
+#    plt.plot(times, f_theory_enstrophy, c='k', label='enstrophy')
+#    plt.plot(times, f_theory_flux, c='r', label='flux')
+#    plt.ylim(0.5, 1)
+#    plt.legend(loc='best')
+#    plt.xlabel('time')
+#    plt.ylabel(r'$f$ from theory')
+#    fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'theory_f_o'), dpi=400, bbox_inches='tight')
+
+    fig = plt.figure()
+    f_theory_cz = (1/Re_in) * enstrophy_theory_cz / fconv_theory_cz
+    f_theory_full = (1/Re_in) * enstrophy_Ls / fconv_Ls
+    plt.plot(times, f_theory_cz, c='k', label='z2-Ls')
+    plt.plot(times, f_theory_full, c='r', label='z1-Ls')
     plt.legend(loc='best')
+    plt.ylim(0, 1)
     plt.xlabel('time')
     plt.ylabel(r'$f$ from theory')
     fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'theory_f'), dpi=400, bbox_inches='tight')
+
+    fig = plt.figure()
+    plt.plot(times, z1, c='k', label='z1')
+    plt.plot(times, z2, c='r', label='z2')
+    plt.plot(times, z3, c='b', label='z3')
+    plt.ylim(0, 2)
+    plt.legend(loc='best')
+    plt.xlabel('time')
+    plt.ylabel(r'zs from theory')
+    fig.savefig('{:s}/{:s}.png'.format(plotter.out_dir, 'theory_zs'), dpi=400, bbox_inches='tight')
+
+
+
+
 
 
 
@@ -380,7 +436,13 @@ if plotter.reader.comm.rank == 0:
         f['grad_rad_above'] = grad_rad_above 
         f['f_theory_enstrophy'] = f_theory_enstrophy
         f['f_theory_flux'] = f_theory_flux
+        f['f_theory_cz'] = f_theory_cz
+        f['enstrophy_theory_cz'] = enstrophy_theory_cz
+        f['fconv_theory_cz'] = fconv_theory_cz
         f['Ls'] = Ls
+        f['z1'] = z1
+        f['z2'] = z2
+        f['z3'] = z3
         f['Lz'] = Lz
         f['Re_in'] = Re_in
 
