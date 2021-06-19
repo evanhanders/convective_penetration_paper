@@ -9,8 +9,10 @@ plt.style.use('apj')
 
 
 # Get data from files
-dynamics_file = 'turbulence_slices/erf_step_3D_Re3.2e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer200_256x256x256_predictive0.46/slices/slices_s5.h5'
-profile_file = 'turbulence_slices/erf_step_3D_Re3.2e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer200_256x256x256_predictive0.46/profiles/profiles_s5.h5'
+dynamics_file = 'turbulence_slices/erf_step_3D_Re6.4e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer100_384x384x384/slices_s8.h5'
+profile_file  = 'turbulence_slices/erf_step_3D_Re6.4e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer100_384x384x384/profiles_s8.h5'
+#dynamics_file = 'turbulence_slices/erf_step_3D_Re3.2e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer200_256x256x256_predictive0.46/slices/slices_s5.h5'
+#profile_file = 'turbulence_slices/erf_step_3D_Re3.2e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer200_256x256x256_predictive0.46/profiles/profiles_s5.h5'
 
 with h5py.File(profile_file, 'r') as f:
     z = f['scales/z/1.0'][()].squeeze()
@@ -42,7 +44,7 @@ caxs = [fig.add_axes(spec) for spec in cax_specs]
 
 Lz = 2
 Lx = Ly = 2*Lz
-nx = ny = nz = 256
+nx = ny = nz = 384
 
 # Dedalus domain for interpolation
 x_basis = de.Fourier('x',   nx, interval=[0, Lx], dealias=1)
@@ -55,24 +57,31 @@ hires_scales = 4
 horiz_field = horiz_domain.new_field()
 vert_field  = vert_domain.new_field()
 
-zz_tb, xx_tb = np.meshgrid(vert_domain.grid(-1, scales=hires_scales), vert_domain.grid(0, scales=hires_scales))
-yy_mid, xx_mid = np.meshgrid(horiz_domain.grid(-1, scales=hires_scales), horiz_domain.grid(0, scales=hires_scales))
 
-plot_ind = 16
+#x_shift = 1
+x = vert_domain.grid(0, scales=hires_scales)
+#x -= x_shift
+#x[x < 0] += Lx
+
+zz_tb, xx_tb = np.meshgrid(vert_domain.grid(-1, scales=hires_scales), x)
+
+
+
+plot_ind = -2
 with h5py.File(dynamics_file, 'r') as f:
     #Temp plots
     vert_field['g'] = f['tasks']['T1_y_mid'][plot_ind,:].squeeze()
     vert_field['g'] -= mean_T1
     vert_field['g'] /= T1_fluc 
     vert_field.set_scales(hires_scales, keep_data=True)
-    T_cbar_scale = np.max(np.abs(vert_field['g']))/7
+    T_cbar_scale = np.max(np.abs(vert_field['g']))/3
     pT = axs[1].pcolormesh(xx_tb,  zz_tb,  np.copy(vert_field['g']),  cmap='RdBu_r', rasterized=True, shading="nearest", vmin=-T_cbar_scale, vmax=T_cbar_scale)
     vert_field.set_scales(1)
 
     #Vel plots
     vert_field['g'] = f['tasks']['w_y_mid'][plot_ind,:].squeeze()
     vert_field.set_scales(hires_scales, keep_data=True)
-    w_cbar_scale = np.max(np.abs(vert_field['g']))
+    w_cbar_scale = np.max(np.abs(vert_field['g']))/1.5
     pW = axs[0].pcolormesh(xx_tb,  zz_tb,  np.copy(vert_field['g']),  cmap='PuOr_r', rasterized=True, shading="nearest", vmin=-w_cbar_scale, vmax=w_cbar_scale)
     vert_field.set_scales(1)
 
