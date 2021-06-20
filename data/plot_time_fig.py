@@ -14,7 +14,10 @@ col_width = 3.25
 golden_ratio = 1.61803398875
 
 dirs = ["erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild/",
-        "erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart"]
+        "erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart",
+        "erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart2",
+        "erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart3",
+        "erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart4"]
 
 fig = plt.figure(figsize=(2*col_width, col_width/golden_ratio))
 ax1 = fig.add_axes([0,    0.67, 0.45, 0.33])
@@ -49,6 +52,7 @@ grad_above = []
 grad_rad_above = []
 theory_f_enstrophy = []
 theory_f_flux = []
+enstrophy_Ls_cz = []
 grad = []
 prof_times = []
 for i, d in enumerate(dirs):
@@ -66,6 +70,7 @@ for i, d in enumerate(dirs):
         theory_f_enstrophy.append(f['f_theory_enstrophy'][()][skip_points:])
         theory_f_flux.append(f['f_theory_flux'][()][skip_points:])
         Ls = f['Ls'][()]
+        enstrophy_Ls_cz.append(f['enstrophy_Ls'][()][skip_points:])
     with h5py.File('{:s}/avg_profs/averaged_avg_profs.h5'.format(d), 'r') as f:
         z = f['z'][()]
         grad_ad = -f['T_ad_z'][()][0,:].squeeze()
@@ -87,16 +92,17 @@ grad           = np.array(np.concatenate(grad, axis=0))
 prof_times     = np.array(np.concatenate(prof_times))
 theory_f_enstrophy     = np.array(np.concatenate(theory_f_enstrophy))
 theory_f_flux          = np.array(np.concatenate(theory_f_flux))
+enstrophy_Ls_cz = np.array(np.concatenate(enstrophy_Ls_cz))
 
 
 f_data = dict()
 f_data['sim_time'] = times
-f_data['f'] = theory_f_enstrophy
+f_data['enstrophy'] = enstrophy_Ls_cz
 f_df = pd.DataFrame(data=f_data)
 rolledf = f_df.rolling(window=50, min_periods=25).mean()
 
-final_f = np.mean(theory_f_enstrophy[-500:])
-error_f = np.abs(1 - rolledf['f']/final_f)
+final_f = np.mean(enstrophy_Ls_cz[-500:])
+error_f = np.abs(1 - rolledf['enstrophy']/final_f)
 time_cross_f = times[error_f < 0.01][0]
 
 delta_d05 = (L_d05s - Ls)/Lcz_norm
@@ -112,9 +118,9 @@ sm = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
 colors = [sm.to_rgba(t) for t in times]
 for i in range(int(len(times)/10)-1):
 #    ax1.plot(times[i*10:(i+1)*10], (L_d01s[i*10:(i+1)*10]-Ls)/Lcz_norm, c=sm.to_rgba(times[int((i+0.5)*10)]))
-    ax1.plot(times[i*10:(i+1)*10]/t_diff, (L_d05s[i*10:(i+1)*10]-Ls)/Lcz_norm, c=sm.to_rgba(times[int((i+0.5)*10)]))
+    ax1.plot(times[i*10:(i+1)*10]/t_diff, L_d05s[i*10:(i+1)*10]-Ls, c=sm.to_rgba(times[int((i+0.5)*10)]))
     ax2.plot(times[i*10:(i+1)*10], ((np.abs(grad_above)-np.abs(grad_rad_above))/np.abs(grad_rad_above))[i*10:(i+1)*10], c=sm.to_rgba(times[int((i+0.5)*10)]))
-    ax3.plot(rolledf['sim_time'][i*10:(i+1)*10], rolledf['f'][i*10:(i+1)*10], c=sm.to_rgba(times[int((i+0.5)*10)]))
+    ax3.plot(rolledf['sim_time'][i*10:(i+1)*10], rolledf['enstrophy'][i*10:(i+1)*10]/Re, c=sm.to_rgba(times[int((i+0.5)*10)]))
 #    ax3.plot(times[i*10:(i+1)*10], theory_f_enstrophy[i*10:(i+1)*10], c=sm.to_rgba(times[int((i+0.5)*10)]))
 ax1.axvline(time_cross_d05/t_diff, color='xkcd:dark grey')
 ax3.axvline(time_cross_f, color='xkcd:dark grey')
@@ -126,9 +132,10 @@ ax1.xaxis.set_label_position('top')
 ax1.xaxis.set_ticks_position('top')
 ax2.set_xticklabels(())
 ax1.set_yticks((0.2, 0.4, 0.6))
-ax1.set_ylabel(r'$\frac{\delta_{0.5}}{\tilde{L_s}}$')
+ax1.set_ylabel(r'$\delta_{0.5}$')
 ax2.set_ylabel(r'$\left\langle\frac{\nabla - \nabla_{\rm{rad}}}{\nabla_{\rm{rad}}}\right\rangle_{\rm{PZ}}$')
-ax3.set_ylabel(r'$\langle f\rangle$')
+ax3.set_ylabel(r'$\langle\frac{\omega^2}{\mathcal{R}}\rangle_{\rm{CZ}}$')
+#ax3.set_ylabel(r'$\mathcal{R}^{-1}\int_0^{L_s}\overline{\omega^2}dz$')
 ax3.set_xlabel('simulation time (freefall units)')
 ax1.set_xlabel('simulation time (diffusion units)')
 

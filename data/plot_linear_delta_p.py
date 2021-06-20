@@ -8,6 +8,7 @@ col_width = 3.25
 golden_ratio = 1.61803398875
 
 dirs = glob.glob('linear*/lin*/')
+dirs += glob.glob('new_linear*/lin*/')
 
 data = []
 for d in dirs:
@@ -27,6 +28,8 @@ for d in dirs:
         mean_enstrophy_f = np.mean(enstrophy_f[good_times])
     S = float(d.split('_S')[-1].split('_')[0])
     P = float(d.split('_Pr')[0].split('_P')[-1].split('_')[0])
+    if 'new_linear' not in d and P >= 1:
+        continue
     Re = float(d.split('_Re')[-1].split('_')[0])
     Lz = float(d.split('_Lz')[-1].split('_')[0])
     if '3D' in d:
@@ -60,20 +63,23 @@ Lz = data[:,9]
 erf = data[:,10]
 ae = data[:,11]
 
-Lcz_norm = Ls - 0.2 #account for flux change at base of CZ.
 theory   = np.sqrt(P*(1 - enstrophy_f))
-
-line_P = np.logspace(-2, 2, 100)
-approx_f = 0.925
-line_theory = np.sqrt(line_P*(1-approx_f))
 
 plt.figure(figsize=(col_width, col_width/golden_ratio))
 good = (erf == 0)
-plt.scatter(P[good], (L_d09[good] - Ls[good])/Lcz_norm[good], c='k', label=r"$\delta_{0.9}$", zorder=1, marker='v')
-plt.scatter(P[good], (L_d05[good] - Ls[good])/Lcz_norm[good], c='k', label=r"$\delta_{0.5}$", zorder=1, marker='o')
-plt.scatter(P[good], (L_d01[good] - Ls[good])/Lcz_norm[good], c='k', label=r"$\delta_{0.1}$", zorder=1, marker='^')
+plt.scatter(P[good], (L_d09[good] - Ls[good]), c='k', label=r"$\delta_{0.9}$", zorder=1, marker='v')
+plt.scatter(P[good], (L_d05[good] - Ls[good]), c='k', label=r"$\delta_{0.5}$", zorder=1, marker='o')
+plt.scatter(P[good], (L_d01[good] - Ls[good]), c='k', label=r"$\delta_{0.1}$", zorder=1, marker='^')
 #plt.scatter(P[good], theory[good], c='orange', label=r'$\sqrt{\mathcal{P}(1 - \langle f \rangle)}$', marker='x')
-plt.plot(line_P, line_theory, c='orange', zorder=0, label='theory')
+line_P = np.logspace(-2, 2, 100)
+for i, approx_f, approx_Lcz in zip([0, 1], [0.72, 0.62], [0.7, 0.7]):
+    xi = (approx_f/4)*np.sqrt(line_P/(1-approx_f))
+    line_theory = approx_Lcz*np.sqrt(line_P*(1-approx_f)) * (np.sqrt(1 + xi**2) - xi)
+    if i == 0:
+        plt.plot(line_P, line_theory, c='orange', label=r'theory'.format(approx_f), zorder=0)
+    else:
+        plt.plot(line_P, line_theory, c='orange', zorder=0)
+
 plt.xscale('log')
 plt.yscale('log')
 
@@ -82,7 +88,7 @@ plt.yscale('log')
 #plt.plot(x, y1, c='orange', label=r'Theory$\,\,(0.25 \mathcal{P}_L^{1/2})$')
 plt.legend(frameon=True, fontsize=8, loc='upper left')
 plt.xlabel('$\mathcal{P}_L$')
-plt.ylabel(r'$\delta_p/\tilde{L_s}$')
+plt.ylabel(r'$\delta_p$')
 plt.xlim(8e-3, 2e1)
 
 plt.savefig('linear_3D_penetration_depths.png', dpi=300, bbox_inches='tight')

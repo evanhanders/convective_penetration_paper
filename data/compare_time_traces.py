@@ -36,7 +36,7 @@ for i, d in enumerate(dirs):
         L_d01s = f['L_d01s'][()]
         L_d05s = f['L_d05s'][()]
         L_d09s = f['L_d09s'][()]
-        f_theory_enstrophy = f['f_theory_enstrophy'][()]
+        f_theory_cz = f['f_theory_cz'][()]
 
     if 'predictive' in d:
         label = d.split('predictive')[-1].split('/')[0]
@@ -46,8 +46,8 @@ for i, d in enumerate(dirs):
     ax1.plot(times, L_d05s, c=colors[i])
     ax1.plot(times, L_d09s, c=colors[i])
 
-    ax2.plot(times, f_theory_enstrophy, c=colors[i])
-ax2.set_ylim(0.75, 0.95)
+    ax2.plot(times, f_theory_cz, c=colors[i])
+ax2.set_ylim(0.4, 1)
 ax1.legend()
 
 for d in dirs:
