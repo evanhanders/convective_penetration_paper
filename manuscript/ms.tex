@@ -52,7 +52,7 @@
 \begin{document}
 
 %%%% Title and Abstract
-\title{Convective penetration is set by the flux and dissipation, not the stiffness}
+\title{Convective penetration probably parameterizes convective overshoot}
 \author[0000-0002-3433-4733]{Evan H. Anders}
 \affiliation{CIERA, Northwestern University, Evanston IL 60201, USA}
 \author[0000-0001-5048-9973]{Adam S. Jermyn}
@@ -142,7 +142,7 @@ Finally, we discuss how future simulations can put finer constraints on this the
 \section{Theory}
 \label{sec:theory}
 
-\subsection{Equations}
+\subsection{Equations \& flux definitions}
 \label{sec:theory_equations}
 Throughout this work, we will utilize a modified version of the incompressible Boussinesq equations of motion,
 \begin{align}
@@ -163,81 +163,128 @@ The equations we use are similar to those derived by \citet{spiegel_veronis_1960
 The classic thermal diffusion term $\chi \grad^2 T'$ therefore carries no average flux and acts only on the fluctuations away from the mean temperature profile, $T' \equiv T - \overline{T}$; throughout this work, we will represent horizontal averages with bars ($\overline{\,\cdot\,}$) and fluctuations away from those averages with primes ($'$).
 Finally, we will assume a model in which an unstable convection zone sits below a stable radiative zone, but the same logic applies to the inverted problem.
 
-\subsection{Kinetic energy \& the dissipation-flux link}
-\label{sec:theory_energy}
-Taking an inner product of the velocity and Eqn.~\ref{eqn:momentum} reveals the kinetic energy equation,
-\begin{equation}
-\frac{\partial}{\partial t}\left(\frac{|\vec{u}|^2}{2}\right) 
-+ \grad\dot\left[\vec{u}\left(\frac{|\vec{u}|^2}{2} + \frac{p}{\rho_0}\right) - \nu\vec{u}\cross\vec{\omega}\right]
-= |\alpha| g w T - \nu|\vec{\omega}|^2,
-\label{eqn:kinetic_energy}
-\end{equation}
-where $\vec{\omega} = \grad\cross\vec{u}$ is the vorticity and $|\vec{u}|^2 = \vec{u}\dot\vec{u}$ \& $|\vec{\omega}|^2 = \vec{\omega}\dot\vec{\omega}$.
-Assuming a statistically stationary state, and assuming that the kinetic energy fluxes vanishes at the upper and lower boundaries of the convection zone, this equation permits one solution: \citet{roxburgh1989}'s integral constraint,
-\begin{equation}
-|\alpha| g \angles{\Fconv} = \nu\angles{|\vec{\omega}|^2},
-\label{eqn:ke_averages}
-\end{equation}
-where $\Fconv = w T$ and angles $\angles{\,\cdot\,}$ represent a time- and volume- average.
-It may seem counterintuitive to find that the viscous energy dissipation term $\nu\angles{|\vec{\omega}|^2}$ operates on the same order of magnitude as the convective flux.
-However, Eqn.~\ref{eqn:ke_averages} is a statement of a balance between buoyant injection of energy into the system on large scales and dissipation on small scales.
-Dimensionally, the viscous dissipation term is $\nu u^2 / \ell^2$, where $u$ is the average convective velocity and $\ell$ is the length scale of velocity gradients on the dissipation scale, and it is reasonable to assume that $\ell^2 \propto \nu$ leading to an appreciable dissipation even at very small $\nu$.
-\citet{currie_browning_2017} demonstrated that even in appreciably density-stratified atmospheres, the magnitude of viscous dissipation remains large for turbulent flows, so the importance of $\nu |\vec{\omega}^2|$ is perhaps not too surprising.
-
-We now decompose the convection zone into a zone which is classically unstable according to the Schwarzschild criterion (called the CZ, with depth $L_s$) and a dynamically distinct penetrative zone (called the PZ, with depth $\delp$).
-Following Eqn.~\ref{eqn:ke_averages}, we write
-\begin{equation}
-\frac{1}{L_s + \delp}\left(\int_{\rm{CZ}} \bar{\Fconv} dz + \int_{\rm{PZ}} \bar{\Fconv} dz \right) = \frac{\nu}{|\alpha| g} \angles{|\vec{\omega}|^2}.
-\label{eqn:flux_breakup}
-\end{equation}
-Rearranging, we retrieve 
-\begin{equation}
-\frac{\int_{\rm{PZ}}\bar{\Fconv}\,dz}{\int_{\rm{CZ}}\bar{\Fconv}\,dz} = -(1 - f),
-\qquad\rm{with}\qquad
-f \equiv \frac{(L_s + \delp)}{|\alpha| g} \frac{\nu\angles{|\vec{\omega}|^2}}{\int_{\rm{CZ}} \bar{\Fconv} dz}
-= \frac{\int_{\rm{CZ+PZ}}\bar{\Fconv}\,dz}{\int_{\rm{CZ}}\bar{\Fconv}\,dz},
-\label{eqn:preliminary_flux_ratio}
-\end{equation}
-where the final equality is a tautological rearrangement of the decomposition of the flux integral in Eqn.~\ref{eqn:flux_breakup}.
-The upshot of this equation is that, if the convective dissipation $f$ is known, the size of the penetrative zone can be immediately found from simple flux arguments.
-We theorize that $f$ is some constant which weakly depends upon things like the turbulence of the flows, the stiffness of the radiative-convective interface, etc.
-If this is the case, Eqn.~\ref{eqn:preliminary_flux_ratio} represents a simple parameterization of the nature of the penetrative zone in terms of the convection zone.
-In order to derive a specific penetration depth $\delp$, we must turn to a more in-depth examination of the fluxes in the PZ.
-
-
-\subsection{A flux-based penetration argument}
-\citet{zahn1991} and Eqn.~\ref{eqn:preliminary_flux_ratio} suggest that the size of the convection zone is determined by the horizontally-averaged energy fluxes.
 Assuming convection reaches a time-stationary state, we horizontally-average and vertically integrate Eqn.~\ref{eqn:temperature} to find
 \begin{equation}
 \overline{\Ftot} = \overline{\Frad} + \overline{\Fconv} = \int Q dz + \Fbot,
+\label{eqn:flux_definition}
 \end{equation}
 where $\Fbot$ is the flux carried at the base of the convection zone, and $\overline{\Ftot}$ is the total flux, which can vary in height due to the heating $Q$.
-We next assume that convection penetrates some distance $\delp$ above the Schwarzschild boundary of the convection zone at $z = L_s$ and mixes the temperature gradient to the adiabatic in the PZ.
-This assumption specifies the radiative flux in the PZ ($\bar{\Frad} = k\gradad$) which in turn specifies the convective flux.
-Defining the radiative gradient $\gradrad = \Ftot/k$, we can write the PZ convective flux
+We note that $k$ and the temperature gradient $\justgrad \equiv -\partial_z \bar{T}$ fully specify $\Frad$ and in turn the convective flux, $\bar{\Fconv} = \bar{\Ftot} - \bar{\Frad}$.
+We define the radiative gradient 
 \begin{equation}
-\overline{\Fconv}|_{\rm{PZ}} = \Ftot - \overline{\Frad} = k(\gradrad - \gradad).
-\label{eqn:fconv_pz}
+\gradrad = \frac{\bar{\Ftot}}{k}
+\label{eqn:gradrad_definition}
 \end{equation}
-Within the penetrative region, $\gradad > \gradrad$, so Eqn.~\ref{eqn:fconv_pz} requires $\overline{\Fconv}|_{\rm{PZ}} < 0$.
+and note that the classical Schwarzschild boundary of the convection zone is the height $z = L_s$ at which $\gradrad = \gradad$ and $\bar{\Fconv} = 0$.
 
-With the knowledge that $\bar{\Fconv}$ is negative in the PZ, we rewrite Eqn.~\ref{eqn:preliminary_flux_ratio}
+\subsection{Kinetic energy \& the dissipation-flux link}
+\label{sec:theory_energy}
+\begin{figure}[t!]
+\centering
+\includegraphics[width=\textwidth]{theory_profiles.pdf}
+\caption{
+(left) The vertical profile of the kinetic energy fluxes $\mathcal{F}$.
+This profile goes to zero at the bottom boundary, again at the dashed line, and at the top of the PZ near $z \approx 1.5$; Eqn.~\ref{eqn:integral_constraint} holds between any two of these points.
+(middle) the evolved value of $\justgrad$ (green) compared to $\gradad$ (grey) and $\gradrad$ (red); note the extended penetration zone where $\justgrad \approx \gradad > \gradrad$.
+(right) Source terms from Eqn.~\ref{eqn:kinetic_energy_1D} normalized by the maximum of $\overline{\mathcal{B}}$.
+\label{fig:theory_profiles}
+}
+\end{figure}
+
+Taking an inner product of the velocity and Eqn.~\ref{eqn:momentum} reveals the kinetic energy equation,
 \begin{equation}
-\frac{|\int_{\rm{PZ}}\bar{\Fconv}\,dz|}{\int_{\rm{CZ}}\bar{\Fconv}\,dz} = (1 - f),
+\frac{\partial \mathcal{K}}{\partial t}
++ \grad\dot\mathcal{F}
+= \mathcal{B} - \Phi,
+%\frac{\partial}{\partial t}\left(\frac{|\vec{u}|^2}{2}\right) 
+%+ \grad\dot\left[\vec{u}\left(\frac{|\vec{u}|^2}{2} + \frac{p}{\rho_0}\right) - \nu\vec{u}\cross\vec{\omega}\right]
+%= |\alpha| g w T - \nu|\vec{\omega}|^2,
+\label{eqn:kinetic_energy}
+\end{equation}
+where we define the kinetic energy $\mathcal{K} \equiv |\vec{u}|^2/2$, the fluxes of kinetic energy $\mathcal{F} \equiv \left[\vec{u}(\mathcal{K} + p/\rho_0) - \nu\vec{u}\cross\vec{\omega} \right]$, the buoyant energy generation rate $\mathcal{B} \equiv |\alpha| g w T'$, and the viscous dissipation rate $\Phi \equiv \nu |\vec{\omega}|^2$ where $\vec{\omega} = \grad\cross\vec{u}$ is the vorticity and $|\vec{u}|^2 = \vec{u}\dot\vec{u}$ \& $|\vec{\omega}|^2 = \vec{\omega}\dot\vec{\omega}$.
+We next take a horizontal- and time-average of Eqn.~\ref{eqn:kinetic_energy} (which we will represent with $\bar{\,\cdot\,}$ for simplicity).
+Assuming that $\bar{\mathcal{K}}$ reaches a statistically stationary state, convective motions satisfy
+\begin{equation}
+\frac{d\bar{\mathcal{F}}}{dz} = \bar{\mathcal{B}} - \bar{\Phi}.
+\label{eqn:kinetic_energy_1D}
+\end{equation}
+It is reasonable to assume that $\mathcal{F}$ is zero at the boundaries of the convecting region (see Fig.~\ref{fig:theory_profiles}, left panel).
+We integrate Eqn.~\ref{eqn:kinetic_energy_1D} vertically between these zeros of the flux to find
+\begin{equation}
+\int \bar{\mathcal{B}}\,dz = \int \bar{\Phi}\,dz.
+\label{eqn:integral_constraint}
+\end{equation}
+Eqn.~\ref{eqn:integral_constraint} is the simple expression of \citet{roxburgh1989}'s integral constraint (is it?), and is the straightforward statement that work by buoyancy in the convection zone on large scales must be balanced by viscous dissipation on small scales.
+We now find it instructive to break up the convecting region into a classical ``convection zone'' (CZ) and a extended ``penetration zone'' (PZ); we will assume that convective motions are efficient in each of these zones so that $\justgrad = \gradad$ in both the CZ and PZ.
+We furthermore note that the buoyant energy generation is directly proportional to the convective flux, $\bar{\mathcal{B}} = |\alpha|g\bar{w T'} = |\alpha| g \bar{\Fconv}$.
+Thus, in the PZ where $\gradad > \gradrad$, we know that $\bar{\Fconv} < 0$ and so $\bar{\mathcal{B}} < 0$ too.
+Breaking up Eqn.~\ref{eqn:integral_constraint}, we see that
+\begin{equation}
+\int_{\rm{CZ}} \bar{\mathcal{B}}\,dz \qquad=\qquad
+\int_{\rm{CZ}} \bar{\Phi}\,dz + \int_{\rm{PZ}} \bar{\Phi}\,dz + \int_{\rm{PZ}}(-\bar{\mathcal{B}})\,dz.
+\label{eqn:constraint_cz_pz_split}
+\end{equation}
+Eqn.~\ref{eqn:constraint_cz_pz_split} is thus arranged so that the (positive) buoyant engine of convection is on the left-hand side, and the (positive) sinks of energy are on the RHS.
+We see that the size of the PZ is set by some combination of buoyancy breaking and viscous dissipation, whose total effect cancels out any remaining work that dissipation in the convection zone did not itself cancel.
+we now find it instructive to define the fraction of the buoyant engine consumed by dissipation in the convection zone
+\begin{equation}
+f \equiv \frac{\int_{\rm{CZ}} \bar{\Phi}\,dz}{\int_{\rm{CZ}}\bar{\mathcal{B}}\,dz},
+\label{eqn:f_defn}
+\end{equation}
+and note two interesting limits,
+\begin{enumerate}
+\item In the limit that $f \rightarrow 0$, viscous dissipation is extremely inefficient.
+It is probably also reasonable to assume that $\int_{\rm{PZ}}\bar{\Phi}\,dz \rightarrow 0$, and so Eqn.~\ref{eqn:constraint_cz_pz_split} states that the PZ must be large enough to cancel out all of the buoyant work done by convection in the CZ by buoyancy breaking in the PZ.
+This is the integral constraint on the maximum size of the PZ that \citet{roxburgh1989} derived.
+\item In the limit that $f \rightarrow 1$, viscous dissipation is extremely efficient in the convection zone and cancels out all of the work done by buoyancy.
+This is the case in standard Rayleigh-B\'{e}nard convection when the convection is contained between two hard plates.
+Per Eqn.~\ref{eqn:constraint_cz_pz_split}, the positive definite PZ terms must approach zero and no PZ develops in this limit.
+\end{enumerate}
+In general, we anticipate from the results of e.g., \citet{currie_browning_2017} that $f$ is closer to 1 than 0, but its precise value must be measured directly from simulations.
+Indeed, we find that $f \gg 0$ but $f < 1$ in our simulations (see Fig.~\ref{fig:theory_profiles}, right panel).
+
+In order to say more about the size of the penetration layer, we model $\bar{\Phi}$ as a linearly decreasing function of height in the PZ.
+We sets its value at the top of the PZ equal to the average of $\bar{\Phi}$ in the CZ of depth $L_{\rm{CZ}}$ so that $\int_{\rm{PZ}} \bar{\Phi}\,dz = (\delp/[2 L_{\rm{CZ}}])\int_{\rm{CZ}}\bar{\Phi}\,dz$ where $\delp$ is the penetration zone depth.
+Rearranging Eqn.~\ref{eqn:constraint_cz_pz_split} and dividing by $\int_{\rm{CZ}} \bar{\mathcal{B}}\,dz$, and plugging in $\bar{\mathcal{B}} = |\alpha|g\bar{\Fconv}$, we can write
+\begin{equation}
+-\frac{\int_{\rm{PZ}}\bar{\Fconv}\,dz}{\int_{\rm{CZ}}\bar{\Fconv}\,dz} + f\frac{\delp}{2 L_{\rm{CZ}}}
+\approx (1 - f).
 \label{eqn:theory_fraction}
 \end{equation}
-and note that $f \leq 1$ by its tautological flux-based definition assuming $\delp \geq 0$.
-While we have arrived at Eqn.~\ref{eqn:theory_fraction} in a very different manner, this equation represents the central result of \citet{zahn1991}'s theory: the ratio of the vertically integrated convective fluxes in the PZ and CZ is directly linked to some constant which relates to the convective dynamics.
-More importantly, if $\bar{\Fconv}$, and $f$ are known, this ratio directly sets the size of the PZ.
-
 In order to derive a specific prediction for the PZ depth, it is necessary to specify the vertical shape of $\overline{\Fconv}$.
 We will study two cases in this work, laid out below.
-In both of these cases, we will define a nondimensional ``Penetration Parameter,''
+In both of these cases, we will define a nondimensional ``Penetration Parameter'' whose magnitude is set by the ratio of the convective flux some equidistant length $\epsilon$ both above and below the Schwarzschild convective boundary $L_s$ (assuming the region above the boundary is an adiabatic penetrative zone),
 \begin{equation}
 \mP \equiv -\frac{\overline{\Fconv}(z = L_s - \epsilon)}{\overline{\Fconv}(z = L_s + \epsilon)}.
 \label{eqn:theory_P_defn}
 \end{equation}
-Following Eqn.~\ref{eqn:fconv_pz}, the sign of $\mP$ is positive and its magnitude is set by the ratio of the convective flux some equidistant length $\epsilon$ both above and below the Schwarzschild convective boundary $L_s$ (assuming the region above the boundary is an adiabatic penetrative zone).
+Since $\Fconv < 0$ in the PZ, the sign of $\mP$ is positive.
+
+%where $\Fconv = w T$ and angles $\angles{\,\cdot\,}$ represent a time- and volume- average.
+%It may seem counterintuitive to find that the viscous energy dissipation term $\nu\angles{|\vec{\omega}|^2}$ operates on the same order of magnitude as the convective flux.
+%However, Eqn.~\ref{eqn:ke_averages} is a statement of a balance between buoyant injection of energy into the system on large scales and dissipation on small scales.
+%Dimensionally, the viscous dissipation term is $\nu u^2 / \ell^2$, where $u$ is the average convective velocity and $\ell$ is the length scale of velocity gradients on the dissipation scale, and it is reasonable to assume that $\ell^2 \propto \nu$ leading to an appreciable dissipation even at very small $\nu$.
+%\citet{currie_browning_2017} demonstrated that even in appreciably density-stratified atmospheres, the magnitude of viscous dissipation remains large for turbulent flows, so the importance of $\nu |\vec{\omega}^2|$ is perhaps not too surprising.
+%
+%We now decompose the convection zone into a zone which is classically unstable according to the Schwarzschild criterion (called the CZ, with depth $L_s$) and a dynamically distinct penetrative zone (called the PZ, with depth $\delp$).
+%Following Eqn.~\ref{eqn:ke_averages}, we write
+%\begin{equation}
+%\frac{1}{L_s + \delp}\left(\int_{\rm{CZ}} \bar{\Fconv} dz + \int_{\rm{PZ}} \bar{\Fconv} dz \right) = \frac{\nu}{|\alpha| g} \angles{|\vec{\omega}|^2}.
+%\label{eqn:flux_breakup}
+%\end{equation}
+%Rearranging, we retrieve 
+%\begin{equation}
+%\frac{\int_{\rm{PZ}}\bar{\Fconv}\,dz}{\int_{\rm{CZ}}\bar{\Fconv}\,dz} = -(1 - f),
+%\qquad\rm{with}\qquad
+%f \equiv \frac{(L_s + \delp)}{|\alpha| g} \frac{\nu\angles{|\vec{\omega}|^2}}{\int_{\rm{CZ}} \bar{\Fconv} dz}
+%= \frac{\int_{\rm{CZ+PZ}}\bar{\Fconv}\,dz}{\int_{\rm{CZ}}\bar{\Fconv}\,dz},
+%\label{eqn:preliminary_flux_ratio}
+%\end{equation}
+%where the final equality is a tautological rearrangement of the decomposition of the flux integral in Eqn.~\ref{eqn:flux_breakup}.
+%The upshot of this equation is that, if the convective dissipation $f$ is known, the size of the penetrative zone can be immediately found from simple flux arguments.
+%We theorize that $f$ is some constant which weakly depends upon things like the turbulence of the flows, the stiffness of the radiative-convective interface, etc.
+%If this is the case, Eqn.~\ref{eqn:preliminary_flux_ratio} represents a simple parameterization of the nature of the penetrative zone in terms of the convection zone.
+%In order to derive a specific penetration depth $\delp$, we must turn to a more in-depth examination of the fluxes in the PZ.
 
 
 \subsubsection{Case I: Discontinuous flux}
@@ -250,13 +297,13 @@ We first consider a model which satisfies
 \end{cases}.
 \end{equation}
 Here, $\Fcz$ is a constant value of flux carried in the convection zone and $\mP_D$ is the penetration parameter (subscript D for discontinuous case).
-Plugging this functional form of the flux into Eqn.~\ref{eqn:theory_fraction}, and integrating the convection zone from $z = 0$ to $z = L_s$ and the penetration zone from $z = L_s$ to $z = L_s + \delp$, we predict
+Plugging this functional form of the flux into Eqn.~\ref{eqn:theory_fraction}, and integrating the CZ over a depth $L_{\rm{CZ}}$ below $L_s$ and the PZ over a depth $\delp$ above $L_s$, we predict
 \begin{equation}
-\frac{\delp}{L_s} = \mP_D (1 - f).
+\frac{\delp}{L_{\rm{CZ}}} \approx \mP_D \frac{1 - f}{1 + \mP_D f / 2}.
 \label{eqn:discontinuous_prediction}
 \end{equation}
-Assuming that $f$ is a weak function of $\mP_D$, we see that the size of the penetration region is linearly proportional to $\mP_D$.
-Intuitively, this result makes sense: as $\mP_D$ grows, the magnitude of $\overline{\Fconv}$ and the breaking force of buoyancy in the PZ shrink, resulting in larger penetrative regions.
+Assuming that $f$ is a weak function of $\mP_D$, we see that the size of the penetration region is roughly linearly proportional to $\mP_D$ at small $\mP_D$, but saturates due to dissipation at large $\mP_D$.
+Intuitively, this result makes sense: as $\mP_D$ grows, the magnitude of $\overline{\Fconv}$ and the breaking force of buoyancy in the PZ shrink, resulting in larger penetrative regions (but this growth cannot extend indefinitely).
 
 \subsubsection{Case II: Piecewise linear flux}
 \label{sec:linear_theory}
@@ -270,16 +317,18 @@ We next assume that $\overline{\Fconv}(z)$ is not discontinuous at the CZ-PZ bou
 \end{cases},
 \end{equation}
 where $(\partial \Frad / \partial z)|_{\rm{CZ}}$ is a constant and $\mP_L$ is the penetration parameter (subscript L for linear case).
-Again, solving Eqn.~\ref{eqn:theory_fraction} with this functional form of the flux, we retrieve
+Again, solving Eqn.~\ref{eqn:theory_fraction} with this functional form of the flux and integrating over $L_{\rm{CZ}}$ in the CZ and $\delp$ in the PZ, we retrieve a quadratic equation.
+This equation has two solution branches, only one of which corresponds to a positive value of $\delp$.
+On that branch, we find
 \begin{equation}
-\frac{\delp}{L_p} = \sqrt{\mP_L (1 - f)}.
+\frac{\delp}{L_p} = \sqrt{\mP_L (1 - f)} \,\,(\sqrt{\xi^2 + 1} - \xi),
 \label{eqn:linear_prediction}
 \end{equation}
-This is strikingly similar to \citet{zahn1991}'s result, whose work corresponds to the case of $\mP_L = 1$.
+where $\xi \equiv (f/4)\sqrt{\mP_L/(1-f)}$.
+So we expect the penetration depth to be roughly proportional to $\sqrt{\mP_L}$ for small values of $\mP_L$, and to again saturate at large values of $\mP_L$. 
 
 In this work, we will test the predictions of Eqns.~\ref{eqn:discontinuous_prediction} and \ref{eqn:linear_prediction}.
 Our goals are to see if the predicted scalings with the penetration parameter $\mP$ are realized in simulations, and to measure the dependence of $f$ on various parameters in local simulations.
-We note that \citet{roxburgh1989}'s constraint puts an upper limit on the penetration depth in the limit that viscous dissipation is negligible ($f = 0$), but in practice we expect $f$ closer to 1.
 
 \section{Simulation Details}
 We nondimensionalize Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq} on the length scale of the Schwarzschild-unstable convection zone $L_s$, the timescale of freefall across that convection zone $\tau_{\rm{ff}}$, and the temperature scale of the internal heating over that freefall time $\Delta T$,
