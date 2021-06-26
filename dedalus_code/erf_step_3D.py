@@ -34,6 +34,8 @@ Options:
     --safety=<s>               CFL safety factor [default: 0.75]
     --mesh=<m>                 Processor distribution mesh (e.g., "4,4")
 
+    --stress_free              Use stress-free upper and lower boundary
+
     --run_time_wall=<time>     Run time, in hours [default: 119.5]
     --run_time_ff=<time>       Run time, in freefall times [default: 1.6e3]
 
@@ -154,10 +156,14 @@ def set_equations(problem):
 
     boundaries = ( (True, " left(T1_z) = 0", "True"),
                    (True, "right(T1) = 0", "True"),
-                   (True, " left(u) = 0", "True"),
-                   (True, "right(u) = 0", "True"),
-                   (True, " left(v) = 0", "True"),
-                   (True, "right(v) = 0", "True"),
+                   (not(args['--stress_free']), " left(u) = 0", "True"),
+                   (not(args['--stress_free']), "right(u) = 0", "True"),
+                   (not(args['--stress_free']), " left(v) = 0", "True"),
+                   (not(args['--stress_free']), "right(v) = 0", "True"),
+                   (args['--stress_free'], " left(ωx) = 0", "True"),
+                   (args['--stress_free'], "right(ωx) = 0", "True"),
+                   (args['--stress_free'], " left(ωy) = 0", "True"),
+                   (args['--stress_free'], "right(ωy) = 0", "True"),
                    (True, " left(w) = 0", kx_n0),
                    (True, "right(w) = 0", kx_n0),
                  )
@@ -227,6 +233,7 @@ def initialize_output(solver, data_dir, mode='overwrite', output_dt=2, iter=np.i
     profiles.add_task("plane_avg(u)", name='u')
     profiles.add_task("plane_avg(w)", name='w')
     profiles.add_task("plane_avg(vel_rms)", name='vel_rms')
+    profiles.add_task("plane_avg(vel_rms**2 / 2)", name='KE')
     profiles.add_task("plane_avg(sqrt((v*ωz - w*ωy)**2 + (u*ωy - v*ωx)**2))", name='advection')
     profiles.add_task("plane_avg(enstrophy)", name="enstrophy")
     profiles.add_task("plane_avg(bruntN2)", name="bruntN2")
@@ -272,6 +279,8 @@ def run_cartesian_instability(args):
     data_dir += "_Re{}_P{}_zeta{}_S{}_Lz{}_Lcz{}_Pr{}_a{}_Titer{}_{}x{}x{}".format(args['--Re'], args['--P'], args['--zeta'], args['--S'], args['--Lz'], args['--L_cz'], args['--Pr'], args['--aspect'], args['--T_iters'], args['--nx'], args['--ny'], args['--nz'])
     if args['--predictive'] is not None:
         data_dir += '_predictive{}'.format(args['--predictive'])
+    if args['--stress_free']:
+        data_dir += '_stressfree'
     if args['--adiabatic_IC']:
         data_dir += '_adiabaticIC'
     if args['--label'] is not None:

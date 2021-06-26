@@ -1,7 +1,7 @@
 """
 Dedalus script for a two-layer, Boussinesq simulation.
 The bottom of the domain is at z = 0.
-The lower part of the domain is stable; the domain is Schwarzschild stable above z >~ L_cz.
+The lower part of the domain is stable; the domain is Schwarzschild stable above z >~ 1.
 
 There are 6 control parameters:
     Re      - The approximate reynolds number = (u / diffusivity) of the evolved flows
@@ -13,8 +13,8 @@ There are 6 control parameters:
     aspect  - The aspect ratio (Lx = aspect * Lz)
 
 Usage:
-    linear_3D.py [options] 
-    linear_3D.py <config> [options] 
+    damping_erf_step_3D.py [options] 
+    damping_erf_step_3D.py <config> [options] 
 
 Options:
     --Re=<Reynolds>            Freefall reynolds number [default: 1e2]
@@ -142,9 +142,9 @@ def set_equations(problem):
                   (True, "True", "ωz - dx(v) + dy(u) = 0"),
                   (True, kx_n0,  "dx(u) + dy(v) + dz(w) = 0"), #Incompressibility
                   (True, kx_0,   "p = 0"), #Incompressibility
-                  (True, "True", "dt(u) + (dy(ωz) - dz(ωy))/Re0  + dx(p)        = v*ωz - w*ωy "), #momentum-x
-                  (True, "True", "dt(v) + (dz(ωx) - dx(ωz))/Re0  + dy(p)        = w*ωx - u*ωz "), #momentum-x
-                  (True, kx_n0,  "dt(w) + (dx(ωy) - dy(ωx))/Re0  + dz(p) - T1   = u*ωy - v*ωx "), #momentum-z
+                  (True, "True", "dt(u) + (dy(ωz) - dz(ωy))/Re0  + dx(p)       = v*ωz - w*ωy - damping * u "), #momentum-x
+                  (True, "True", "dt(v) + (dz(ωx) - dx(ωz))/Re0  + dy(p)       = w*ωx - u*ωz - damping * v "), #momentum-x
+                  (True, kx_n0,  "dt(w) + (dx(ωy) - dy(ωx))/Re0  + dz(p) - T1  = u*ωy - v*ωx - damping * w "), #momentum-z
                   (True, kx_0,   "w = 0"), #momentum-z
                   (True, kx_n0, "dt(T1) - Lap(T1, T1_z)/Pe0  = -UdotGrad(T1, T1_z) - w*(T0_z - T_ad_z)"), #energy eqn
                   (True, kx_0,  "dt(T1) - dz(k0*T1_z)        = -UdotGrad(T1, T1_z) - w*(T0_z - T_ad_z) + (Q + dz(k0)*T0_z + k0*T0_zz)"), #energy eqn
@@ -280,7 +280,7 @@ def run_cartesian_instability(args):
     if args['--predictive'] is not None:
         data_dir += '_predictive{}'.format(args['--predictive'])
     if args['--stress_free']:
-        data_dir += 'stressfree'
+        data_dir += '_stressfree'
     if args['--adiabatic_IC']:
         data_dir += '_adiabaticIC'
     if args['--label'] is not None:
@@ -327,11 +327,13 @@ def run_cartesian_instability(args):
     Fbot = zeta*Fconv
 
     #Model values
-    xi = 1 + P * (1 + zeta)
-    dz_k0 = dH / (L_cz * S * xi)
-    k_bot = dH * zeta / (S * xi)
-    k_ad  = dH * (1 + zeta) / (S * xi)
-    grad_ad = Qmag * S * xi
+    k_rz = dH / (P * S) 
+    k_cz = k_rz * ( zeta / (1 + zeta + invP) )
+    k_ad = k_rz * ( (1 + zeta) / (1 + zeta + invP) )
+    delta_k = k_rz - k_cz
+    grad_ad = (Qmag * S * P) * (1 + zeta + invP)
+    grad_rad_top = (Qmag * S * P) * (1 + zeta)
+    delta_grad = grad_ad - grad_rad_top
 
     #Adjust to account for expected velocities. and larger m = 0 diffusivities.
     Pe0 /= (np.sqrt(Qmag))
@@ -347,7 +349,7 @@ def run_cartesian_instability(args):
     ### 3. Setup Dedalus domain, problem, and substitutions/parameters
     x_basis = de.Fourier('x', nx, interval=(0, Lx), dealias=3/2)
     y_basis = de.Fourier('y', ny, interval=(0, Ly), dealias=3/2)
-    z_basis = de.Chebyshev('z', nz, interval=(0,Lz), dealias=3/2)
+    z_basis = de.Chebyshev('z', nz, interval=(-0.1,Lz), dealias=3/2)
     bases = [x_basis, y_basis, z_basis]
     domain = de.Domain(bases, grid_dtype=np.float64, mesh=mesh)
     reducer = flow_tools.GlobalArrayReducer(domain.distributor.comm_cart)
@@ -369,20 +371,24 @@ def run_cartesian_instability(args):
     Q = domain.new_field()
     flux_of_z = domain.new_field()
     cz_mask = domain.new_field()
-    for f in [T0, T0_z, T_ad_z, k0, k0_z, Q, flux_of_z, T_rad_z0, cz_mask]:
+    damping = domain.new_field()
+    for f in [T0, T0_z, T_ad_z, k0, Q, flux_of_z, T_rad_z0, cz_mask, damping]:
         f.set_scales(domain.dealias)
-    for f in [T_ad_z, k0]:
+    for f in [T_ad_z, k0, damping]:
         f.meta['x', 'y']['constant'] = True
 
     cz_mask['g'] = zero_to_one(z_de, 0.2, width=0.05)*one_to_zero(z_de, L_cz, width=0.05)
 
     delta = 0.02
-    dz_k_func = lambda z: dz_k0 * (1 + (1/P - 1)*zero_to_one(z, L_cz, width=delta))
+    k_shape = lambda z: zero_to_one(z, L_cz, width=0.075)
+    k_func = lambda z: (k_cz + delta_k*k_shape(z))
     Q_func  = lambda z: Qmag*zero_to_one(z, 0.1, delta)*one_to_zero(z, 0.1+dH, delta)
     T_rad_func = lambda flux, k: -flux / k
 
-    k0_z['g'] = dz_k_func(z_de)
-    k0_z.antidifferentiate('z', ('left', k_bot), out=k0)
+    damping['g'] = 10*one_to_zero(z_de, 0.1, width=0.05)
+
+    k0['g'] = k_func(z_de)
+    k0.differentiate('z', out=k0_z)
     Q['g'] = Q_func(z_de)
     Q.antidifferentiate('z', ('left', Fbot), out=flux_of_z)
     flux = flux_of_z.interpolate(z=L_cz)['g'].min()
@@ -390,8 +396,14 @@ def run_cartesian_instability(args):
     T_ad_z['g'] = -grad_ad
     T_rad_z0['g'] = T_rad_func(flux_of_z['g'], k0['g'])
 
-    max_brunt = reducer.global_max(T_rad_z0['g'] - T_ad_z['g'])
-    logger.info("Max brunt T: {:.3e}".format(max_brunt))
+    max_brunt2 = reducer.global_max(T_rad_z0['g'] - T_ad_z['g'])
+    logger.info("Max brunt T: {:.3e}".format(max_brunt2))
+
+    #find match point
+    zs = np.linspace(0, Lz, 1000)
+    kmatch = k_func(zs)
+    Tradmatch = T_rad_func(flux, kmatch)
+    z_match = np.interp(-grad_ad, Tradmatch, zs)
 
     if args['--adiabatic_IC']:
         T0_zz['g'] = 0
@@ -400,10 +412,16 @@ def run_cartesian_instability(args):
     else:
         #Construct T0_zz so that it gets around the discontinuity.
         width = 0.05
-        T0_z['g'] = T_rad_z0['g']
-        T0_z['g'] += (-grad_ad - T_rad_z0['g'])*one_to_zero(z_de, L_cz, width=width)
+        T_rad_z0.differentiate('z', out=T0_zz)
+        T0_zz['g'] *= zero_to_one(z_de.flatten(), z_match - width, width=width)
+        T0_zz.antidifferentiate('z', ('left', -grad_ad), out=T0_z)
+
+        #Erf has a width that messes up the transition; bump up T0_zz so it transitions to grad_rad at top.
+        deltaT0z_rad = -grad_rad_top + grad_ad
+        deltaT0z_sim = T0_z.interpolate(z=Lz)['g'].max() + grad_ad
+        T0_zz['g'] *= deltaT0z_rad/deltaT0z_sim
+        T0_zz.antidifferentiate('z', ('left', -grad_ad), out=T0_z)
         T0_z.antidifferentiate('z', ('right', 1), out=T0)
-        T0_z.differentiate('z', out=T0_zz)
 
     #Check that heating and cooling cancel each other out.
     fH = domain.new_field()
@@ -416,19 +434,19 @@ def run_cartesian_instability(args):
     if args['--plot_model']:
         import matplotlib.pyplot as plt
         plt.plot(z_de.flatten(), -T_ad_z['g'][0,0,:], c='b', lw=0.5, label='-T_ad_z')
-        plt.plot(z_de.flatten(), -T_rad_z0['g'][0,0,:], c='r', label='-T_rad_z')
+        plt.plot(z_de.flatten(), -T_rad_func(flux, k0['g'][0,0,:]), c='r', label='-T_rad_z_IH')
         plt.plot(z_de.flatten(), -T0_z['g'][0,0,:], c='k', label='-T0_z')
+        plt.axhline(grad_rad_top, c='r', lw=0.5)
         plt.xlabel('z')
         plt.ylabel('-T_z')
         T_rad_top = T_rad_z0.interpolate(z=Lz)['g'].min()
-#        plt.ylim(-0.9*T_rad_top, grad_ad - 0.1*(-grad_ad - T_rad_top) )
+        plt.ylim(-0.9*T_rad_top, grad_ad - 0.1*(-grad_ad - T_rad_top) )
         plt.legend()
         plt.savefig('{:s}/T0_z_structure.png'.format(data_dir), dpi=400)
 
         plt.figure()
         plt.plot(z_de.flatten(), k0['g'][0,0,:], c='k', label='k0')
         plt.plot(z_de.flatten(), k0_z['g'][0,0,:], c='b', label='k0_z')
-        plt.axhline(k_ad, c='r', lw=0.5)
         plt.xlabel('z')
         plt.ylabel('k0')
         plt.legend()
@@ -436,6 +454,7 @@ def run_cartesian_instability(args):
         plt.show()
 
     #Plug in default parameters
+    problem.parameters['damping'] = damping
     problem.parameters['Pe0']    = Pe0
     problem.parameters['Re0']    = Re0
     problem.parameters['Lx']     = Lx
@@ -449,7 +468,7 @@ def run_cartesian_instability(args):
     problem.parameters['Q'] = Q
     problem.parameters['flux_of_z'] = flux_of_z
     problem.parameters['cz_mask'] = cz_mask
-    problem.parameters['max_brunt'] = max_brunt 
+    problem.parameters['max_brunt2'] = max_brunt2 
 
     problem = set_subs(problem)
     problem = set_equations(problem)
@@ -540,7 +559,7 @@ def run_cartesian_instability(args):
     ### 5. Set simulation stop parameters, output, and CFL
     t_ff    = 1/np.sqrt(Qmag)
     t_therm = Pe0
-    t_brunt   = np.sqrt(1/max_brunt)
+    t_brunt   = np.sqrt(1/max_brunt2)
     max_dt    = np.min((0.5*t_ff, t_brunt))
     logger.info('buoyancy and brunt times are: {:.2e} / {:.2e}; max_dt: {:.2e}'.format(t_ff, t_brunt, max_dt))
     if dt is None:
@@ -560,23 +579,20 @@ def run_cartesian_instability(args):
     ### 6. Setup output tasks; run main loop.
     analysis_tasks = initialize_output(solver, data_dir, mode=mode, output_dt=t_ff)
 
-    T_rad_z0.set_scales(domain.dealias)
-    delta_grad_de = grad_ad + T_rad_z0['g'][0,0,:] #= grad_ad - grad_rad; positive in RZ, negative in CZ
-
     dense_scales = 20
+    dense_x_scales = 1#mesh[0]/nx
+    dense_y_scales = 1#mesh[1]/ny
     z_dense = domain.grid(-1, scales=dense_scales)
-    T_rad_z0.set_scales((1,1,dense_scales))
-    delta_grad = grad_ad + T_rad_z0['g'][0,0,:] #positive in RZ, negative in CZ
     dense_handler = solver.evaluator.add_dictionary_handler(sim_dt=1, iter=np.inf)
-    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=(1,1,dense_scales), layout='g')
+    dense_handler.add_task("plane_avg(-T_z)", name='grad', scales=(dense_x_scales, dense_y_scales, dense_scales), layout='g')
 
     flow = flow_tools.GlobalFlowProperty(solver, cadence=1)
     flow.add_property("Re", name='Re')
     flow.add_property("Pe", name='Pe')
     flow.properties.add_task("plane_avg(T1_z)", name='mean_T1_z', scales=domain.dealias, layout='g')
-    flow.properties.add_task("vol_avg(cz_mask*vel_rms**2/max_brunt)**(-1)", name='stiffness')
+    flow.properties.add_task("plane_avg(right(T))", name='right_T', scales=domain.dealias, layout='g')
+    flow.properties.add_task("vol_avg(cz_mask*vel_rms**2/max_brunt2)**(-1)", name='stiffness')
 
-    grad_departure_frac = 0.5
 
     Hermitian_cadence = 100
 
@@ -627,7 +643,7 @@ def run_cartesian_instability(args):
                     #Get departure points from grad_ad
                     grad = dense_handler['grad']['g'][0,0,:]
                     for i, departure_frac in enumerate([0.1, 0.5, 0.9]):
-                        cz_bools[i] = (grad > grad_ad - departure_frac*delta_grad)*(delta_grad > 0)
+                        cz_bools[i] = grad > grad_ad - departure_frac*delta_grad
                     delta_p01 = 0
                     delta_p05 = 0
                     delta_p09 = 0
@@ -658,6 +674,7 @@ def run_cartesian_instability(args):
                             delta_p09_vals[-1] = delta_p09
                             top_cz_times[-1] = solver.sim_time
                             good_times[-1] = True
+
 
                     #Adjust background thermal profile
                     if done_T_iters < max_T_iters and np.sum(good_times) == N:
@@ -699,7 +716,7 @@ def run_cartesian_instability(args):
                         else:
                             #AE -- adjust mean temperature profile.
                             L_cz_end   = avg_L_cz + delta_L_cz
-                            mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz_end, width=avg_width)*delta_grad_de)
+                            mean_T_z = -(grad_ad - zero_to_one(z_de, L_cz_end, width=avg_width)*delta_grad)
                             mean_T1_z = mean_T_z - T0_z['g'][0,0,:]
                             T1_z['g'] -= flow.properties['mean_T1_z']['g']
                             T1_z['g'] *= one_to_zero(z_de, 1, width=0.05)

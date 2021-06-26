@@ -13,12 +13,13 @@ Options:
     --static_cbar                       If flagged, don't evolve the cbar with time
     --dpi=<dpi>                         Image pixel density [default: 200]
 
-    --horiz_inch=<in>                   Number of inches / horizontal plot [default: 2]
-    --vert_inch=<in>                    Number of inches / vertical plot [default: 1]
+    --horiz_inch=<in>                   Number of inches / horizontal plot [default: 6]
+    --vert_inch=<in>                    Number of inches / vertical plot [default: 3]
     --pad=<inch>                        Plot padding inches [default: 0.5]
 
     --fig_type=<fig_type>               Type of figure to plot
                                             1 - T - horiz_avg(T), w
+                                            2 - kitchen sink
                                         [default: 1]
 """
 import numpy as np
@@ -45,6 +46,11 @@ fig_name   = args['--fig_name']
 plotter = SlicePlotter(root_dir, file_dir='slices', fig_name=fig_name, start_file=start_file, n_files=n_files)
 
 if int(args['--fig_type']) == 1:
+    plotter_kwargs = { 'col_in' : int(args['--horiz_inch']), 'row_in' : int(args['--vert_inch']), 'padding' : 100 }
+    plotter.setup_grid(1, 2, **plotter_kwargs)
+    fnames = [  (("T1_y_mid",), {'remove_x_mean' : True, 'label' : 'T(y=Ly/2) - horiz_avg(T)'}),
+                (("w_y_mid",), {'cmap': 'PuOr_r'})]
+elif int(args['--fig_type']) == 2:
     h_inch = float(args['--horiz_inch'])
     v_inch = float(args['--vert_inch'])
     pad = float(args['--pad'])
