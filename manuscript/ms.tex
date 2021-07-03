@@ -214,7 +214,8 @@ We integrate Eqn.~\ref{eqn:kinetic_energy_1D} vertically between these zeros of 
 \int \bar{\mathcal{B}}\,dz = \int \bar{\Phi}\,dz.
 \label{eqn:integral_constraint}
 \end{equation}
-Eqn.~\ref{eqn:integral_constraint} is the simple expression of \citet{roxburgh1989}'s integral constraint (is it?), and is the straightforward statement that work by buoyancy in the convection zone on large scales must be balanced by viscous dissipation on small scales.
+Integral constraints of this form are the basis for a broad range of analyses in Boussinesq convection \citep[see e.g.,][]{ahlers_etal_2009, goluskin2016} and were considered in the context of penetrative convection by \citet{roxburgh1989}.
+Eqn.~\ref{eqn:integral_constraint} is the straightforward statement that work by buoyancy on large scales must be balanced by viscous dissipation on small scales.
 We now find it instructive to break up the convecting region into a classical ``convection zone'' (CZ) and a extended ``penetration zone'' (PZ); we will assume that convective motions are efficient in each of these zones so that $\justgrad = \gradad$ in both the CZ and PZ.
 We furthermore note that the buoyant energy generation is directly proportional to the convective flux, $\bar{\mathcal{B}} = |\alpha|g\bar{w T'} = |\alpha| g \bar{\Fconv}$.
 Thus, in the PZ where $\gradad > \gradrad$, we know that $\bar{\Fconv} < 0$ and so $\bar{\mathcal{B}} < 0$ too.
@@ -225,30 +226,42 @@ Breaking up Eqn.~\ref{eqn:integral_constraint}, we see that
 \label{eqn:constraint_cz_pz_split}
 \end{equation}
 Eqn.~\ref{eqn:constraint_cz_pz_split} is thus arranged so that the (positive) buoyant engine of convection is on the left-hand side, and the (positive) sinks of energy are on the RHS.
-We see that the size of the PZ is set by some combination of buoyancy breaking and viscous dissipation, whose total effect cancels out any remaining work that dissipation in the convection zone did not itself cancel.
-we now find it instructive to define the fraction of the buoyant engine consumed by dissipation in the convection zone
+We see that the size of the PZ is set by some combination of viscous dissipation and buoyancy breaking, whose total effect cancels out any remaining work that dissipation in the convection zone did not itself cancel.
+we now find it instructive to parameterize the fraction of the buoyant engine consumed by CZ dissipation  
 \begin{equation}
-f \equiv \frac{\int_{\rm{CZ}} \bar{\Phi}\,dz}{\int_{\rm{CZ}}\bar{\mathcal{B}}\,dz},
+f \equiv \frac{\int_{\rm{CZ}} \bar{\Phi}\,dz}{\int_{\rm{CZ}}\bar{\mathcal{B}}\,dz}.
 \label{eqn:f_defn}
 \end{equation}
-and note two interesting limits,
+Under this parameterization, Eqn.~\ref{eqn:constraint_cz_pz_split} can be written
+\begin{equation}
+\frac{\int_{\rm{PZ}} \bar{\Phi}\,dz + \int_{\rm{PZ}}(-\bar{\mathcal{B}})\,dz}{\int_{\rm{CZ}} \bar{\mathcal{B}}\,dz}
+= 1 - f,
+\label{eqn:first_pz_parameterization}
+\end{equation}
+and we can immediately read off limits on a hypothetical PZ according to $f$,
 \begin{enumerate}
 \item In the limit that $f \rightarrow 0$, viscous dissipation is extremely inefficient.
-It is probably also reasonable to assume that $\int_{\rm{PZ}}\bar{\Phi}\,dz \rightarrow 0$, and so Eqn.~\ref{eqn:constraint_cz_pz_split} states that the PZ must be large enough to cancel out all of the buoyant work done by convection in the CZ by buoyancy breaking in the PZ.
+It is probably also reasonable to assume that $\int_{\rm{PZ}}\bar{\Phi}\,dz \rightarrow 0$, and so Eqn.~\ref{eqn:first_pz_parameterization} states that the PZ must be large enough for its negative buoyant work to be equal in magnitude to the positive buoyant work of the CZ.
 This is the integral constraint on the maximum size of the PZ that \citet{roxburgh1989} derived.
-\item In the limit that $f \rightarrow 1$, viscous dissipation is extremely efficient in the convection zone and cancels out all of the work done by buoyancy.
+\item In the limit that $f \rightarrow 1$, viscous dissipation is efficient in the CZ and cancels out the work done by buoyancy.
 This is the case in standard Rayleigh-B\'{e}nard convection when the convection is contained between two hard plates.
-Per Eqn.~\ref{eqn:constraint_cz_pz_split}, the positive definite PZ terms must approach zero and no PZ develops in this limit.
+Per Eqn.~\ref{eqn:first_pz_parameterization}, the positive-definite PZ terms must approach zero and no PZ develops in this limit.
 \end{enumerate}
 In general, we anticipate from the results of e.g., \citet{currie_browning_2017} that $f$ is closer to 1 than 0, but its precise value must be measured directly from simulations.
-Indeed, we find that $f \gg 0$ but $f < 1$ in our simulations (see Fig.~\ref{fig:theory_profiles}, right panel).
+Indeed, we find that $f \gg 0$ but $f < 1$ in our simulations (see e.g., Fig.~\ref{fig:theory_profiles}, right panel).
 
-In order to say more about the size of the penetration layer, we model $\bar{\Phi}$ as a linearly decreasing function of height in the PZ.
-We sets its value at the top of the PZ equal to the average of $\bar{\Phi}$ in the CZ of depth $L_{\rm{CZ}}$ so that $\int_{\rm{PZ}} \bar{\Phi}\,dz = (\delp/[2 L_{\rm{CZ}}])\int_{\rm{CZ}}\bar{\Phi}\,dz$ where $\delp$ is the penetration zone depth.
-Rearranging Eqn.~\ref{eqn:constraint_cz_pz_split} and dividing by $\int_{\rm{CZ}} \bar{\mathcal{B}}\,dz$, and plugging in $\bar{\mathcal{B}} = |\alpha|g\bar{\Fconv}$, we can write
+Assuming that a PZ of depth $\delp$ develops above a CZ of depth $L_{\rm{CZ}}$, we model the PZ dissipation as
 \begin{equation}
--\frac{\int_{\rm{PZ}}\bar{\Fconv}\,dz}{\int_{\rm{CZ}}\bar{\Fconv}\,dz} + f\frac{\delp}{2 L_{\rm{CZ}}}
-\approx (1 - f).
+\int_{\rm{PZ}} \bar{\Phi}\,dz = \xi\frac{\delp}{L_{\rm{CZ}}}\int_{\rm{CZ}}\bar{\Phi} = \xi \delp \Phi_{\rm{CZ}}.
+\end{equation}
+Here $\Phi_{\rm{CZ}}$ is the average dissipation value in the CZ and $\xi$ is a parameter that describes the shape of the dissipation profile as a function of height in the PZ.
+In other words, we assume that $\bar{\Phi} \approx \Phi_{\rm{CZ}}$ at the CZ-PZ boundary and then falls off with height.
+The shape of $\bar{\Phi}$ determines the value of $\xi$, with a linear falloff producing $\xi = 1/2$, a quadratic falloff producing $\xi = 2/3$, and the in which $\bar{\Phi}$ does not decline with height produces $\xi = 1$.
+Regardless, $\xi$ is another measurable parameter bounded by $[0, 1]$. 
+With this parameterization, we rewrite Eqn.~\ref{eqn:first_pz_parameterization}
+\begin{equation}
+-\frac{\int_{\rm{PZ}}\bar{\Fconv}\,dz}{\int_{\rm{CZ}}\bar{\Fconv}\,dz} + f\xi\frac{\delp}{L_{\rm{CZ}}}
+= (1 - f).
 \label{eqn:theory_fraction}
 \end{equation}
 In order to derive a specific prediction for the PZ depth, it is necessary to specify the vertical shape of $\overline{\Fconv}$.
@@ -299,7 +312,7 @@ We first consider a model which satisfies
 Here, $\Fcz$ is a constant value of flux carried in the convection zone and $\mP_D$ is the penetration parameter (subscript D for discontinuous case).
 Plugging this functional form of the flux into Eqn.~\ref{eqn:theory_fraction}, and integrating the CZ over a depth $L_{\rm{CZ}}$ below $L_s$ and the PZ over a depth $\delp$ above $L_s$, we predict
 \begin{equation}
-\frac{\delp}{L_{\rm{CZ}}} \approx \mP_D \frac{1 - f}{1 + \mP_D f / 2}.
+\frac{\delp}{L_{\rm{CZ}}} = \mP_D \frac{1 - f}{1 + \xi f \mP_D}.
 \label{eqn:discontinuous_prediction}
 \end{equation}
 Assuming that $f$ is a weak function of $\mP_D$, we see that the size of the penetration region is roughly linearly proportional to $\mP_D$ at small $\mP_D$, but saturates due to dissipation at large $\mP_D$.
@@ -321,10 +334,10 @@ Again, solving Eqn.~\ref{eqn:theory_fraction} with this functional form of the f
 This equation has two solution branches, only one of which corresponds to a positive value of $\delp$.
 On that branch, we find
 \begin{equation}
-\frac{\delp}{L_p} = \sqrt{\mP_L (1 - f)} \,\,(\sqrt{\xi^2 + 1} - \xi),
+\frac{\delp}{L_p} = \sqrt{\mP_L (1 - f)} \,\,(\sqrt{\zeta^2 + 1} - \zeta),
 \label{eqn:linear_prediction}
 \end{equation}
-where $\xi \equiv (f/4)\sqrt{\mP_L/(1-f)}$.
+where $\zeta \equiv (\xi f/2)\sqrt{\mP_L/(1-f)}$.
 So we expect the penetration depth to be roughly proportional to $\sqrt{\mP_L}$ for small values of $\mP_L$, and to again saturate at large values of $\mP_L$. 
 
 In this work, we will test the predictions of Eqns.~\ref{eqn:discontinuous_prediction} and \ref{eqn:linear_prediction}.
@@ -379,7 +392,7 @@ We assume that the (adiabatic) temperature gradient at the bottom boundary carri
 In our equations, we expect the volume-average convective velocities to depend on the magnitude of the heating, $\angles{\vec{u}} \approx Q_{\rm{mag}}^{1/2} \approx 1$, so the characteristic convective frequency is $f_{\rm{conv}} \approx \angles{\vec{u}} L_s \approx 1$.
 The stiffness is defined,
 \begin{equation}
-\mS \equiv \frac{N^2}{f_{\rm{conv}}} \approx N^2,
+\mS \equiv \frac{N^2}{f_{\rm{conv}}^2} \approx N^2,
 \end{equation}
 where $N^2$ is the \brunt$\,$frequency in the radiative zone.
 In our nondimensionalization, $N^2 = \gradad - \gradrad$ where $\gradrad = \Ftot/k$.
