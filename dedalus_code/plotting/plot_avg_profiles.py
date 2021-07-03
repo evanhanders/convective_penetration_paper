@@ -35,7 +35,7 @@ fig_name   = args['--fig_name']
 
 plotter = ProfilePlotter(root_dir, file_dir='profiles', fig_name=fig_name, start_file=start_file, n_files=n_files)
 
-fields = ['T', 'T_z', 'bruntN2', 'F_rad', 'F_conv', 'T_rad_z', 'T_rad_z_IH', 'T_ad_z', 'vel_rms', 'effective_heating', 'T1', 'T1_z', 'heat_fluc_rad', 'heat_fluc_conv', 'T1_fluc', 'enstrophy', 'F_KE', 'F_KE_vert', 'F_KE_p']
+fields = ['T', 'T_z', 'bruntN2', 'F_rad', 'F_conv', 'T_rad_z', 'T_rad_z_IH', 'T_ad_z', 'vel_rms', 'effective_heating', 'T1', 'T1_z', 'heat_fluc_rad', 'heat_fluc_conv', 'T1_fluc', 'enstrophy', 'u', 'w', 'F_KE_p']
 for f in fields:
     plotter.add_profile(f, avg_writes)
 
