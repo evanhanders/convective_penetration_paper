@@ -109,16 +109,16 @@ for d in dirs:
     elif 'schwarzschild_restart' in d:
         continue
     elif ('predictive0.7/' in d and P == 4) or ('predictive0.45' in d and P == 2) or ('predictive0.3' in d and P == 1):
-        color = 'green'
-        zorder = 2
+        color = 'orange'
+        zorder = 1
         times -= times[-1]
         if P == 1:
             N_skip = 0#10
         if P == 2:
             N_skip = 10
     elif ('predictive0.4/' in d and P == 4) or ('predictive0.1' in d and P == 2) or ('predictive0' in d and P == 1):
-        color = 'orange'
-        zorder = 1
+        color = 'green'
+        zorder = 2
         times -= times[-1]
         if P == 1:
             N_skip = 10

@@ -42,35 +42,37 @@ fconv       = fconv_profiles[N,:]
 ke_eqn_rhs  = fconv - dissipation
 
 
-ax1.axhline(0, c='k', lw=0.5)
-ax1.plot(z, dissipation, c='indigo', label='$\omega^2 / \mathcal{R}$')
-ax1.plot(z, fconv, c='red', label=r'$F_{\rm{conv}}$')
-ax1.plot(z, ke_eqn_rhs, c='blue', label=r'$F_{\rm{conv}}$ - $\omega^2 / \mathcal{R}$')
-ax1.legend(loc='best', fontsize=8)
-ax1.set_ylim(-0.25, 0.25)
-ax1.set_ylabel('KE sources')
+ax3.axhline(0, c='k', lw=0.5)
+ax3.plot(z, dissipation/0.2, c='indigo', label='$\overline{\Phi}$')
+ax3.plot(z, fconv/0.2, c='red', label=r'$\overline{\mathcal{B}}$')
+ax3.plot(z, ke_eqn_rhs/0.2, c='blue', label=r'$\overline{\mathcal{B}} - \overline{\Phi}$')
+ax3.legend(loc='best', fontsize=8)
+ax3.set_ylim(-1.25, 1.25)
+ax3.set_ylabel('KE sources')
 
 f_ke_p = f_ke_profiles[N,:]
 
-ax2.axhline(0, c='k', lw=0.5)
-ax2.plot(z, f_ke_p, c='blue')
-ax2.axvline(brentq(interp1d(z, f_ke_p), 0.05, 0.9), c='k', ls='--')
-ax2.set_ylabel(r'$F_{\rm{KE}}$')
+ax1.axhline(0, c='k', lw=0.5)
+ax1.plot(z, f_ke_p, c='blue')
+ax1.axvline(brentq(interp1d(z, f_ke_p), 0.05, 0.9), c='k', ls='--')
+ax1.set_ylabel(r'$\overline{\mathcal{F}}$')
 
 
 grad = grad_profiles[N,:]
 grad_ad = grad_ad_profiles[N,:]
 grad_rad = grad_rad_profiles[N,:]
 
-ax3.axhline(1, c='k', lw=0.5)
-ax3.plot(z, grad/grad_ad, c='green', label=r'$\nabla/\nabla_{\rm{ad}}$')
-ax3.plot(z, grad_rad/grad_ad, c='red', label=r'$\nabla_{\rm{rad}}/\nabla_{\rm{ad}}$')
-ax3.legend(loc='best', fontsize=8)
-ax3.set_ylim(0.75, 1.2)
-ax3.set_ylabel(r'$\nabla/\nabla_{\rm{ad}}$')
+ax2.axhline(1, c='k', lw=0.5)
+#ax2.plot(z, grad/grad_ad, c='green', label=r'$\nabla/\nabla_{\rm{ad}}$')
+#ax2.plot(z, grad_rad/grad_ad, c='red', label=r'$\nabla_{\rm{rad}}/\nabla_{\rm{ad}}$')
+ax2.plot(z, grad/grad_ad, c='green', label=r'$\nabla$')
+ax2.plot(z, grad_rad/grad_ad, c='red', label=r'$\nabla_{\rm{rad}}$')
+ax2.legend(loc='best', fontsize=8)
+ax2.set_ylim(0.75, 1.2)
+ax2.set_ylabel(r'$\nabla/\nabla_{\rm{ad}}$')
 
 
-for ax in [ax1, ax2, ax3]:
+for ax in [ax3, ax1, ax2]:
     ax.set_xlim(0, Lz)
     ax.set_xlabel('z')
 
