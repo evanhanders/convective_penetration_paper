@@ -157,30 +157,32 @@ Throughout this work, we will utilize a modified version of the incompressible B
 \label{eqn:boussinesq}
 \end{align}
 Here, the density is decomposed into a constant background $\rho_0$ with fluctuations $\rho_1$ which appear only in the buoyancy force and depend on the temperature $T$ and the coefficient of thermal expansion $\alpha = \partial\ln\rho / \partial T$.
-We furthermore define the velocity vector $\vec{u}$, the viscous diffusivity $\nu$, the thermal diffusivity $\chi$, the bulk internal heating $Q$ \citep[similar but not identical to that described in e.g.,][]{goluskin2016}, and the adiabatic temperature gradient $\gradad$.
-We define $\gradad$ as a positive value to align with stellar structure conventions; thus marginal stability is achieved when $\partial_z T = -\gradad$.
-The addition of a nonzero $\gradad$ to the standard Boussinesq equations was derived by \citet{spiegel_veronis_1960} and utilized by e.g., \citet{korre_etal_2019}.
-In this work, we have modified the equations one step further to better model stellar environments and allow for a height-dependent radiative gradient $\gradrad$.
-We allow the mean temperature profile $\overline{T}$ to carry a radiative flux $\Frad = -k \grad \overline{T}$, where $k$ is a radiative diffusivity which can vary with height.
-As a result, we define $\gradrad \equiv F / k$, where $F$ is the total flux being carried by the system.
-In this model, the classic thermal diffusion term $\chi \grad^2 T'$ carries no average flux and acts only on the fluctuations away from the mean temperature profile, $T' \equiv T - \overline{T}$; throughout this work, we will represent horizontal averages with bars ($\overline{\,\cdot\,}$) and fluctuations away from those averages with primes ($'$).
-Crucially, we allow the mean temperature profile $\bar{T}$ which sets $\Frad$ and $T'$ to self-consistently evolve with time according to Eqn.~\ref{eqn:temperature}.
+We furthermore define the velocity vector $\vec{u}$, the viscous diffusivity $\nu$, the thermal diffusivity $\chi$, the bulk internal heating $Q$ \citep[similar but not identical to that described in e.g.,][]{goluskin2016}, the adiabatic gradient $\gradad$, and a height-dependent thermal conductivity $k$.
+We will consider Cartesian coordinates $(x, y, z)$ with a constant vertical gravity $\vec{g} = -g\hat{z}$.
+Throughout this work, we will represent horizontal averages with bars ($\overline{\,\cdot\,}$) and fluctuations away from those averages with primes ($'$).
+Thus, in Eqn.~\ref{eqn:temperature}, $\bar{T}$ is the horizontally averaged temperature and $T'$ are fluctuations away from that; both of these fields evolve in time according to this equation.
 
-In this work, we will consider Cartesian coordinates $(x, y, z)$ with a constant vertical gravity $\vec{g} = -g\hat{z}$.
-We will assume a model in which an unstable convection zone sits below a stable radiative zone, but the same logic applies to the inverted problem.
 Assuming convection reaches a time-stationary state, the fluxes are found by horizontally-averaging then vertically integrating Eqn.~\ref{eqn:temperature} to find
 \begin{equation}
 \overline{\Ftot} = \overline{\Frad} + \overline{\Fconv} = \int Q dz + \Fbot,
 \label{eqn:flux_definition}
 \end{equation}
-where $\Fbot$ is the flux carried at the base of the convection zone, and $\overline{\Ftot}$ is the total flux, which can vary in height due to the heating $Q$.
-We note that $k$ and the temperature gradient $\justgrad \equiv -\partial_z \bar{T}$ fully specify $\Frad$ and in turn the convective flux, $\bar{\Fconv} = \bar{\Ftot} - \bar{\Frad}$.
-We define the radiative gradient 
+where $\Fbot$ is the flux carried at the bottom of the domain, and $\overline{\Ftot}$ is the total flux, which can vary in height due to the heating $Q$.
+We allow the mean temperature profile $\overline{T}$ to carry a radiative flux $\bar{\Frad} = -k \grad \overline{T}$.
+We note that $k$ and $-\partial_z \bar{T}$ fully specify $\bar{\Frad}$ and in turn the convective flux, $\bar{\Fconv} = \bar{\Ftot} - \bar{\Frad}$.
+We define the gradient and radiative gradient 
 \begin{equation}
-\gradrad = \frac{\bar{\Ftot}}{k}
+\justgrad \equiv -\partial_z \bar{T} \qquad
+\gradrad \equiv \frac{\bar{\Ftot}}{k}.
 \label{eqn:gradrad_definition}
 \end{equation}
-and note that the classical Schwarzschild boundary of the convection zone is the height $z = L_s$ at which $\gradrad = \gradad$ and $\bar{\Fconv} = 0$.
+We have defined the $\justgrad$'s as positive quantities to align with stellar structure conventions.
+Marginal stability is achieved when $\justgrad = \gradad$, a constant.
+We note that the classical Schwarzschild boundary of the convection zone is the height $z = L_s$ at which $\gradrad = \gradad$ and $\bar{\Fconv} = 0$.
+
+The addition of a nonzero $\gradad$ to Eqn.~\ref{eqn:temperature} was derived by \citet{spiegel_veronis_1960} and utilized by e.g., \citet{korre_etal_2019}.
+In this work, we have decomposed the radiative diffusivity into a background portion ($\grad\dot \bar{\Frad}$) and a fluctuating portion ($\chi \grad^2 T'$); by doing so, we have introduced a height-dependent $\gradrad$ to the equation set while preserving the diffusive behavior on fluctuations felt by classical Rayleigh-B\'{e}nard convection.
+Here, we will assume a model in which an unstable convection zone ($\gradrad > \gradad$) sits below a stable radiative zone ($\gradrad < \gradad$), but the same logic applies to the inverted problem.
 
 \subsection{Kinetic energy \& the dissipation-flux link}
 \label{sec:theory_energy}
@@ -219,20 +221,21 @@ We integrate Eqn.~\ref{eqn:kinetic_energy_1D} vertically between these zeros of 
 \int \bar{\mathcal{B}}\,dz = \int \bar{\Phi}\,dz.
 \label{eqn:integral_constraint}
 \end{equation}
-Integral constraints of this form are the basis for a broad range of analyses in Boussinesq convection \citep[see e.g.,][]{ahlers_etal_2009, goluskin2016} and were considered in the context of penetrative convection by \citet{roxburgh1989}.
+Integral constraints of this form are the basis for a broad range of analyses in Boussinesq convection \citep[see e.g.,][]{ahlers_etal_2009, goluskin2016} and were considered in the context of penetrative stellar convection by \citet{roxburgh1989}.
 Eqn.~\ref{eqn:integral_constraint} is the straightforward statement that work by buoyancy on large scales must be balanced by viscous dissipation on small scales.
+
 We now find it instructive to break up the convecting region into a classical ``convection zone'' (CZ) and a extended ``penetration zone'' (PZ); we will assume that convective motions are efficient in each of these zones so that $\justgrad = \gradad$ in both the CZ and PZ.
 We furthermore note that the buoyant energy generation is directly proportional to the convective flux, $\bar{\mathcal{B}} = |\alpha|g\bar{w T'} = |\alpha| g \bar{\Fconv}$.
-Thus, in the PZ where $\gradad > \gradrad$, we know that $\bar{\Fconv} < 0$ and so $\bar{\mathcal{B}} < 0$ too.
+Thus, in the PZ where $\gradad > \gradrad$, we know that $\bar{\Fconv} < 0$ and so $\bar{\mathcal{B}} < 0$ too (see the discussion around Eqn.~\ref{eqn:gradrad_definition}).
 Breaking up Eqn.~\ref{eqn:integral_constraint}, we see that
 \begin{equation}
 \int_{\rm{CZ}} \bar{\mathcal{B}}\,dz \qquad=\qquad
 \int_{\rm{CZ}} \bar{\Phi}\,dz + \int_{\rm{PZ}} \bar{\Phi}\,dz + \int_{\rm{PZ}}(-\bar{\mathcal{B}})\,dz.
 \label{eqn:constraint_cz_pz_split}
 \end{equation}
-Eqn.~\ref{eqn:constraint_cz_pz_split} is thus arranged so that the (positive) buoyant engine of convection is on the left-hand side, and the (positive) sinks of energy are on the RHS.
-We see that the size of the PZ is set by some combination of viscous dissipation and buoyancy breaking, whose total effect cancels out any remaining work that dissipation in the convection zone did not itself cancel.
-we now find it instructive to parameterize the fraction of the buoyant engine consumed by CZ dissipation  
+Eqn.~\ref{eqn:constraint_cz_pz_split} is thus arranged so that the (positive) buoyant engine of convection is on the left-hand side, and the (positive) sinks of work are on the RHS.
+We see that the size of the PZ is set by some combination of viscous dissipation and buoyancy breaking.
+We now parameterize the fraction of the buoyant engine consumed by CZ dissipation  
 \begin{equation}
 f \equiv \frac{\int_{\rm{CZ}} \bar{\Phi}\,dz}{\int_{\rm{CZ}}\bar{\mathcal{B}}\,dz}.
 \label{eqn:f_defn}
@@ -262,7 +265,7 @@ Assuming that a PZ of depth $\delp$ develops above a CZ of depth $L_{\rm{CZ}}$, 
 \end{equation}
 Here $\Phi_{\rm{CZ}}$ is the average dissipation value in the CZ and $\xi$ is a parameter that describes the shape of the dissipation profile as a function of height in the PZ.
 In other words, we assume that $\bar{\Phi} \approx \Phi_{\rm{CZ}}$ at the CZ-PZ boundary and then falls off with height.
-The shape of $\bar{\Phi}$ determines the value of $\xi$, with a linear falloff producing $\xi = 1/2$, a quadratic falloff producing $\xi = 2/3$, and the in which $\bar{\Phi}$ does not decline with height produces $\xi = 1$.
+The shape of $\bar{\Phi}$ determines the value of $\xi$, with a linear falloff producing $\xi = 1/2$, a quadratic falloff producing $\xi = 2/3$, and if $\bar{\Phi}$ does not decline with height then $\xi = 1$.
 Regardless, $\xi$ is another measurable parameter bounded by $[0, 1]$. 
 With this parameterization, we rewrite Eqn.~\ref{eqn:first_pz_parameterization}
 \begin{equation}
@@ -326,7 +329,7 @@ where $\zeta \equiv (\xi f/2)\sqrt{\mP_L/(1-f)}$.
 So we expect the penetration depth to be roughly proportional to $\sqrt{\mP_L}$ for small values of $\mP_L$, and to again saturate at large values of $\mP_L$. 
 
 In this work, we will test the predictions of Eqns.~\ref{eqn:discontinuous_prediction} and \ref{eqn:linear_prediction}.
-Our goals are to see if the predicted scalings with the penetration parameter $\mP$ are realized in simulations, and to measure the dependence of $f$ on various parameters in local simulations.
+Our goals are to see if the predicted scalings with the penetration parameter $\mP$ are realized in simulations, and to measure the dependence of $f$ and $\xi$ on various parameters in local simulations.
 
 \section{Simulation Details}
 We nondimensionalize Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq} on the length scale of the Schwarzschild-unstable convection zone $L_s$, the timescale of freefall across that convection zone $\tau_{\rm{ff}}$, and the temperature scale of the internal heating over that freefall time $\Delta T$,
@@ -360,12 +363,13 @@ We construct a domain in the range $z \in [0, L_z]$ where in this work we choose
 We decompose the temperature field into a time-stationary initial background and fluctuations, $T(x, y, z, t) = T_0(z) + T_1(x, y, z, t)$.
 For boundary conditions, we impose impenetrable, no-slip boundary conditions at the top and bottom of the box so that $\vec{u} = 0$ at $z = [0, L_z]$.
 We also impose a fixed-flux boundary at the bottom of the box ($\partial_z T_1 = 0$ at $z = 0$) and a fixed temperature boundary at the top of the domain ($T_1 = 0$ at $z = L_z$).
+For a select few simulations, we impose stress-free instead of no-slip boundary conditions ($w = 0$ and $\partial_z u = \partial_z v = 0$ at $z = [0, L_z]$).
 
 We impose a constant internal heating which spans only part of the convection zone,
 \begin{equation}
 Q = \begin{cases}
 0		& z < 0.1\,\,\rm{or}\,\,z\geq 0.1 + \delta_H,\\
-|Q_{\rm{mag}}|		& 0.1 \leq z \leq 0.1 + \delta_H
+Q_{\rm{mag}}		& 0.1 \leq z \leq 0.1 + \delta_H
 \end{cases}.
 \label{eqn:sim_Q}
 \end{equation}
@@ -380,8 +384,8 @@ The stiffness is defined,
 \mS \equiv \frac{N^2}{f_{\rm{conv}}^2} \approx N^2,
 \end{equation}
 where $N^2$ is the \brunt$\,$frequency in the radiative zone.
-In our nondimensionalization, $N^2 = \gradad - \gradrad$ where $\gradrad = \Ftot/k$.
-We treat $\mS$ as a control parameter; by choosing a value of the stiffness we set the magnitude of the background temperature gradient, $\partial_z T_0$ which in turn sets the value of $k$ in the radiative zone.
+In our nondimensionalization, $N^2 = \gradad - \gradrad$.
+We treat $\mS$ as a control parameter; by choosing a value of the stiffness we set the magnitude of $\justgrad$, which in turn sets the value of $k$ in the radiative zone.
 
 The crucial place in which our model differs from that of prior work is that we define the ``Penetration Parameter,'' $\mP$, according to Eqn.~\ref{eqn:theory_P_defn}.
 We construct our experiments so that $\mP$ and $\mS$ can be varied separately.
@@ -411,6 +415,7 @@ k_{\rm{CZ}} = k_{\rm{RZ}}\frac{1}{1 + \zeta + \mP_D^{-1}},\qquad
 \end{equation}
 
 We study three sweeps through the ($\mP_D$, $\mS$, $\mR$) parameter space in this paper in which we hold two of these parameters constant and vary the other.
+We study an additional sweep through $\mR$ parameter space using stress-free boundaries to compare to our no-slip cases.
 We use reference values of $\mP_D = 4$, $\mS = 10^3$, and $\mR = 400$; all parameter space sweeps pass through these values.
 According to Eqn.~\ref{eqn:discontinuous_prediction}, we expect $\delp \propto \mP_D$.
 
@@ -428,11 +433,11 @@ We achieve this by constructing a radiative conductivity with a piecewise discon
 Since $k$ varies with height, the value of $\mS$ and $\mP$ also vary with height; we specify their values at $z = 2$.
 By this choice, we require
 \begin{equation}
-\partial_z k_0 = \frac{\delta_H}{L_s \mS \xi},\qquad
-k_b = \frac{\delta_H\zeta}{\mS\xi},\qquad
-\gradad = Q \mS \xi,
+\partial_z k_0 = \frac{\delta_H}{L_s \mS \psi},\qquad
+k_b = \frac{\delta_H\zeta}{\mS\psi},\qquad
+\gradad = Q \mS \psi,
 \end{equation}
-where $\xi \equiv 1 + \mP_L(1 + \zeta)$.
+where $\psi \equiv 1 + \mP_L(1 + \zeta)$.
 In these simulations, we hold $\mS = 10^3$ and $\mR = 800$ while varying $\mP_L$.
 According to Eqn.~\ref{eqn:linear_prediction}, we expect $\delta_p \propto \mP_L^{1/2}$.
 
@@ -469,7 +474,7 @@ L_s + \delta_{h} = \rm{max}(z) \mid \justgrad > \gradad - h\,\Delta\justgrad.
 \label{eqn:delta_p_measures}
 \end{equation}
 In this work, we measure the 10\% ($\delta_{0.1}$), 50\% ($\delta_{0.5}$), and 90\% ($\delta_{0.9}$) departure points.
-Using \citet{zahn1991}'s terminology, $\delta_{0.1}$ is the top of the PZ while $\delta_{0.5}$ and $\delta_{0.9}$ represent the middle and top of the ``thermal adjustment layer.''
+Using \citet{zahn1991}'s terminology, $\delta_{0.5}$ is the mean value of the top of the PZ while $\delta_{0.9} - \delta_{0.1}$ roughly represents the width of the ``thermal adjustment layer.''
 We will simply refer to these as three different measures of the top of the PZ.
 We find that these measurements based on the (slowly-evolving) thermodynamic profile are more robust and straightforward than many previous dynamically-based prescriptions \citep[see e.g.,][for a nice discussion]{pratt_etal_2017}.
 
@@ -495,7 +500,7 @@ The top of the penetration zone departure points are plotted over the profile ev
 \end{figure}
 
 In Fig.~\ref{fig:time_evolution}, we show the time evolution of a Case I (discontinuous conductivity) simulation with $\mR = 400$, $\mS = 10^3$, and $\mP_D = 4$ whose initial conditions roughly set $\justgrad = \gradad$ in the convection zone ($z \lesssim 1$) and $\justgrad = \gradrad$ in the radiative zone ($z \gtrsim 1)$.
-In the top left panel, we display the extent of the penetrative region vs.~time, $\delta_{\rm{0.5}}$.
+In the top left panel, we display the measured extent of the penetrative region $\delta_{\rm{0.5}}$ vs.~time.
 This region initially grows quickly over hundreds of freefall times, but this evolution slows down as the convective dynamics establish themselves and the final equilibration takes tens of thousands of convective overturn (freefall) times.
 We note that this long evolution is extremely computationally costly; for this modest simulation (256x64$^2$ coefficients), this evolution represents roughly 20 days of evolution on 1024 cores for a total of $\sim$2.5 million cpu-hours.
 It is not feasible to perform simulations of this length for a full parameter space study, and so we use smarter initial conditions and tricks to accelerate the evolution (see appendix \ref{app:accelerated_evolution} for details) for the bulk of the simulations in this work.
