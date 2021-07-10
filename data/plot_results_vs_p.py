@@ -96,7 +96,6 @@ ax2.set_title('$\mathcal{P}_L|_{\mathcal{R} = 800, \mathcal{S} = 10^3}$')
 ax1.set_ylabel(r'$\delta_{\rm{p}}$')
 ax1_1.set_ylabel(r'$f$')
 ax1_2.set_ylabel(r'$\xi$')
-ax1.set_ylim(1e-2, 1)
 ax1.set_yticks((0.25, 0.5, 0.75, 1, 1.25))
 
 
@@ -130,7 +129,8 @@ theory_plot = ax2.plot(line_P, line_theory, c='orange', label=r'$\propto \mathca
 ax2.legend(frameon=True, fontsize=8, framealpha=0.6)
 
 
-
+for ax in [ax1, ax2]:
+    ax.set_ylim(8e-3, 2)
 
 
 for ax in [ax1_1, ax2_1]:
