@@ -27,6 +27,7 @@ for d in dirs:
         modern_f = f['modern_f'][()]
         modern_xi = f['modern_xi'][()]
         fconv_Ls = f['fconv_Ls'][()]
+        vel_rms = f['vel_cz'][()]
         Ls = np.mean(f['Ls'][()])
         tot_time = times[-1] - times[0]
         time_window = np.min((500, tot_time/2))
@@ -37,12 +38,13 @@ for d in dirs:
         mean_f  = np.mean(modern_f[good_times])
         mean_xi = np.mean(modern_xi[good_times])
         mean_fconv_Ls = np.mean(fconv_Ls[good_times])
+        mean_vel_rms = np.mean(vel_rms[good_times])
     if 'erf' in d:
         erf = True
     else:
         erf = False
 
-    data.append((S, P, Re, Ls, Lz, erf, mean_L_d01, mean_L_d05, mean_L_d09, mean_f, mean_xi, mean_fconv_Ls))
+    data.append((S, P, Re, Ls, Lz, erf, mean_L_d01, mean_L_d05, mean_L_d09, mean_f, mean_xi, mean_fconv_Ls, mean_vel_rms))
 data = np.array(data)
 
 S = data[:,0]
@@ -58,6 +60,7 @@ L_d09 = data[:,8]
 theory_f  = data[:,9]
 theory_xi = data[:,10]
 fconv_Ls = data[:,11]
+vel_rms  = data[:,12]
 
 fig = plt.figure(figsize=(page_width, 2*page_width/(3*golden_ratio)))
 
@@ -67,9 +70,6 @@ ax1_1 = fig.add_axes([0.00, 0.25, 0.46, 0.25])
 ax1_2 = fig.add_axes([0.00, 0.00, 0.46, 0.25])
 ax2_1 = fig.add_axes([0.54, 0.25, 0.46, 0.25])
 ax2_2 = fig.add_axes([0.54, 0.00, 0.46, 0.25])
-second_plot_lower = 0.45
-second_plot_upper = 0.9
-
 
 good = (erf == 1) * (Re == 4e2) * (S == 1e3) 
 #Lcz_erf = (Ls*(fconv_Ls/(0.2*Ls)))[good]
@@ -96,9 +96,7 @@ ax2.set_title('$\mathcal{P}_L|_{\mathcal{R} = 800, \mathcal{S} = 10^3}$')
 ax1.set_ylabel(r'$\delta_{\rm{p}}$')
 ax1_1.set_ylabel(r'$f$')
 ax1_2.set_ylabel(r'$\xi$')
-for ax in [ax1, ax1_1]:
-    ax.set_xlim(0, 11)
-ax1.set_ylim(7e-2, 1)
+ax1.set_ylim(1e-2, 1)
 ax1.set_yticks((0.25, 0.5, 0.75, 1, 1.25))
 
 
@@ -144,7 +142,7 @@ for ax in [ax1_2, ax2_2]:
 
 for ax in [ax1, ax1_1, ax1_2]:
     ax.set_xscale('log')
-    ax.set_xlim(8e-1, 15)
+    ax.set_xlim(8e-2, 15)
 ax1.set_yscale('log')
 
 for ax in [ax2, ax2_1, ax2_2]:
@@ -161,3 +159,9 @@ ax2_2.set_xlabel(r'$\mathcal{P}_L$')
 
 plt.savefig('parameters_vs_p.png', dpi=300, bbox_inches='tight')
 plt.savefig('../manuscript/parameters_vs_p.pdf', dpi=300, bbox_inches='tight')
+
+#plt.close()
+#plt.figure()
+#good = (erf == 1)*(Re == 4e2)*(S ==1e3)
+#plt.scatter(theory_f[good], theory_f[good]/vel_rms[good]**2)
+#plt.show()

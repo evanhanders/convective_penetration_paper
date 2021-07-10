@@ -86,6 +86,7 @@ for d in dirs:
     L_d05 = data[d][8]
     L_d09 = data[d][9]
     f_theory    = data[d][10]
+    xi_theory    = data[d][11]
     Ls = data[d][-1]
     N_skip = 0
 
@@ -182,6 +183,7 @@ for d in dirs:
             ax5.axhline(np.mean((L_d01-Ls)[-1000:]), c='k', lw=0.5)
             ax5.axhline(np.mean((L_d09-Ls)[-1000:]), c='k', lw=0.5)
             ax6.axhline(np.mean(f_theory[-1000:]), c='k', lw=0.5)
+            print('f', np.mean(f_theory[-1000:]), 'xi', np.mean(xi_theory[-1000:]))
     data_chunks.append((P, t_sim, 'schwarzschild' in d, color))
 
 for P, ax in zip([1, 2, 4], [ax1, ax3, ax5]):
@@ -198,8 +200,8 @@ for P, ax in zip([1, 2, 4], [ax1, ax3, ax5]):
                 zorder = 1
             ax.axvline(c[1]/schwarz_time, c=c[3], lw=lw, zorder=zorder)
 
-
-
+for c in data_chunks:
+    print(c)
             
             
 
@@ -223,7 +225,7 @@ for ax in [ax4, ax6]:
 
 ax5.yaxis.set_ticks_position('right')
 ax1.set_ylabel(r'$\delta_{\rm{p}}$')
-ax2.set_ylabel(r'$\langle \frac{\omega^2}{\mathcal{R}} \rangle_{\rm{CZ}}$')
+ax2.set_ylabel(r'$f$')
 
 ax1.text(0.50, 0.85, r'$\mathcal{P}_D = 1$', transform=ax1.transAxes, ha='center')
 ax3.text(0.50, 0.85, r'$\mathcal{P}_D = 2$', transform=ax3.transAxes, ha='center')

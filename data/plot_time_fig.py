@@ -172,6 +172,7 @@ ax4.set_xlabel('z')
 ax4.set_ylabel(r'$\nabla/\nabla_{\rm{ad}}$')
 ax4.yaxis.set_ticks_position('right')
 ax4.yaxis.set_label_position('right')
+ax4.axvline(Ls, c='k', ls='--')
 
 plt.savefig('time_evolution.png', dpi=300, bbox_inches='tight')
 plt.savefig('../manuscript/time_evolution.pdf', dpi=300, bbox_inches='tight')
