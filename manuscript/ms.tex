@@ -84,17 +84,18 @@ We further discuss prospects for extending these results to more realistic stell
 %%%% Body of paper
 \section{Introduction}
 \label{sec:introduction}
-Convection is a crucial heat transport mechanism in stars \citep{woosley_etal_2002, hansen_etal_2004, christensen-dalsgaard_2021}, and convective dynamics influence many poorly-understood stellar phenomena.
-For example, convection drives the magnetic dynamo of the Sun, leading to the host of emergent phenomena known as solar activity \citep{brun_browning_2017}.
-Convection also mixes stars compositionally, which can modify observed surface abundances or inject additional fuel into convective cores, thereby extending stellar lifetimes \citep{salaris_cassisi_2017}.
+Convection is a crucial mechanism for transporting heat in stars~\citep{woosley_etal_2002, hansen_etal_2004, christensen-dalsgaard_2021}, and convective dynamics influence many poorly-understood stellar phenomena.
+For example, convection drives the magnetic dynamo of the Sun, leading to a whole host of emergent phenomena collectively known as solar activity \citep{brun_browning_2017}.
+Convection also mixes chemical elements in stars, which can modify observed surface abundances or inject additional fuel into their cores, thereby extending stellar lifetimes \citep{salaris_cassisi_2017}.
 Furthermore, convective motions excite waves, which can be observed and used to constrain the thermodynamic structure of stars \citep{aerts2010, basu2016}.
-A complete and nuanced understanding of convection is therefore crucial for understanding stellar structure, evolution, and observations.
+A complete and nuanced understanding of convection is therefore crucial for understanding stellar structure and evolution, and for connecting this understand to observations.
 
 Despite decades of study, robust parameterizations for the mechanisms broadly referred to as ``convective overshoot'' remain elusive, and improved parameterizations could resolve many discrepancies between observations and structure models.
-In the stellar structure literature, ``convective overshoot'' refers to any convectively-driven mixing which occurs beyond the boundaries of the unstable convection zone.
-This mixing can influence, for example, observed surface lithium abundances in the Sun and solar-type stars which align poorly with models \citep{pinsonneault1997, carlos_etal_2019, dumont_etal_2021}.
+In the stellar structure literature, ``convective overshoot'' refers to any convectively-driven mixing which occurs beyond the boundaries of the Ledoux-unstable zone.
+This mixing can influence, for example, observed surface lithium abundances in the Sun and solar-type stars, which align poorly with theoretical predictions \citep{pinsonneault1997, carlos_etal_2019, dumont_etal_2021}.
 Furthermore, modern spectroscopic observations suggest a lower solar metallicity than previously thought, and models computed with modern metallicity estimates and opacity tables have shallower convection zones than helioseismic observations suggest \citep{basu_antia_2004, bahcall_etal_2005, bergemann_serenelli_2014, vinyoles_etal_2017, asplund_etal_2021}; modeling and observational discrepancies can be reduced with additional mixing below the convective boundary \citep{christensen-dalsgaard_etal_2011}.
-Overshoot parameterizations in massive stars with convective cores must be finely tuned as a function of stellar mass, again suggesting our current parameterizations are missing some physics \citep{claret_torres_2018, jermyn_etal_2018, viani_basu_2020, martinet_etal_2021, pedersen_etal_2021}.
+
+Beyond the Sun, overshooting in massive stars with convective cores must be finely tuned as a function of stellar mass, again pointing to missing physics in our current parameterizations \citep{claret_torres_2018, jermyn_etal_2018, viani_basu_2020, martinet_etal_2021, pedersen_etal_2021}.
 Since core convective overshoot increases the reservoir of fuel available for nuclear fusion at each stage in stellar evolution, improved models of core convective boundary mixing could have profound impacts on the post-main sequence evolution and remnant formation of massive stars \citep{farmer_etal_2019, higgins_vink_2020}.
 In order to ensure that models can be evolved on fast (human) timescales, 1D stellar evolution codes rely on simple parameterizations of convection \citep[e.g., mixing length theory,][]{bohm-vitense1958} and convective overshoot \citep{shaviv_salpeter_1973, maeder1975, herwig2000, paxton_etal_2011, paxton_etal_2013, paxton_etal_2018, paxton_etal_2019}.
 While some preliminary work has been done to couple 3D dynamical convective simulations with 1D stellar evolution codes \citep{jorgensen_weiss_2019}, these calculations are prohibitively expensive to perform at every timestep in a stellar evolution simulation.
