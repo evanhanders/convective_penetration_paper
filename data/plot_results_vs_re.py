@@ -44,6 +44,7 @@ for i, d in enumerate(dirs):
         modern_f = f['modern_f'][()]
         modern_xi = f['modern_xi'][()]
         fconv_Ls = f['fconv_Ls'][()]
+        fconv_cz = f['fconv_cz'][()]
         Ls = np.mean(f['Ls'][()])
         tot_time = times[-1] - times[0]
         time_window = np.min((500, tot_time/2))
@@ -55,6 +56,7 @@ for i, d in enumerate(dirs):
         std_f   = np.std(modern_f[good_times])/np.sqrt(len(modern_f[good_times]))
         mean_xi = np.mean(modern_xi[good_times])
         mean_fconv_Ls = np.mean(fconv_Ls[good_times])
+        mean_fconv_cz = np.mean(fconv_cz[good_times])
     if 'stressfree' in d:
         sf = True
     else:
@@ -97,7 +99,7 @@ for i, d in enumerate(dirs):
             pz_visc_bl = visc_bl_upper_top - visc_bl_upper_bot
 
 
-    data.append((S, P, Re, Ls, Lz, sf, mean_L_d01, mean_L_d05, mean_L_d09, mean_f, mean_xi, mean_fconv_Ls, bot_visc_bl, pz_visc_bl, std_f))
+    data.append((S, P, Re, Ls, Lz, sf, mean_L_d01, mean_L_d05, mean_L_d09, mean_f, mean_xi, mean_fconv_Ls, mean_fconv_cz, bot_visc_bl, pz_visc_bl, std_f))
 data = np.array(data)
 S = data[:,0]
 P = data[:,1]
@@ -112,18 +114,19 @@ L_d09 = data[:,8]
 theory_f  = data[:,9]
 theory_xi = data[:,10]
 fconv_Ls = data[:,11]
-bot_bl = data[:,12]
-pz_bl  = data[:,13]
-std_f  = data[:,14]
+fconv_cz = data[:,12]
+bot_bl = 2*data[:,13]
+pz_bl  = data[:,14]
+std_f  = data[:,15]
 
 fig = plt.figure(figsize=(page_width, 2*page_width/(3*golden_ratio)))
 
-ax1 = fig.add_axes([0.00, 0.55, 0.25, 0.45])
-ax2 = fig.add_axes([0.35, 0.55, 0.25, 0.45])
-ax3 = fig.add_axes([0.70, 0.55, 0.25, 0.45])
-ax4 = fig.add_axes([0.00, 0.00, 0.25, 0.45])
-ax5 = fig.add_axes([0.35, 0.00, 0.25, 0.45])
-ax6 = fig.add_axes([0.70, 0.00, 0.25, 0.45])
+ax1 = fig.add_axes([0.00, 0.60, 0.25, 0.40])
+ax2 = fig.add_axes([0.35, 0.60, 0.25, 0.40])
+ax3 = fig.add_axes([0.70, 0.60, 0.25, 0.40])
+ax4 = fig.add_axes([0.00, 0.00, 0.25, 0.40])
+ax5 = fig.add_axes([0.35, 0.00, 0.25, 0.40])
+ax6 = fig.add_axes([0.70, 0.00, 0.25, 0.40])
 
 good = sf == 1
 ax1.scatter(Re[good], (L_d09 - Ls)[good], facecolor=(1,1,1,0.5), color='k', marker='v')
@@ -149,14 +152,7 @@ ax2.set_xlabel(r'$\mathcal{R}$')
 ax2.set_ylabel(r'$f$')
 ax2.set_xlim(2e1, 7e3)
 
-good = sf == 1
-ax4.scatter(theory_f[good], (L_d05 - Ls)[good], facecolor=(1,1,1,0.5), color='k', marker='o')
-good = sf == 0
-ax4.scatter(theory_f[good], (L_d05 - Ls)[good], color='k', marker='o', alpha=0.8)
-ax4.set_xlabel(r'$f$')
-ax4.set_ylabel(r'$\delta_{0.5}$')
-
-good = sf == 1
+good = (sf == 1)
 ax3.scatter(Re[good], theory_xi[good], facecolor=(1,1,1,0.5), color='k', marker='o')
 good = sf == 0
 ax3.scatter(Re[good], theory_xi[good], color='k', marker='o', alpha=0.8)
@@ -165,36 +161,59 @@ ax3.set_ylabel(r'$\xi$')
 ax3.set_xlabel(r'$\mathcal{R}$')
 ax3.set_xlim(2e1, 7e3)
 
-good = sf == 1
+good = (sf == 1)*(Re >= 200)
+ax4.scatter(theory_f[good], (L_d05 - Ls)[good], facecolor=(1,1,1,0.5), color='k', marker='o')
+good = (sf == 0)*(Re >= 200)
+ax4.scatter(theory_f[good], (L_d05 - Ls)[good], color='k', marker='o', alpha=0.8)
+ax4.set_xlabel(r'$f$')
+ax4.set_ylabel(r'$\delta_{0.5}$')
+ax4.set_xlim(0.63, 0.75)
+ax4.set_ylim(0.3, 0.55)
+
+
+
+good = (sf == 1)*(Re >= 200)
 ax5.errorbar(bot_bl[good], theory_f[good], yerr=std_f[good], lw=0, markerfacecolor=(1,1,1,1), color='k', marker='o')
-good = sf == 0
+good = (sf == 0)*(Re >= 200)
 ax5.errorbar(bot_bl[good], theory_f[good], yerr=std_f[good], lw=0, color='k', marker='o', alpha=0.8)
-ax5.set_xlim(0, 0.2)
-ax5.set_xlabel(r'$\delta_\nu$')
+ax5.set_xlim(0, 0.24)
+ax5.set_xlabel(r'$\ell_\nu$')
 ax5.set_ylabel(r'$f$')
 
-bl = np.linspace(-0.05, 0.2, 100)
-ax5.plot(bl, 0.755 - 1.5*bl/Ls[good][0], c='orange', label=r'$\propto \delta_\nu$')
+bl = np.linspace(-0.05, 0.4, 100)
+f_bl = 0.755*(1 - bl/Ls[good][0])
+ax5.plot(bl, f_bl, c='orange', label=r'$0.755(1 - \ell_\nu/L_s)$')
 ax5.set_ylim(0.6, 0.8)
 ax5.legend(frameon=True, fontsize=8, framealpha=0.6)
 
+xi = 0.6
+delta_func = lambda f_val: 0.9 * 4 * (1 - f_val) / ( 1 + xi * f_val * 4)
+delta = delta_func(f_bl)
+ax4.plot(f_bl, delta, c='orange', label=r'$0.9 \cdot \rm{Eqn}.~17$')
+ax4.legend(frameon=True, fontsize=8, framealpha=0.6)
+
+ax1.axhline(delta_func(0.755), c='orange')
+
 
 R = np.logspace(1, 4, 100)
-ax6.plot(R, 4*R**(-2/3), c='orange', label=r'$\propto \mathcal{R}^{-2/3}$')
-good = sf == 1
+ax6.plot(R, 8*R**(-2/3), c='orange', label=r'$ 8 \mathcal{R}^{-2/3}$')
+good = (sf == 1)*(Re >= 200)
 ax6.scatter(Re[good], bot_bl[good], facecolor=(1,1,1,0.5), color='k', marker='o')
-good = sf == 0
+good = (sf == 0)*(Re >= 200)
 ax6.scatter(Re[good], bot_bl[good], color='k', marker='o', alpha=0.8)
 ax6.set_xscale('log')
 ax6.set_yscale('log')
 ax6.set_xlabel(r'$\mathcal{R}$')
-ax6.set_ylabel(r'$\delta_\nu$')
+ax6.set_ylabel(r'$\ell_\nu$')
 ax6.legend(frameon=True, fontsize=8, framealpha=0.6)
-ax6.set_xlim(2e1, 7e3)
+ax6.set_xlim(1.5e2, 7e3)
+ax6.set_ylim(1.4e-2, 6e-1)
 
-for ax in [ax1, ax2, ax3]:
-    ax.xaxis.set_ticks_position('top')
-    ax.xaxis.set_label_position('top')
+#for ax in [ax1, ax2, ax3]:
+#    ax.xaxis.set_ticks_position('top')
+#    ax.xaxis.set_label_position('top')
+
+print(Ls, bot_bl[(sf == 1)*(Re >= 200)], Re[(sf == 1)*(Re >= 200)], delta_func(0.734), delta_func(0.755))
 
 
 plt.savefig('parameters_vs_re.png', dpi=300, bbox_inches='tight')
