@@ -75,7 +75,7 @@ Following \citet{roxburgh1989} and \citet{zahn1991}, we construct an energy-base
 We compare this theory to 3D numerical simulations using a simplified Boussinesq model of stellar convection.
 Although it can take thousands of overturn times to develop, in all cases we find significant convective penetration.
 In stellar contexts, we expect $\mathcal{P} \approx 1$ and in this regime our results suggest that convection zones may extend beyond the Schwarzschild boundary by up to $\sim$20-30\% of a mixing length.
-We present a MESA solar model which employs our parameterization of convective penetration, and find that the base of the solar convection zone extends by $\sim$35\% of a pressure scale height.
+We present a MESA solar model which employs our parameterization of convective penetration, and find that the base of the solar convection zone extends by $\sim$50\% of a pressure scale height.
 We discuss prospects for extending these results to more realistic stellar contexts.
 \end{abstract}
 \keywords{UAT keywords}
@@ -134,14 +134,15 @@ Experiments exhibiting extensive expansion of convection zones via entrainment h
 Some recent studies in simplified Boussinesq setups exhibit stiffness-dependent convection zone expansion via entrainment \citep{couston_etal_2017, toppaladoddi_wettlaufer_2018}; others find stiffness-dependent pure overshoot \citep{korre_etal_2019}.
 While a link between stiffness and entrainment and overshoot processes has seemingly emerged in previous work, a mechanism for penetration remains elusive.
 
-Studies which more closely model the conditions inside of stars have presented confusing results.
-Many studies have exhibited hints of penetrative convection -- that is, the mixing of the entropy towards an adiabatic profile beyond the convective boundary.
-Some of these studies exhibit dynamical or flux-based hints of penetration (the convective flux is negative and the radiative flux carries more than the total flux going through the simulation), but do not clearly report the value of the entropy gradient \citep{hurlburt_etal_1986, singh_etal_1995, browning_etal_2004, brun_etal_2017, pratt_etal_2017}
-Others report a change of the entropy gradient towards the adiabatic beyond the convecting region \citep{hurlburt_etal_1994, saikia_etal_2000, rogers_etal_2006, kitiashvili_etal_2016}
-Some simulations show little evidence of true penetration \citep[see e.g., the superadiabaticity profiles of][]{higl_etal_2021}.
-These simulations include simple plane-parallel studies of compressible convection as well as global 3D simulations which employ profiles from stellar structure codes as background states.
-Unfortunately, other fundamental studies in both Cartesian and spherical geometries have exhibited little to no dependence of penetration on the stiffness \citep{brummell_etal_2002, rogers_glatzmaier_2005}.
-This host of experiments suggests that convective penetration is \emph{probably} a process that happens in stars, but no clear model has emerged which explains whether convective penetration depends on stiffness or some other quantity.
+Many studies in both Cartesian and spherical geometries have exhibited hints of penetrative convection.
+Some authors report clear mixing of the entropy gradient beyond the nominal convecting region \citep{hurlburt_etal_1994, saikia_etal_2000, brummell_etal_2002, rogers_glatzmaier_2005, rogers_etal_2006, kitiashvili_etal_2016}, but it is often unclear how much mixing is due to changes in the location of the Schwarzschild boundary (entrainment) and how much is pure penetration.
+Other authors present simulations with dynamical or flux-based hints of penetration such as a negative convective flux or a radiative flux which exceeds the total system flux, but do not clearly report the value of the entropy gradient \citep{hurlburt_etal_1986, singh_etal_1995, browning_etal_2004, brun_etal_2017, pratt_etal_2017}.
+Still other simulations show negligible penetration \citep[e.g.,][]{higl_etal_2021}.
+Even detailed studies which sought a relationship between penetration depth and stiffness $\mS$ have presented contradictory results.
+Early work by e.g., \citet{hurlburt_etal_1994, singh_etal_1995} hinted at a link between $\mS$ and penetration length, at least for low values of $\mS$.
+Subsequent simulations by \citet{brummell_etal_2002} exhibit a weak scaling of penetration depth with $\mS$; the authors interpret this scaling as a sign of pure overshoot and claim their simulations do not achieve adiabatic convective penetration.
+Still later simulations by \citet{rogers_glatzmaier_2005} demonstrate a negligible scaling of the penetration depth against $\mS$ at moderate values of $\mS$.
+Prior simulations thus consistently show hints of penetration at low $\mS$ \citep[where results may not be relevant for stars,][]{couston_etal_2017}, but present confusing and contradictory results at moderate-to-high $\mS$.
 
 There are hints in the literature that convective penetration may be dependent upon energy fluxes.
 \citet{roxburgh1978, roxburgh1989, roxburgh1992, roxburgh1998} derived an ``integral constraint'' from the energy equation and found that a spatial integral of the flux puts an upper limit on the size of a theoretical penetrative region.
@@ -854,7 +855,7 @@ are good first estimates for $f$ and $\xi$ when applying our theory of penetrati
 \caption{
 (top) Profiles of $\justgrad$ (green), $\gradad$ (purple), and $\gradrad$ (orange) in a MESA solar model with a penetration zone.
 (bottom) The difference in the sound speed in the MESA model with a PZ that is presented in the top panel compared to a model run at identical parameters but without a PZ.
-We see that the addition of a PZ increases the sound speed by $\mathcal{O}$(1-2\%) below the convection zone.
+We see that the addition of a PZ increases the sound speed by $\mathcal{O}$(2\%) below the convection zone.
 \label{fig:mesa_profiles}
 }
 \end{figure}
@@ -890,9 +891,9 @@ Note that $\justgrad$ (green) remains close to $\gradad$ (purple) below the Schw
 After some depth $\justgrad \rightarrow \gradrad$ (orange) in the star's interior.
 We additionally evolved a standard solar MESA model to a 4.56 Gyr age without the inclusion of a PZ.
 We compare the sound speed profiles of the PZ and standard (std) model in the bottom panel of Fig.~\ref{fig:mesa_profiles}.
-We see that the inclusion of a PZ leads to an $\mathcal{O}$(1-2\%) increase in the sound speed profile near the base of the solar convection zone, similar to what is observed between helioseismic observations and standard models \citep{bergemann_serenelli_2014}.
+We see that the inclusion of a PZ leads to an $\mathcal{O}$(2\%) increase in the sound speed profile near the base of the solar convection zone, similar to what is observed between helioseismic observations and standard models \citep{bergemann_serenelli_2014}.
 
-At the Schwarzschild base of the CZ, we find $H_p \approx 0.082R_\odot$, and the depth of the penetration zone in Fig.~\ref{fig:mesa_profiles} is $0.030R_\odot$, such that this PZ extends $\sim 36$\% of a scale height below the convection zone.
+At the Schwarzschild base of the CZ, we find $H_p \approx 0.082R_\odot$, and the depth of the penetration zone in Fig.~\ref{fig:mesa_profiles} is $0.042R_\odot$, such that this PZ extends $\sim 50$\% of a scale height below the convection zone.
 Helioseismic studies have suggested that a PZ depth should be constrained to 5-10\% of $H_P$ \citep{basu_etal_1994, basu2016}; these constraints are significantly smaller than our crude model.
 Some recent simulations \citep{kapyla2019} have suggested that solar convection could exhibit penetration depths of $0.2 H_P$, which are closer to these models but still smaller than what we measure.
 Despite these discrepancies, Fig.~\ref{fig:mesa_profiles} shows the promise of a convective penetration parameterization such as the one presented here.
