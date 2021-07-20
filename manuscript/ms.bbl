@@ -1,0 +1,469 @@
+\begin{thebibliography}{}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\providecommand{\url}[1]{\href{#1}{#1}}
+\providecommand{\dodoi}[1]{doi:~\href{http://doi.org/#1}{\nolinkurl{#1}}}
+\providecommand{\doeprint}[1]{\href{http://ascl.net/#1}{\nolinkurl{http://ascl.net/#1}}}
+\providecommand{\doarXiv}[1]{\href{https://arxiv.org/abs/#1}{\nolinkurl{https://arxiv.org/abs/#1}}}
+
+\bibitem[{{Aerts} {et~al.}(2010){Aerts}, {Christensen-Dalsgaard}, \&
+  {Kurtz}}]{aerts2010}
+{Aerts}, C., {Christensen-Dalsgaard}, J., \& {Kurtz}, D.~W. 2010,
+  {Asteroseismology} (Springer)
+
+\bibitem[{{Ahlers} {et~al.}(2009){Ahlers}, {Grossmann}, \&
+  {Lohse}}]{ahlers_etal_2009}
+{Ahlers}, G., {Grossmann}, S., \& {Lohse}, D. 2009, Reviews of Modern Physics,
+  81, 503, \dodoi{10.1103/RevModPhys.81.503}
+
+\bibitem[{{Alastuey} \& {Jancovici}(1978)}]{Alastuey1978}
+{Alastuey}, A., \& {Jancovici}, B. 1978, \apj, 226, 1034,
+  \dodoi{10.1086/156681}
+
+\bibitem[{{Anders} {et~al.}(2018){Anders}, {Brown}, \&
+  {Oishi}}]{anders_etal_2018}
+{Anders}, E.~H., {Brown}, B.~P., \& {Oishi}, J.~S. 2018, Physical Review
+  Fluids, 3, 083502, \dodoi{10.1103/PhysRevFluids.3.083502}
+
+\bibitem[{{Asplund} {et~al.}(2021){Asplund}, {Amarsi}, \&
+  {Grevesse}}]{asplund_etal_2021}
+{Asplund}, M., {Amarsi}, A.~M., \& {Grevesse}, N. 2021, arXiv e-prints,
+  arXiv:2105.01661.
+\newblock \doarXiv{2105.01661}
+
+\bibitem[{{Bahcall} {et~al.}(2005){Bahcall}, {Serenelli}, \&
+  {Basu}}]{bahcall_etal_2005}
+{Bahcall}, J.~N., {Serenelli}, A.~M., \& {Basu}, S. 2005, \apjl, 621, L85,
+  \dodoi{10.1086/428929}
+
+\bibitem[{{Basu}(2016)}]{basu2016}
+{Basu}, S. 2016, Living Reviews in Solar Physics, 13, 2,
+  \dodoi{10.1007/s41116-016-0003-4}
+
+\bibitem[{{Basu} \& {Antia}(2004)}]{basu_antia_2004}
+{Basu}, S., \& {Antia}, H.~M. 2004, \apjl, 606, L85, \dodoi{10.1086/421110}
+
+\bibitem[{{Bergemann} \& {Serenelli}(2014)}]{bergemann_serenelli_2014}
+{Bergemann}, M., \& {Serenelli}, A. 2014, {Solar Abundance Problem}, 245--258,
+  \dodoi{10.1007/978-3-319-06956-2\_21}
+
+\bibitem[{{B{\"o}hm-Vitense}(1958)}]{bohm-vitense1958}
+{B{\"o}hm-Vitense}, E. 1958, \zap, 46, 108
+
+\bibitem[{{Browning} {et~al.}(2004){Browning}, {Brun}, \&
+  {Toomre}}]{browning_etal_2004}
+{Browning}, M.~K., {Brun}, A.~S., \& {Toomre}, J. 2004, \apj, 601, 512,
+  \dodoi{10.1086/380198}
+
+\bibitem[{{Brummell} {et~al.}(2002){Brummell}, {Clune}, \&
+  {Toomre}}]{brummell_etal_2002}
+{Brummell}, N.~H., {Clune}, T.~L., \& {Toomre}, J. 2002, \apj, 570, 825,
+  \dodoi{10.1086/339626}
+
+\bibitem[{{Brun} \& {Browning}(2017)}]{brun_browning_2017}
+{Brun}, A.~S., \& {Browning}, M.~K. 2017, Living Reviews in Solar Physics, 14,
+  4, \dodoi{10.1007/s41116-017-0007-8}
+
+\bibitem[{{Brun} {et~al.}(2017){Brun}, {Strugarek}, {Varela}, {Matt},
+  {Augustson}, {Emeriau}, {DoCao}, {Brown}, \& {Toomre}}]{brun_etal_2017}
+{Brun}, A.~S., {Strugarek}, A., {Varela}, J., {et~al.} 2017, \apj, 836, 192,
+  \dodoi{10.3847/1538-4357/aa5c40}
+
+\bibitem[{{Buchler} \& {Yueh}(1976)}]{Buchler1976}
+{Buchler}, J.~R., \& {Yueh}, W.~R. 1976, \apj, 210, 440, \dodoi{10.1086/154847}
+
+\bibitem[{{Burns} {et~al.}(2020){Burns}, {Vasil}, {Oishi}, {Lecoanet}, \&
+  {Brown}}]{burns_etal_2020}
+{Burns}, K.~J., {Vasil}, G.~M., {Oishi}, J.~S., {Lecoanet}, D., \& {Brown},
+  B.~P. 2020, Physical Review Research, 2, 023068,
+  \dodoi{10.1103/PhysRevResearch.2.023068}
+
+\bibitem[{{Carlos} {et~al.}(2019){Carlos}, {Mel{\'e}ndez}, {Spina}, {dos
+  Santos}, {Bedell}, {Ramirez}, {Asplund}, {Bean}, {Yong}, {Yana Galarza}, \&
+  {Alves-Brito}}]{carlos_etal_2019}
+{Carlos}, M., {Mel{\'e}ndez}, J., {Spina}, L., {et~al.} 2019, \mnras, 485,
+  4052, \dodoi{10.1093/mnras/stz681}
+
+\bibitem[{{Cassisi} {et~al.}(2007){Cassisi}, {Potekhin}, {Pietrinferni},
+  {Catelan}, \& {Salaris}}]{Cassisi2007}
+{Cassisi}, S., {Potekhin}, A.~Y., {Pietrinferni}, A., {Catelan}, M., \&
+  {Salaris}, M. 2007, \apj, 661, 1094, \dodoi{10.1086/516819}
+
+\bibitem[{{Caswell} {et~al.}(2021){Caswell}, {Droettboom}, {Lee}, {Sales De
+  Andrade}, {Hunter}, {Firing}, {Hoffmann}, {Klymak}, {Stansby}, {Varoquaux},
+  {Hedegaard Nielsen}, {Root}, {May}, {Elson}, {Sepp{\"a}nen}, {Dale}, {Lee},
+  {McDougall}, {Straw}, {Hobson}, {Gohlke}, {Yu}, {Ma}, {Vincent}, {Hannah},
+  {Silvester}, {Moad}, {Kniazev}, {Ernest}, \& {Ivanov}}]{mpl3.3.4}
+{Caswell}, T.~A., {Droettboom}, M., {Lee}, A., {et~al.} 2021,
+  {matplotlib/matplotlib: REL: v3.3.4}, v3.3.4,  Zenodo,
+  \dodoi{10.5281/zenodo.4475376}
+
+\bibitem[{{Christensen-Dalsgaard}(2021)}]{christensen-dalsgaard_2021}
+{Christensen-Dalsgaard}, J. 2021, Living Reviews in Solar Physics, 18, 2,
+  \dodoi{10.1007/s41116-020-00028-3}
+
+\bibitem[{{Christensen-Dalsgaard} {et~al.}(2011){Christensen-Dalsgaard},
+  {Monteiro}, {Rempel}, \& {Thompson}}]{christensen-dalsgaard_etal_2011}
+{Christensen-Dalsgaard}, J., {Monteiro}, M.~J.~P.~F.~G., {Rempel}, M., \&
+  {Thompson}, M.~J. 2011, \mnras, 414, 1158,
+  \dodoi{10.1111/j.1365-2966.2011.18460.x}
+
+\bibitem[{{Claret} \& {Torres}(2018)}]{claret_torres_2018}
+{Claret}, A., \& {Torres}, G. 2018, \apj, 859, 100,
+  \dodoi{10.3847/1538-4357/aabd35}
+
+\bibitem[{{Couston} {et~al.}(2017){Couston}, {Lecoanet}, {Favier}, \& {Le
+  Bars}}]{couston_etal_2017}
+{Couston}, L.~A., {Lecoanet}, D., {Favier}, B., \& {Le Bars}, M. 2017, Physical
+  Review Fluids, 2, 094804, \dodoi{10.1103/PhysRevFluids.2.094804}
+
+\bibitem[{{Cristini} {et~al.}(2017){Cristini}, {Meakin}, {Hirschi}, {Arnett},
+  {Georgy}, {Viallet}, \& {Walkington}}]{cristini_etal_2017}
+{Cristini}, A., {Meakin}, C., {Hirschi}, R., {et~al.} 2017, \mnras, 471, 279,
+  \dodoi{10.1093/mnras/stx1535}
+
+\bibitem[{{Currie} \& {Browning}(2017)}]{currie_browning_2017}
+{Currie}, L.~K., \& {Browning}, M.~K. 2017, \apjl, 845, L17,
+  \dodoi{10.3847/2041-8213/aa8301}
+
+\bibitem[{{Cyburt} {et~al.}(2010){Cyburt}, {Amthor}, {Ferguson}, {Meisel},
+  {Smith}, {Warren}, {Heger}, {Hoffman}, {Rauscher}, {Sakharuk}, {Schatz},
+  {Thielemann}, \& {Wiescher}}]{Cyburt2010}
+{Cyburt}, R.~H., {Amthor}, A.~M., {Ferguson}, R., {et~al.} 2010, \apjs, 189,
+  240, \dodoi{10.1088/0067-0049/189/1/240}
+
+\bibitem[{{Deardorff} {et~al.}(1969){Deardorff}, {Willis}, \&
+  {Lilly}}]{deardorff_etal_1969}
+{Deardorff}, J.~W., {Willis}, G.~E., \& {Lilly}, D.~K. 1969, Journal of Fluid
+  Mechanics, 35, 7, \dodoi{10.1017/S0022112069000942}
+
+\bibitem[{{Dewitt} {et~al.}(1973){Dewitt}, {Graboske}, \&
+  {Cooper}}]{Dewitt1973}
+{Dewitt}, H.~E., {Graboske}, H.~C., \& {Cooper}, M.~S. 1973, \apj, 181, 439,
+  \dodoi{10.1086/152061}
+
+\bibitem[{{Dietrich} \& {Wicht}(2018)}]{dietrich_wicht_2018}
+{Dietrich}, W., \& {Wicht}, J. 2018, Frontiers in Earth Science, 6, 189,
+  \dodoi{10.3389/feart.2018.00189}
+
+\bibitem[{{Dumont} {et~al.}(2021){Dumont}, {Palacios}, {Charbonnel}, {Richard},
+  {Amard}, {Augustson}, \& {Mathis}}]{dumont_etal_2021}
+{Dumont}, T., {Palacios}, A., {Charbonnel}, C., {et~al.} 2021, \aap, 646, A48,
+  \dodoi{10.1051/0004-6361/202039515}
+
+\bibitem[{{Farmer} {et~al.}(2019){Farmer}, {Renzo}, {de Mink}, {Marchant}, \&
+  {Justham}}]{farmer_etal_2019}
+{Farmer}, R., {Renzo}, M., {de Mink}, S.~E., {Marchant}, P., \& {Justham}, S.
+  2019, \apj, 887, 53, \dodoi{10.3847/1538-4357/ab518b}
+
+\bibitem[{{Ferguson} {et~al.}(2005){Ferguson}, {Alexander}, {Allard}, {Barman},
+  {Bodnarik}, {Hauschildt}, {Heffner-Wong}, \& {Tamanai}}]{Ferguson2005}
+{Ferguson}, J.~W., {Alexander}, D.~R., {Allard}, F., {et~al.} 2005, \apj, 623,
+  585, \dodoi{10.1086/428642}
+
+\bibitem[{{Fuentes} \& {Cumming}(2020)}]{fuentes_cumming_2020}
+{Fuentes}, J.~R., \& {Cumming}, A. 2020, Physical Review Fluids, 5, 124501,
+  \dodoi{10.1103/PhysRevFluids.5.124501}
+
+\bibitem[{{Fuller} {et~al.}(1985){Fuller}, {Fowler}, \& {Newman}}]{Fuller1985}
+{Fuller}, G.~M., {Fowler}, W.~A., \& {Newman}, M.~J. 1985, \apj, 293, 1,
+  \dodoi{10.1086/163208}
+
+\bibitem[{{Garaud}(2021)}]{garaud2021}
+{Garaud}, P. 2021, Physical Review Fluids, 6, 030501,
+  \dodoi{10.1103/PhysRevFluids.6.030501}
+
+\bibitem[{{Goluskin}(2016)}]{goluskin2016}
+{Goluskin}, D. 2016, {Internally heated convection and Rayleigh-B{\'e}nard
+  convection} (Springer International Publishing), arXiv:1506.01656,
+  \dodoi{10.1007/978-3-319-23941-5}
+
+\bibitem[{{Hansen} {et~al.}(2004){Hansen}, {Kawaler}, \&
+  {Trimble}}]{hansen_etal_2004}
+{Hansen}, C.~J., {Kawaler}, S.~D., \& {Trimble}, V. 2004, {Stellar interiors :
+  physical principles, structure, and evolution} (Springer)
+
+\bibitem[{{Herwig}(2000)}]{herwig2000}
+{Herwig}, F. 2000, \aap, 360, 952.
+\newblock \doarXiv{astro-ph/0007139}
+
+\bibitem[{{Higgins} \& {Vink}(2020)}]{higgins_vink_2020}
+{Higgins}, E.~R., \& {Vink}, J.~S. 2020, \aap, 635, A175,
+  \dodoi{10.1051/0004-6361/201937374}
+
+\bibitem[{{Higl} {et~al.}(2021){Higl}, {M{\"u}ller}, \&
+  {Weiss}}]{higl_etal_2021}
+{Higl}, J., {M{\"u}ller}, E., \& {Weiss}, A. 2021, \aap, 646, A133,
+  \dodoi{10.1051/0004-6361/202039532}
+
+\bibitem[{{Horst} {et~al.}(2021){Horst}, {Hirschi}, {Edelmann}, {Andrassy}, \&
+  {Roepke}}]{horst_etal_2021}
+{Horst}, L., {Hirschi}, R., {Edelmann}, P.~V.~F., {Andrassy}, R., \& {Roepke},
+  F.~K. 2021, arXiv e-prints, arXiv:2107.02199.
+\newblock \doarXiv{2107.02199}
+
+\bibitem[{{Hotta}(2017)}]{hotta2017}
+{Hotta}, H. 2017, \apj, 843, 52, \dodoi{10.3847/1538-4357/aa784b}
+
+\bibitem[{{Hunter}(2007)}]{hunter2007}
+{Hunter}, J.~D. 2007, Computing in Science and Engineering, 9, 90,
+  \dodoi{10.1109/MCSE.2007.55}
+
+\bibitem[{{Hurlburt} {et~al.}(1986){Hurlburt}, {Toomre}, \&
+  {Massaguer}}]{hurlburt_etal_1986}
+{Hurlburt}, N.~E., {Toomre}, J., \& {Massaguer}, J.~M. 1986, \apj, 311, 563,
+  \dodoi{10.1086/164796}
+
+\bibitem[{{Hurlburt} {et~al.}(1994){Hurlburt}, {Toomre}, {Massaguer}, \&
+  {Zahn}}]{hurlburt_etal_1994}
+{Hurlburt}, N.~E., {Toomre}, J., {Massaguer}, J.~M., \& {Zahn}, J.-P. 1994,
+  \apj, 421, 245, \dodoi{10.1086/173642}
+
+\bibitem[{{Iglesias} \& {Rogers}(1993)}]{Iglesias1993}
+{Iglesias}, C.~A., \& {Rogers}, F.~J. 1993, \apj, 412, 752,
+  \dodoi{10.1086/172958}
+
+\bibitem[{{Iglesias} \& {Rogers}(1996)}]{Iglesias1996}
+---. 1996, \apj, 464, 943, \dodoi{10.1086/177381}
+
+\bibitem[{{Irwin}(2004)}]{Irwin2004}
+{Irwin}, A.~W. 2004, The FreeEOS Code for Calculating the Equation of State for
+  Stellar Interiors.
+\newblock \url{http://freeeos.sourceforge.net/}
+
+\bibitem[{{Itoh} {et~al.}(1979){Itoh}, {Totsuji}, {Ichimaru}, \&
+  {Dewitt}}]{Itoh1979}
+{Itoh}, N., {Totsuji}, H., {Ichimaru}, S., \& {Dewitt}, H.~E. 1979, \apj, 234,
+  1079, \dodoi{10.1086/157590}
+
+\bibitem[{{Jermyn} {et~al.}(2018){Jermyn}, {Tout}, \&
+  {Chitre}}]{jermyn_etal_2018}
+{Jermyn}, A.~S., {Tout}, C.~A., \& {Chitre}, S.~M. 2018, \mnras, 480, 5427,
+  \dodoi{10.1093/mnras/sty1831}
+
+\bibitem[{{J{\o}rgensen} \& {Weiss}(2019)}]{jorgensen_weiss_2019}
+{J{\o}rgensen}, A. C.~S., \& {Weiss}, A. 2019, \mnras, 488, 3463,
+  \dodoi{10.1093/mnras/stz1980}
+
+\bibitem[{{K{\"a}pyl{\"a}}(2019)}]{kapyla2019}
+{K{\"a}pyl{\"a}}, P.~J. 2019, \aap, 631, A122,
+  \dodoi{10.1051/0004-6361/201834921}
+
+\bibitem[{{K{\"a}pyl{\"a}}(2021)}]{kapyla2021}
+---. 2021, arXiv e-prints, arXiv:2105.08453.
+\newblock \doarXiv{2105.08453}
+
+\bibitem[{{K{\"a}pyl{\"a}} {et~al.}(2007){K{\"a}pyl{\"a}}, {Korpi}, {Stix}, \&
+  {Tuominen}}]{kapyla_etal_2007}
+{K{\"a}pyl{\"a}}, P.~J., {Korpi}, M.~J., {Stix}, M., \& {Tuominen}, I. 2007, in
+  Convection in Astrophysics, ed. F.~{Kupka}, I.~{Roxburgh}, \& K.~L. {Chan},
+  Vol. 239, 437--442, \dodoi{10.1017/S1743921307000865}
+
+\bibitem[{{K{\"a}pyl{\"a}} {et~al.}(2017){K{\"a}pyl{\"a}}, {Rheinhardt},
+  {Brandenburg}, {Arlt}, {K{\"a}pyl{\"a}}, {Lagg}, {Olspert}, \&
+  {Warnecke}}]{kapyla_etal_2017}
+{K{\"a}pyl{\"a}}, P.~J., {Rheinhardt}, M., {Brandenburg}, A., {et~al.} 2017,
+  \apjl, 845, L23, \dodoi{10.3847/2041-8213/aa83ab}
+
+\bibitem[{{Kitiashvili} {et~al.}(2016){Kitiashvili}, {Kosovichev}, {Mansour},
+  \& {Wray}}]{kitiashvili_etal_2016}
+{Kitiashvili}, I.~N., {Kosovichev}, A.~G., {Mansour}, N.~N., \& {Wray}, A.~A.
+  2016, \apjl, 821, L17, \dodoi{10.3847/2041-8205/821/1/L17}
+
+\bibitem[{{Korre} {et~al.}(2019){Korre}, {Garaud}, \&
+  {Brummell}}]{korre_etal_2019}
+{Korre}, L., {Garaud}, P., \& {Brummell}, N.~H. 2019, \mnras, 484, 1220,
+  \dodoi{10.1093/mnras/stz047}
+
+\bibitem[{{Langanke} \& {Mart{\'{\i}}nez-Pinedo}(2000)}]{Langanke2000}
+{Langanke}, K., \& {Mart{\'{\i}}nez-Pinedo}, G. 2000, Nuclear Physics A, 673,
+  481, \dodoi{10.1016/S0375-9474(00)00131-7}
+
+\bibitem[{{Maeder}(1975)}]{maeder1975}
+{Maeder}, A. 1975, \aap, 40, 303
+
+\bibitem[{{Marcus} {et~al.}(1983){Marcus}, {Press}, \&
+  {Teukolsky}}]{marcus_etal_1983}
+{Marcus}, P.~S., {Press}, W.~H., \& {Teukolsky}, S.~A. 1983, \apj, 267, 795,
+  \dodoi{10.1086/160915}
+
+\bibitem[{{Martinet} {et~al.}(2021){Martinet}, {Meynet}, {Ekstr{\"o}m},
+  {Sim{\'o}n-D{\'\i}az}, {Holgado}, {Castro}, {Georgy}, {Eggenberger},
+  {Buldgen}, {Salmon}, {Hirschi}, {Groh}, {Farrell}, \&
+  {Murphy}}]{martinet_etal_2021}
+{Martinet}, S., {Meynet}, G., {Ekstr{\"o}m}, S., {et~al.} 2021, \aap, 648,
+  A126, \dodoi{10.1051/0004-6361/202039426}
+
+\bibitem[{{Meakin} \& {Arnett}(2007)}]{meakin_arnett_2007}
+{Meakin}, C.~A., \& {Arnett}, D. 2007, \apj, 667, 448, \dodoi{10.1086/520318}
+
+\bibitem[{{Moore} \& {Weiss}(1973)}]{moore_weiss_1973}
+{Moore}, D.~R., \& {Weiss}, N.~O. 1973, Journal of Fluid Mechanics, 61, 553,
+  \dodoi{10.1017/S0022112073000868}
+
+\bibitem[{{Musman}(1968)}]{musman1968}
+{Musman}, S. 1968, Journal of Fluid Mechanics, 31, 343,
+  \dodoi{10.1017/S0022112068000194}
+
+\bibitem[{{Oda} {et~al.}(1994){Oda}, {Hino}, {Muto}, {Takahara}, \&
+  {Sato}}]{Oda1994}
+{Oda}, T., {Hino}, M., {Muto}, K., {Takahara}, M., \& {Sato}, K. 1994, Atomic
+  Data and Nuclear Data Tables, 56, 231, \dodoi{10.1006/adnd.1994.1007}
+
+\bibitem[{{Paxton} {et~al.}(2011){Paxton}, {Bildsten}, {Dotter}, {Herwig},
+  {Lesaffre}, \& {Timmes}}]{paxton_etal_2011}
+{Paxton}, B., {Bildsten}, L., {Dotter}, A., {et~al.} 2011, \apjs, 192, 3,
+  \dodoi{10.1088/0067-0049/192/1/3}
+
+\bibitem[{{Paxton} {et~al.}(2013){Paxton}, {Cantiello}, {Arras}, {Bildsten},
+  {Brown}, {Dotter}, {Mankovich}, {Montgomery}, {Stello}, {Timmes}, \&
+  {Townsend}}]{paxton_etal_2013}
+{Paxton}, B., {Cantiello}, M., {Arras}, P., {et~al.} 2013, \apjs, 208, 4,
+  \dodoi{10.1088/0067-0049/208/1/4}
+
+\bibitem[{{Paxton} {et~al.}(2015){Paxton}, {Marchant}, {Schwab}, {Bauer},
+  {Bildsten}, {Cantiello}, {Dessart}, {Farmer}, {Hu}, {Langer}, {Townsend},
+  {Townsley}, \& {Timmes}}]{paxton_etal_2015}
+{Paxton}, B., {Marchant}, P., {Schwab}, J., {et~al.} 2015, \apjs, 220, 15,
+  \dodoi{10.1088/0067-0049/220/1/15}
+
+\bibitem[{{Paxton} {et~al.}(2018){Paxton}, {Schwab}, {Bauer}, {Bildsten},
+  {Blinnikov}, {Duffell}, {Farmer}, {Goldberg}, {Marchant}, {Sorokina},
+  {Thoul}, {Townsend}, \& {Timmes}}]{paxton_etal_2018}
+{Paxton}, B., {Schwab}, J., {Bauer}, E.~B., {et~al.} 2018, \apjs, 234, 34,
+  \dodoi{10.3847/1538-4365/aaa5a8}
+
+\bibitem[{{Paxton} {et~al.}(2019){Paxton}, {Smolec}, {Schwab}, {Gautschy},
+  {Bildsten}, {Cantiello}, {Dotter}, {Farmer}, {Goldberg}, {Jermyn}, {Kanbur},
+  {Marchant}, {Thoul}, {Townsend}, {Wolf}, {Zhang}, \&
+  {Timmes}}]{paxton_etal_2019}
+{Paxton}, B., {Smolec}, R., {Schwab}, J., {et~al.} 2019, \apjs, 243, 10,
+  \dodoi{10.3847/1538-4365/ab2241}
+
+\bibitem[{{Pedersen} {et~al.}(2021){Pedersen}, {Aerts}, {P{\'a}pics},
+  {Michielsen}, {Gebruers}, {Rogers}, {Molenberghs}, {Burssens}, {Garcia}, \&
+  {Bowman}}]{pedersen_etal_2021}
+{Pedersen}, M.~G., {Aerts}, C., {P{\'a}pics}, P.~I., {et~al.} 2021, arXiv
+  e-prints, arXiv:2105.04533.
+\newblock \doarXiv{2105.04533}
+
+\bibitem[{{Pinsonneault}(1997)}]{pinsonneault1997}
+{Pinsonneault}, M. 1997, \araa, 35, 557, \dodoi{10.1146/annurev.astro.35.1.557}
+
+\bibitem[{Pinsonneault(2019)}]{pm}
+Pinsonneault, M. 2019, Evolution of low mass stars,  Zenodo,
+  \dodoi{10.5281/zenodo.3374959}
+
+\bibitem[{{Potekhin} \& {Chabrier}(2010)}]{Potekhin2010}
+{Potekhin}, A.~Y., \& {Chabrier}, G. 2010, Contributions to Plasma Physics, 50,
+  82, \dodoi{10.1002/ctpp.201010017}
+
+\bibitem[{{Pratt} {et~al.}(2017){Pratt}, {Baraffe}, {Goffrey}, {Constantino},
+  {Viallet}, {Popov}, {Walder}, \& {Folini}}]{pratt_etal_2017}
+{Pratt}, J., {Baraffe}, I., {Goffrey}, T., {et~al.} 2017, \aap, 604, A125,
+  \dodoi{10.1051/0004-6361/201630362}
+
+\bibitem[{{Rempel}(2004)}]{rempel2004}
+{Rempel}, M. 2004, \apj, 607, 1046, \dodoi{10.1086/383605}
+
+\bibitem[{{Rogers} \& {Nayfonov}(2002)}]{Rogers2002}
+{Rogers}, F.~J., \& {Nayfonov}, A. 2002, \apj, 576, 1064,
+  \dodoi{10.1086/341894}
+
+\bibitem[{{Rogers} \& {Glatzmaier}(2005)}]{rogers_glatzmaier_2005}
+{Rogers}, T.~M., \& {Glatzmaier}, G.~A. 2005, \apj, 620, 432,
+  \dodoi{10.1086/423415}
+
+\bibitem[{{Rogers} {et~al.}(2006){Rogers}, {Glatzmaier}, \&
+  {Jones}}]{rogers_etal_2006}
+{Rogers}, T.~M., {Glatzmaier}, G.~A., \& {Jones}, C.~A. 2006, \apj, 653, 765,
+  \dodoi{10.1086/508482}
+
+\bibitem[{{Roxburgh}(1978)}]{roxburgh1978}
+{Roxburgh}, I.~W. 1978, \aap, 65, 281
+
+\bibitem[{{Roxburgh}(1989)}]{roxburgh1989}
+---. 1989, \aap, 211, 361
+
+\bibitem[{{Roxburgh}(1992)}]{roxburgh1992}
+---. 1992, \aap, 266, 291
+
+\bibitem[{{Roxburgh}(1998)}]{roxburgh1998}
+---. 1998, \apss, 261, 43, \dodoi{10.1023/A:1002029105802}
+
+\bibitem[{{Saikia} {et~al.}(2000){Saikia}, {Singh}, {Chan}, {Roxburgh}, \&
+  {Srivastava}}]{saikia_etal_2000}
+{Saikia}, E., {Singh}, H.~P., {Chan}, K.~L., {Roxburgh}, I.~W., \&
+  {Srivastava}, M.~P. 2000, \apj, 529, 402, \dodoi{10.1086/308249}
+
+\bibitem[{{Salaris} \& {Cassisi}(2017)}]{salaris_cassisi_2017}
+{Salaris}, M., \& {Cassisi}, S. 2017, Royal Society Open Science, 4, 170192,
+  \dodoi{10.1098/rsos.170192}
+
+\bibitem[{{Salpeter}(1954)}]{Salpeter1954}
+{Salpeter}, E.~E. 1954, Australian Journal of Physics, 7, 373,
+  \dodoi{10.1071/PH540373}
+
+\bibitem[{{Saumon} {et~al.}(1995){Saumon}, {Chabrier}, \& {van
+  Horn}}]{Saumon1995}
+{Saumon}, D., {Chabrier}, G., \& {van Horn}, H.~M. 1995, \apjs, 99, 713,
+  \dodoi{10.1086/192204}
+
+\bibitem[{{Shaviv} \& {Salpeter}(1973)}]{shaviv_salpeter_1973}
+{Shaviv}, G., \& {Salpeter}, E.~E. 1973, \apj, 184, 191, \dodoi{10.1086/152318}
+
+\bibitem[{{Singh} {et~al.}(1995){Singh}, {Roxburgh}, \&
+  {Chan}}]{singh_etal_1995}
+{Singh}, H.~P., {Roxburgh}, I.~W., \& {Chan}, K.~L. 1995, \aap, 295, 703
+
+\bibitem[{{Singh} {et~al.}(1998){Singh}, {Roxburgh}, \&
+  {Chan}}]{singh_etal_1998}
+---. 1998, \aap, 340, 178
+
+\bibitem[{{Spiegel} \& {Veronis}(1960)}]{spiegel_veronis_1960}
+{Spiegel}, E.~A., \& {Veronis}, G. 1960, \apj, 131, 442, \dodoi{10.1086/146849}
+
+\bibitem[{{Tian} {et~al.}(2009){Tian}, {Deng}, \& {Chan}}]{tian_etal_2009}
+{Tian}, C.-L., {Deng}, L.-C., \& {Chan}, K.-L. 2009, \mnras, 398, 1011,
+  \dodoi{10.1111/j.1365-2966.2009.15178.x}
+
+\bibitem[{{Timmes} \& {Swesty}(2000)}]{Timmes2000}
+{Timmes}, F.~X., \& {Swesty}, F.~D. 2000, \apjs, 126, 501,
+  \dodoi{10.1086/313304}
+
+\bibitem[{{Toppaladoddi} \& {Wettlaufer}(2018)}]{toppaladoddi_wettlaufer_2018}
+{Toppaladoddi}, S., \& {Wettlaufer}, J.~S. 2018, Physical Review Fluids, 3,
+  043501, \dodoi{10.1103/PhysRevFluids.3.043501}
+
+\bibitem[{{Viallet} {et~al.}(2013){Viallet}, {Meakin}, {Arnett}, \&
+  {Moc{\'a}k}}]{viallet_etal_2013}
+{Viallet}, M., {Meakin}, C., {Arnett}, D., \& {Moc{\'a}k}, M. 2013, \apj, 769,
+  1, \dodoi{10.1088/0004-637X/769/1/1}
+
+\bibitem[{{Viallet} {et~al.}(2015){Viallet}, {Meakin}, {Prat}, \&
+  {Arnett}}]{viallet_etal_2015}
+{Viallet}, M., {Meakin}, C., {Prat}, V., \& {Arnett}, D. 2015, \aap, 580, A61,
+  \dodoi{10.1051/0004-6361/201526294}
+
+\bibitem[{{Viani} \& {Basu}(2020)}]{viani_basu_2020}
+{Viani}, L.~S., \& {Basu}, S. 2020, \apj, 904, 22,
+  \dodoi{10.3847/1538-4357/abba17}
+
+\bibitem[{{Vinyoles} {et~al.}(2017){Vinyoles}, {Serenelli}, {Villante}, {Basu},
+  {Bergstr{\"o}m}, {Gonzalez-Garcia}, {Maltoni}, {Pe{\~n}a-Garay}, \&
+  {Song}}]{vinyoles_etal_2017}
+{Vinyoles}, N., {Serenelli}, A.~M., {Villante}, F.~L., {et~al.} 2017, \apj,
+  835, 202, \dodoi{10.3847/1538-4357/835/2/202}
+
+\bibitem[{Wang \& Ruuth(2008)}]{wang&ruuth2008}
+Wang, D., \& Ruuth, S.~J. 2008, Journal of Computational Mathematics, 26, 838.
+\newblock \url{http://www.jstor.org/stable/43693484}
+
+\bibitem[{{Woosley} {et~al.}(2002){Woosley}, {Heger}, \&
+  {Weaver}}]{woosley_etal_2002}
+{Woosley}, S.~E., {Heger}, A., \& {Weaver}, T.~A. 2002, Reviews of Modern
+  Physics, 74, 1015, \dodoi{10.1103/RevModPhys.74.1015}
+
+\bibitem[{{Zahn}(1991)}]{zahn1991}
+{Zahn}, J.~P. 1991, \aap, 252, 179
+
+\end{thebibliography}
