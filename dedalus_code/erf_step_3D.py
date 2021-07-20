@@ -47,6 +47,7 @@ Options:
 
     --adiabatic_IC             If flagged, set the background profile as a pure adiabat (not thermal equilibrium in RZ)
     --predictive=<delta>       A guess for delta_P the penetration depth. The initial state grad(T) will be an erf from grad(T_ad) to grad(T_rad) centered at L_cz + delta_P
+    --predictive_width=<w>     Erf width for predictive ICs [default: 0.05]
     --plot_model               If flagged, create and plt.show() some plots of the 1D atmospheric structure.
 
     --T_iters=<N>              Number of times to iterate background profile before pure timestepping [default: 100]
@@ -495,7 +496,8 @@ def run_cartesian_instability(args):
             z_p = L_cz + float(args['--predictive'])
             logger.info('using predictive 1D ICs with zp: {:.2f}'.format(z_p))
 
-            T_z = -grad_ad + (T_rad_z0['g'] + grad_ad)*zero_to_one(z_de, z_p, width=0.05)
+            width = float(args['--predictive_width'])
+            T_z = -grad_ad + (T_rad_z0['g'] + grad_ad)*zero_to_one(z_de, z_p, width=width)
             T1_z['g'] = T_z - T0_z['g']
             T1_z.antidifferentiate('z', ('right', 0), out=T1)
 

@@ -1,0 +1,17 @@
+[parameters]
+Re = 3.2e3
+S = 1e3
+P = 4e0
+Lz = 2
+nz = 256
+nx = 256
+run_time_wall = 119.5
+run_time_ff = 8e3
+
+stress_free=true
+T_iters=0
+
+restart=stressfree_erf_Re_cut/erf_step_3D_Re3.2e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_256x256x256_stressfree/final_checkpoint/final_checkpoint_s1.h5
+
+SBDF2=true
+safety=0.35
