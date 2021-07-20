@@ -15,5 +15,5 @@ PEN=8e0
 STIFF=1e3
 CONF=config/paper_linear_P_cut/linear_re8e2_P8e0_S1e3
 date
-mpiexec_mpt -n 1024 python3 linear_3D.py  $CONF  > out.paper_P.linear.re$RE.P$PEN.S$STIFF.$PBS_JOBID
+/u/scicon/tools/bin/several_tries mpiexec_mpt -n 1024 python3 linear_3D.py  $CONF  > out.paper_P.linear.re$RE.P$PEN.S$STIFF.$PBS_JOBID
 date

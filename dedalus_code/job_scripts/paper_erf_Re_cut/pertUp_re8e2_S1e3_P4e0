@@ -1,6 +1,6 @@
 #PBS -S /bin/bash
 #PBS -N erf_step_3D_turb_pertUp_re8e2_P4e0_S_1e3
-#PBS -l select=37:ncpus=40:mpiprocs=40:model=bro
+#PBS -l select=37:ncpus=28:mpiprocs=28:model=bro
 #PBS -l walltime=120:00:00
 #PBS -j oe
 #PBS -q long
