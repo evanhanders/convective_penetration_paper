@@ -103,7 +103,7 @@ Since core convective overshoot increases the reservoir of fuel available for nu
 
 In order to ensure that models can be evolved on fast (human) timescales, 1D stellar evolution codes rely on simple parameterizations of convection \citep[e.g., mixing length theory,][]{bohm-vitense1958} and convective overshoot \citep{shaviv_salpeter_1973, maeder1975, herwig2000, paxton_etal_2011, paxton_etal_2013, paxton_etal_2018, paxton_etal_2019}.
 While some preliminary work has been done to couple 3D dynamical convective simulations with 1D stellar evolution codes \citep{jorgensen_weiss_2019}, these calculations are prohibitively expensive to perform at every timestep in a stellar evolution simulation.
-In order to resolve discrepancies between stellar evolution models and observations, a more complete and \emph{parameterizeable} understanding of convective overshoot is required.
+To resolve discrepancies between stellar evolution models and observations, a more complete and \emph{parameterizeable} understanding of convective overshoot is required.
 
 The broad category of ``convective overshoot'' in the stellar literature is an umbrella term for a few hydrodynamical processes \citep{zahn1991, brummell_etal_2002, korre_etal_2019}.
 The first process is confusingly also called ``\emph{convective overshoot}'' in the fluid dynamics literature, and refers to motions which extend beyond the convective boundary but do not adjust the thermodynamic profiles.
@@ -216,12 +216,13 @@ We plot $\justgrad$ (green) compared to $\gradad$ (purple, a constant) and $\gra
 
 \section{Theory}
 \label{sec:theory}
-In this section we derive a theoretical model of convective penetration by examining the energetics and energy fluxes in the convection and penetration zones.
+In this section we derive a theoretical model of convective penetration by examining the energetics and energy fluxes in the Schwarzschild-unstable convection zone (CZ) and penetration zone (PZ).
 In Sec.~\ref{sec:theory_equations}, we describe our equations and problem setup and define the heat fluxes.
 In Sec.~\ref{sec:theory_energy}, we build a parameterized theory based on the kinetic energy (KE) equation.
-We find that excess KE in the convection zone can cause a penetration zone to form.
-By balancing the excess KE in the convection zone with a buoyancy-braking work term in the PZ, we are able to derive the size of the PZ.
-We find that a description of the size of a theoretical penetration zone does not depend on the often-considered stiffness, which measures the relative stability between the convection zone and an adjacent radiative zone.
+We find that imbalances in KE source terms within the CZ determine the extent of the PZ.
+%We find that excess KE in the convection zone can cause a penetration zone to form.
+By balancing the excess KE generation in the CZ with buoyancy-braking and dissipation work terms in the PZ, we are able to derive the size of the PZ.
+We find that a description of the size of a theoretical PZ does not depend on the often-considered stiffness, which measures the relative stability between the convection zone and an adjacent radiative zone.
 
 \subsection{Equations \& flux definitions}
 \label{sec:theory_equations}
@@ -326,12 +327,13 @@ Eqn.~\ref{eqn:constraint_cz_pz_split} is arranged so that the (positive) buoyant
 If viscous dissipation in the CZ does not balance the buoyant generation of energy in the CZ, the kinetic energy of the convective flows grows, resulting in a penetrative region.
 This region grows with time until Eqn.~\ref{eqn:constraint_cz_pz_split} is satisfied.
 We see that the viscous dissipation and buoyancy breaking felt by flows in the PZ determine its size.
-We now parameterize the fraction of the buoyant engine consumed by CZ dissipation,
+We now define
 \begin{equation}
-f \equiv \frac{\int_{\rm{CZ}} \bar{\Phi}\,dz}{\int_{\rm{CZ}}\bar{\mathcal{B}}\,dz}.
+f \equiv \frac{\int_{\rm{CZ}} \bar{\Phi}\,dz}{\int_{\rm{CZ}}\bar{\mathcal{B}}\,dz},
 \label{eqn:f_defn}
 \end{equation}
-Under this parameterization, Eqn.~\ref{eqn:constraint_cz_pz_split} can be written
+the measurable fraction of the buoyant engine consumed by CZ dissipation.
+Eqn.~\ref{eqn:constraint_cz_pz_split} can then be rewritten as
 \begin{equation}
 \frac{\int_{\rm{PZ}}(-\bar{\mathcal{B}})\,dz}{\int_{\rm{CZ}} \bar{\mathcal{B}}\,dz}
 + \frac{\int_{\rm{PZ}} \bar{\Phi}\,dz }{\int_{\rm{CZ}} \bar{\mathcal{B}}\,dz}
