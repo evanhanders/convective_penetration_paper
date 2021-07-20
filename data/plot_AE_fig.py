@@ -51,6 +51,7 @@ for d in dirs:
         enstrophy_Ls = f['enstrophy_Ls'][()]
         enstrophy_cz = f['enstrophy_cz'][()]
         fconv_Ls = f['fconv_Ls'][()]
+        vel_Ls = f['vel_Ls'][()]
 
         L_pz = L_d09s - Ls
         dissipation_cz   = enstrophy_cz/Re
@@ -61,7 +62,7 @@ for d in dirs:
         modern_xi        = ( (dissipation_pz*L_pz) / (fconv_Ls*Ls) ) / (modern_f * (L_pz/Ls))
 
 
-    data[d] = [S, P, Re, threeD, Lz, erf, times, L_d01s, L_d05s, L_d09s, modern_f, modern_xi, Ls]
+    data[d] = [S, P, Re, threeD, Lz, erf, times, L_d01s, L_d05s, L_d09s, modern_f, modern_xi, vel_Ls, Ls]
 
 dirs_p1 = ["erf_AE_cut/erf_step_3D_Re4e2_P1e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild/",
            "erf_AE_cut/erf_step_3D_Re4e2_P1e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart/"]
@@ -87,6 +88,7 @@ for d in dirs:
     L_d09 = data[d][9]
     f_theory    = data[d][10]
     xi_theory    = data[d][11]
+    vel_rms = data[d][12]
     Ls = data[d][-1]
     N_skip = 0
 
@@ -184,7 +186,7 @@ for d in dirs:
             ax5.axhline(np.mean((L_d09-Ls)[-1000:]), c='k', lw=0.5)
             ax6.axhline(np.mean(f_theory[-1000:]), c='k', lw=0.5)
             print('f', np.mean(f_theory[-1000:]), 'xi', np.mean(xi_theory[-1000:]))
-    data_chunks.append((P, t_sim, 'schwarzschild' in d, color))
+    data_chunks.append((P, t_sim, 'schwarzschild' in d, color, np.mean((L_d01-Ls)[-1000:]), np.mean((L_d05-Ls)[-1000:]), np.mean((L_d09-Ls)[-1000:]), np.mean(f_theory[-1000:]), np.mean(xi_theory[-1000:]), np.mean(vel_rms[-1000:]) ))
 
 for P, ax in zip([1, 2, 4], [ax1, ax3, ax5]):
     for c in data_chunks:
@@ -201,7 +203,7 @@ for P, ax in zip([1, 2, 4], [ax1, ax3, ax5]):
             ax.axvline(c[1]/schwarz_time, c=c[3], lw=lw, zorder=zorder)
 
 for c in data_chunks:
-    print(c)
+    print('P: {}, t: {:.4e}, ds: {:.3f}, {:.3f}, {:.3f}, f: {:.2f}, xi: {:.2f}, u: {:.2f}'.format(c[0], c[1], *tuple(c[4:])))
             
             
 

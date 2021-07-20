@@ -1,0 +1,18 @@
+[parameters]
+Re = 6.4e3
+S = 1e3
+P = 4e0
+Lz = 2
+nz = 384
+nx = 384
+run_time_wall = 59.5
+run_time_ff = 5e3
+
+stress_free=true
+T_iters=0
+
+SBDF2=true
+safety=0.35
+
+predictive_width=0.033
+predictive=0.391

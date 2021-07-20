@@ -1,7 +1,7 @@
 #PBS -S /bin/bash
-#PBS -N erf_step_3D_re4e2_P4e0_S_1e3_paper_AE_pertDown
+#PBS -N erf_step_3D_stressfree_turb_re4e2_P4e0_S_1e3
 #PBS -l select=7:ncpus=40:mpiprocs=40:model=sky_ele
-#PBS -l walltime=120:00:00
+#PBS -l walltime=60:00:00
 #PBS -j oe
 #PBS -q long
 #PBS -W group_list=s2276
@@ -13,7 +13,8 @@ cd $PBS_O_WORKDIR
 RE=4e2
 PEN=4e0
 STIFF=1e3
-CONF=config/paper_AE_cut/erf_re1e3_P4e0_S1e3_pertDown
+CONF=config/paper_stressfree_erf_Re_cut/erf_re4e2_P4e0_S1e3
+
 date
-mpiexec_mpt -n 256 python3 erf_step_3D.py  $CONF  > out.paper_AE_pertDown.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
+mpiexec_mpt -n 256 python3 erf_step_3D.py  $CONF  > out.paper_re_cut.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
 date

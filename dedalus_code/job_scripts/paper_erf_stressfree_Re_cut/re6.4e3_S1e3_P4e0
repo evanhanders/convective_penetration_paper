@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N erf_step_3D_turb_re6.4e3_P4e0_S_1e3
+#PBS -N erf_step_3D_stressfree_turb_re6.4e3_P4e0_S_1e3
 #PBS -l select=103:ncpus=40:mpiprocs=40:model=cas_ait
 #PBS -l walltime=60:00:00
 #PBS -j oe
@@ -13,8 +13,8 @@ cd $PBS_O_WORKDIR
 RE=6.4e3
 PEN=4e0
 STIFF=1e3
-CONF=config/paper_erf_Re_cut/erf_re6.4e3_P4e0_S1e3
+CONF=config/paper_stressfree_erf_Re_cut/erf_re6.4e3_P4e0_S1e3
 
 date
-mpiexec_mpt -n 4096 python3 erf_step_3D.py  $CONF  > out.paper_re_cut.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
+mpiexec_mpt -n 4096 python3 erf_step_3D.py  $CONF  > out.paper_re_cut_stressfree.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
 date

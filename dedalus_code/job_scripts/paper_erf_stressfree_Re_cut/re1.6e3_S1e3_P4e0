@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N linear_step_3D_re1.6e3_P1e0_S_1e3_paper_Re
+#PBS -N erf_step_3D_stressfree_turb_re1.6e3_P4e0_S_1e3
 #PBS -l select=26:ncpus=40:mpiprocs=40:model=sky_ele
 #PBS -l walltime=60:00:00
 #PBS -j oe
@@ -11,9 +11,10 @@ conda activate dedalus
 cd $PBS_O_WORKDIR
 
 RE=1.6e3
-PEN=1e0
+PEN=4e0
 STIFF=1e3
-CONF=config/paper_linear_Re_cut/linear_re1.6e3_P1e0_S1e3
+CONF=config/paper_stressfree_erf_Re_cut/erf_re1.6e3_P4e0_S1e3
+
 date
-mpiexec_mpt -n 1024 python3 linear_3D.py  $CONF  > out.paper_Re.linear.re$RE.P$PEN.S$STIFF.$PBS_JOBID
+mpiexec_mpt -n 1024 python3 erf_step_3D.py  $CONF  > out.paper_re_cut.erf.re$RE.P$PEN.S$STIFF.$PBS_JOBID
 date

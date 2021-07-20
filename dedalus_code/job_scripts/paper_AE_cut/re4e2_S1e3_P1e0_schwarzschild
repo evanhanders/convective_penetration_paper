@@ -1,7 +1,7 @@
 #PBS -S /bin/bash
 #PBS -N erf_step_3D_re4e2_P1e0_S_1e3_paper_AE_schwarzschild
 #PBS -l select=26:ncpus=40:mpiprocs=40:model=sky_ele
-#PBS -l walltime=90:00:00
+#PBS -l walltime=120:00:00
 #PBS -j oe
 #PBS -q long
 #PBS -W group_list=s2276

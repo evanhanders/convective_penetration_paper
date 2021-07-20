@@ -1,0 +1,17 @@
+[parameters]
+Re = 8e2
+S = 1e3
+P = 4e0
+Lz = 2
+nz = 256
+nx = 128
+run_time_wall = 59.5
+run_time_ff = 5e3
+
+stress_free=true
+T_iters=0
+
+restart=for_sorting/erf_step_3D_Re8e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer25_128x128x256_predictive0.6/final_checkpoint/final_checkpoint_s1.h5
+
+SBDF2=true
+safety=0.35
