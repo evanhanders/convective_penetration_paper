@@ -42,6 +42,11 @@
 \bibitem[{{Basu} \& {Antia}(2004)}]{basu_antia_2004}
 {Basu}, S., \& {Antia}, H.~M. 2004, \apjl, 606, L85, \dodoi{10.1086/421110}
 
+\bibitem[{{Basu} {et~al.}(1994){Basu}, {Antia}, \&
+  {Narasimha}}]{basu_etal_1994}
+{Basu}, S., {Antia}, H.~M., \& {Narasimha}, D. 1994, \mnras, 267, 209,
+  \dodoi{10.1093/mnras/267.1.209}
+
 \bibitem[{{Bergemann} \& {Serenelli}(2014)}]{bergemann_serenelli_2014}
 {Bergemann}, M., \& {Serenelli}, A. 2014, {Solar Abundance Problem}, 245--258,
   \dodoi{10.1007/978-3-319-06956-2\_21}
@@ -140,10 +145,6 @@
   {Cooper}}]{Dewitt1973}
 {Dewitt}, H.~E., {Graboske}, H.~C., \& {Cooper}, M.~S. 1973, \apj, 181, 439,
   \dodoi{10.1086/152061}
-
-\bibitem[{{Dietrich} \& {Wicht}(2018)}]{dietrich_wicht_2018}
-{Dietrich}, W., \& {Wicht}, J. 2018, Frontiers in Earth Science, 6, 189,
-  \dodoi{10.3389/feart.2018.00189}
 
 \bibitem[{{Dumont} {et~al.}(2021){Dumont}, {Palacios}, {Charbonnel}, {Richard},
   {Amard}, {Augustson}, \& {Mathis}}]{dumont_etal_2021}

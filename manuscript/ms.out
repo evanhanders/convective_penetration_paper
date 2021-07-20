@@ -1,24 +1,27 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
-\BOOKMARK [1][-]{section.2}{Theory}{}% 2
-\BOOKMARK [2][-]{subsection.2.1}{Equations \046 flux definitions}{section.2}% 3
-\BOOKMARK [2][-]{subsection.2.2}{Kinetic energy \046 the dissipation-flux link}{section.2}% 4
-\BOOKMARK [3][-]{subsubsection.2.2.1}{Case I: Discontinuous flux}{subsection.2.2}% 5
-\BOOKMARK [3][-]{subsubsection.2.2.2}{Case II: Piecewise linear flux}{subsection.2.2}% 6
-\BOOKMARK [1][-]{section.3}{Simulation Details}{}% 7
-\BOOKMARK [2][-]{subsection.3.1}{Case I: Discontinuous flux}{section.3}% 8
-\BOOKMARK [2][-]{subsection.3.2}{Case II: Piecewise linear flux}{section.3}% 9
-\BOOKMARK [2][-]{subsection.3.3}{Numerics}{section.3}% 10
-\BOOKMARK [2][-]{subsection.3.4}{Penetration depth measurements}{section.3}% 11
-\BOOKMARK [1][-]{section.4}{Results}{}% 12
-\BOOKMARK [2][-]{subsection.4.1}{Qualitative description of simulation evolution}{section.4}% 13
-\BOOKMARK [2][-]{subsection.4.2}{Dependence on P}{section.4}% 14
-\BOOKMARK [2][-]{subsection.4.3}{Dependence on S}{section.4}% 15
-\BOOKMARK [2][-]{subsection.4.4}{Dependence on R}{section.4}% 16
-\BOOKMARK [1][-]{section.5}{A modified solar model}{}% 17
-\BOOKMARK [1][-]{section.6}{Discussion}{}% 18
-\BOOKMARK [1][-]{appendix.A}{Accelerated Evolution}{}% 19
-\BOOKMARK [1][-]{appendix.B}{MESA implementation}{}% 20
-\BOOKMARK [2][-]{subsection.B.1}{Input Physics}{appendix.B}% 21
-\BOOKMARK [2][-]{subsection.B.2}{Penetration Implementation}{appendix.B}% 22
-\BOOKMARK [2][-]{subsection.B.3}{Models}{appendix.B}% 23
-\BOOKMARK [1][-]{appendix.C}{Table of simulation parameters}{}% 24
+\BOOKMARK [2][-]{subsection.1.1}{Context}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Convective penetration \046 this study's findings}{section.1}% 3
+\BOOKMARK [1][-]{section.2}{Central Result: Convective Penetration}{}% 4
+\BOOKMARK [1][-]{section.3}{Theory}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Equations \046 flux definitions}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{Kinetic energy \046 the dissipation-flux link}{section.3}% 7
+\BOOKMARK [3][-]{subsubsection.3.2.1}{Case I: Discontinuous flux}{subsection.3.2}% 8
+\BOOKMARK [3][-]{subsubsection.3.2.2}{Case II: Piecewise linear flux}{subsection.3.2}% 9
+\BOOKMARK [1][-]{section.4}{Simulation Details}{}% 10
+\BOOKMARK [2][-]{subsection.4.1}{Case I: Discontinuous flux}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.2}{Case II: Piecewise linear flux}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.3}{Numerics}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.4}{Penetration height measurements}{section.4}% 14
+\BOOKMARK [1][-]{section.5}{Results}{}% 15
+\BOOKMARK [2][-]{subsection.5.1}{Qualitative description of simulation evolution}{section.5}% 16
+\BOOKMARK [2][-]{subsection.5.2}{Dependence on P}{section.5}% 17
+\BOOKMARK [2][-]{subsection.5.3}{Dependence on S}{section.5}% 18
+\BOOKMARK [2][-]{subsection.5.4}{Dependence on R}{section.5}% 19
+\BOOKMARK [1][-]{section.6}{A modified solar model}{}% 20
+\BOOKMARK [1][-]{section.7}{Discussion}{}% 21
+\BOOKMARK [1][-]{appendix.A}{Accelerated Evolution}{}% 22
+\BOOKMARK [1][-]{appendix.B}{MESA implementation}{}% 23
+\BOOKMARK [2][-]{subsection.B.1}{Input Physics}{appendix.B}% 24
+\BOOKMARK [2][-]{subsection.B.2}{Penetration Implementation}{appendix.B}% 25
+\BOOKMARK [2][-]{subsection.B.3}{Models}{appendix.B}% 26
+\BOOKMARK [1][-]{appendix.C}{Table of simulation parameters}{}% 27

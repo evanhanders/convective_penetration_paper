@@ -1,5 +1,5 @@
-This is BibTeX, Version 0.99d (TeX Live 2019)
-Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+This is BibTeX, Version 0.99d (TeX Live 2020)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: ms.aux
 The style file: aasjournal.bst
 Database file #1: biblio.bib
@@ -7,34 +7,34 @@ Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Warning--empty publisher in bergemann_serenelli_2014
 You've used 101 entries,
             3168 wiz_defined-function locations,
-            1348 strings with 25699 characters,
-and the built_in function-call counts, 45060 in all, are:
-= -- 3877
-> -- 3051
-< -- 49
-+ -- 1016
-- -- 1084
-* -- 3888
-:= -- 8128
+            1347 strings with 25679 characters,
+and the built_in function-call counts, 45101 in all, are:
+= -- 3879
+> -- 3059
+< -- 48
++ -- 1019
+- -- 1088
+* -- 3895
+:= -- 8137
 add.period$ -- 108
 call.type$ -- 101
-change.case$ -- 560
+change.case$ -- 561
 chr.to.int$ -- 101
 cite$ -- 102
 duplicate$ -- 1718
 empty$ -- 2889
-format.name$ -- 1238
-if$ -- 9251
+format.name$ -- 1239
+if$ -- 9257
 int.to.chr$ -- 1
 int.to.str$ -- 0
 missing$ -- 97
 newline$ -- 318
 num.names$ -- 405
-pop$ -- 605
+pop$ -- 606
 preamble$ -- 1
-purify$ -- 560
+purify$ -- 561
 quote$ -- 0
-skip$ -- 1541
+skip$ -- 1540
 stack$ -- 0
 substring$ -- 1920
 swap$ -- 49

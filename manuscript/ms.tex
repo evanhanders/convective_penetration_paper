@@ -869,6 +869,7 @@ In order to implement our theory into MESA, we need to extend Eqn.~\ref{eqn:theo
 To do so, we replace horizontal averages in Eqn.~\ref{eqn:integral_constraint} with integrals over latitude and longitude, and find that the relevant integral constraint contains the convective luminosity,
 \begin{equation}
 \int |\alpha| g L_{\rm{conv}}\,dr =   \int_V \rho_0 \Phi\,dV,
+\label{eqn:mesa_integral_constraint}
 \end{equation}
 where $L_{\rm{conv}} = 4\pi\rho_0 r^2 \bar{F_{\rm{conv}}}$, $r$ is the radial coordinate, and we write the RHS as a volume integral.
 We next define $f$ in the same way as in Eqn.~\ref{eqn:f_defn} and define $\xi$ similarly to Eqn.~\ref{eqn:xi_defn},
@@ -895,11 +896,15 @@ We additionally evolved a standard solar MESA model to a 4.56 Gyr age without th
 We compare the sound speed profiles of the PZ and standard (std) model in the bottom panel of Fig.~\ref{fig:mesa_profiles}.
 We see that the inclusion of a PZ leads to an $\mathcal{O}$(2\%) increase in the sound speed profile near the base of the solar convection zone, similar to what is observed between helioseismic observations and standard models \citep{bergemann_serenelli_2014}.
 
-At the Schwarzschild base of the CZ, we find $H_p \approx 0.082R_\odot$, and the depth of the penetration zone in Fig.~\ref{fig:mesa_profiles} is $0.042R_\odot$, such that this PZ extends $\sim 50$\% of a scale height below the convection zone.
-Helioseismic studies have suggested that a PZ depth should be constrained to 5-10\% of $H_P$ \citep{basu_etal_1994, basu2016}; these constraints are significantly smaller than our crude model.
-Some recent simulations \citep{kapyla2019} have suggested that solar convection could exhibit penetration depths of $0.2 H_P$, which are closer to these models but still smaller than what we measure.
-Despite these discrepancies, Fig.~\ref{fig:mesa_profiles} shows the promise of a convective penetration parameterization such as the one presented here.
-Pathways for improving our parameterization will be discussed in the following section.
+When a PZ is present beneath a CZ, $\justgrad$ experiences a sharp jump from $\gradad$ to $\gradrad$ (Fig.~\ref{fig:mesa_profiles}, top panel), resulting in an acoustic ``glitch'' in the sound speed profile (Fig.~\ref{fig:mesa_profiles}, bottom panel).
+Helioseismic studies have argued that that the solar PZ depth cannot be larger than $\mathcal{O}$(0.05 $H_p$), because larger PZs would result in larger glitches than are detected  \citep[see Sct.~7.2.1 of][for a nice review]{basu2016}.
+However, some recent 3D convective simulations by \citet{kapyla2019} suggest that the solar PZ depth could be as large as $\mathcal{O}(0.2 H_p)$.
+In the model shown in Fig.~\ref{fig:mesa_profiles}, we find $H_p \approx 0.082R_\odot$ at the Schwarzschild CZ boundary, and the depth of the penetration zone in Fig.~\ref{fig:mesa_profiles} is $0.042R_\odot \sim 0.5 H_p$.
+This over-estimates fully compressible simulations by a factor of a few, and observations by an order of magnitude.
+However, it is unsurprising that our Boussinesq-based model only qualitatively matches observational constraints for the solar CZ.
+The solar convection zone is highly stratified ($\sim$14 density scale heights), and we neglected density stratification in this work.
+Fig.~\ref{fig:mesa_profiles} shows that our parameterization can produce penetration zones in 1D models with measurable acoustic glitches.
+In a future paper, we will produce more realistic models by building upon our parameterization to include the crucial effects of density stratification.
 
 
 \section{Discussion}
@@ -939,8 +944,6 @@ Future work should determine if stabilizing composition gradients can prevent th
 In summary, we have unified \citet{roxburgh1989}'s integral constraint with \citet{zahn1991}'s theory of flux-dependent penetration into a parameterized theory of convective penetration.
 We tested this theory with simulations and found good agreement between the theory and our simulations.
 In future work, we will aim to more robustly implement this theory into MESA and use simulations to test some of the complicating factors we discussed here.
-
-
 
 
 
@@ -1055,9 +1058,9 @@ Here we describe a first implementation of Eqn.~\ref{eqn:mesa_eqn} in MESA.
 We note that this impelementation is likely not universal or robust enough to be used in most complex stellar models, but it is robust enough to time-step stably and produce the results displayed in Sct.~\ref{sec:solar_model}.
 Future work should improve upon this model.
 
-To find the extent of the penetrative region we write Eqn.~\eqref{eq:mesa_eqn} as
+To find the extent of the penetrative region we write Eqn.~\eqref{eqn:mesa_eqn} as
 \begin{align}
-	(1-f) \int_{\rm CZ} L_{\rm conv} dr = \int_{\rm PZ} \xi f L_{\rm conv,avg,CZ} + L_{\rm conv} dr,
+	(1-f) \int_{\rm CZ} L_{\rm conv} dr = \int_{\rm PZ} \left(\xi f L_{\rm conv,avg,CZ} + L_{\rm conv}\right) dr,
 	\label{eq:rwt}
 \end{align}
 where $L_{\rm conv,avg,CZ}$ is the average of $L_{\rm conv}$ in the convection zone and $L_{\rm conv}$ in the penetrative region is given by
@@ -1082,7 +1085,6 @@ Using this procedure with $f = 0.86$ and $\xi = 0.6$, and timestepping a solar m
 Models were constructed to reasonably reproduce the present-day Sun and based on the 2019 MESA summer school lab by~\citet{pm}.
 Inlists and the \texttt{run\_star\_extras} source code are available at CITE.
 
-\newpage
 \section{Table of simulation parameters}
 \label{app:simulation_table}
 Input parameters and summary statistics of the simulations presented in this work are shown in Table~\ref{table:simulation_info}.
@@ -1151,7 +1153,9 @@ For short simulations $(t_{\rm{sim}} < 1000)$, we average over most of the simul
 \end{deluxetable*}                                        	
                                                           	
 
-
+\newpage
+\,
+\newpage
 \bibliographystyle{aasjournal}
 \bibliography{biblio}
 \end{document}
