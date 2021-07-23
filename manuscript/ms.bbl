@@ -24,6 +24,12 @@
 {Anders}, E.~H., {Brown}, B.~P., \& {Oishi}, J.~S. 2018, Physical Review
   Fluids, 3, 083502, \dodoi{10.1103/PhysRevFluids.3.083502}
 
+\bibitem[{{Anders} {et~al.}(2021){Anders}, {Jermyn}, {Lecoanet}, \&
+  {Brown}}]{supp}
+{Anders}, E.~H., {Jermyn}, A.~S., {Lecoanet}, D., \& {Brown}, B.~P. 2021,
+  {Supplemental Materials for "Convective Penetration Probably Parameterizes
+  Convective Overshoot"}, 1.0.0,  Zenodo, \dodoi{10.5281/zenodo.5131118}
+
 \bibitem[{{Asplund} {et~al.}(2021){Asplund}, {Amarsi}, \&
   {Grevesse}}]{asplund_etal_2021}
 {Asplund}, M., {Amarsi}, A.~M., \& {Grevesse}, N. 2021, arXiv e-prints,
@@ -41,11 +47,6 @@
 
 \bibitem[{{Basu} \& {Antia}(2004)}]{basu_antia_2004}
 {Basu}, S., \& {Antia}, H.~M. 2004, \apjl, 606, L85, \dodoi{10.1086/421110}
-
-\bibitem[{{Basu} {et~al.}(1994){Basu}, {Antia}, \&
-  {Narasimha}}]{basu_etal_1994}
-{Basu}, S., {Antia}, H.~M., \& {Narasimha}, D. 1994, \mnras, 267, 209,
-  \dodoi{10.1093/mnras/267.1.209}
 
 \bibitem[{{Bergemann} \& {Serenelli}(2014)}]{bergemann_serenelli_2014}
 {Bergemann}, M., \& {Serenelli}, A. 2014, {Solar Abundance Problem}, 245--258,
