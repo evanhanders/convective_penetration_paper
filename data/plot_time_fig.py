@@ -13,13 +13,27 @@ import pandas as pd
 col_width = 3.25
 golden_ratio = 1.61803398875
 
-dirs = ["erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild/",
-        "erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart",
-        "erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart2",
-        "erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart3",
-        "erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart4",
-        "erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart5",
-        ]
+with h5py.File('temporal_data/erf_re4e2_p4e0_s1e3_longevolution.h5', 'r') as in_f:
+    d01s = in_f['scalars/d01'][100:] 
+    d05s = in_f['scalars/d05'][100:] 
+    d09s = in_f['scalars/d09'][100:] 
+    times = in_f['scalars/times'][100:]
+    f = in_f['scalars/f'][100:]
+    xi = in_f['scalars/xi'][100:]  
+    Ls = in_f['scalars/Ls'][()]
+    z    = in_f['profiles/z'][()]
+    grad = in_f['profiles/grad'][()]  
+    prof_times = in_f['profiles/times'][()] 
+    grad_ad = in_f['profiles/grad_ad'][()] 
+    grad_rad = in_f['profiles/grad_rad'][()] 
+
+S = 1e3
+P = 4
+Re = 4e2
+Lz = 2
+
+k_rz = 0.2 / (S * P)
+t_diff = 1/k_rz
 
 fig = plt.figure(figsize=(2*col_width, col_width/golden_ratio))
 ax1 = fig.add_axes([0,    0.67, 0.45, 0.33])
@@ -27,88 +41,27 @@ ax2 = fig.add_axes([0,    0.34, 0.45, 0.33])
 ax3 = fig.add_axes([0,    0.00, 0.45, 0.34])
 ax4 = fig.add_axes([0.50,    0, 0.45, 1])
 
-#Parse input parmeters
-data = OrderedDict()
-S = float(dirs[0].split('_S')[-1].split('_')[0])
-P = float(dirs[0].split('_Pr')[0].split('_P')[-1].split('_')[0])
-Re = float(dirs[0].split('_Re')[-1].split('_')[0])
-Lz = float(dirs[0].split('_Lz')[-1].split('_')[0])
-threeD = True
-erf = True
-
-k_rz = 0.2 / (S * P)
-t_diff = 1/k_rz
-
-#Read in scalar and profile data
-times = []
-L_d01s = []
-L_d05s = []
-L_d09s = []
-theory_f = []
-theory_xi = []
-grad = []
-prof_times = []
-for i, d in enumerate(dirs):
-    if i == 0:
-        skip_points = 100
-    with h5py.File('{:s}/data_top_cz.h5'.format(d), 'r') as f:
-        dictionary = dict()
-        for k in ['times', 'L_d01s', 'L_d05s', 'L_d09s', 'modern_f', 'modern_xi']:
-            dictionary[k] = f[k][()]
-            if k != 'times':
-                dictionary[k] = dictionary[k][np.unique(dictionary['times'], return_index=True)[1]]
-        dictionary['times'] = np.unique(dictionary['times'])
-        if i > 0:
-            #clean out some time artifacts from restarting simulations
-            skip_points = int(np.sum(dictionary['times'] <= times[-1][-1]))
-        
-        times.append(dictionary['times'][skip_points:])
-        L_d01s.append(dictionary['L_d01s'][skip_points:])
-        L_d05s.append(dictionary['L_d05s'][skip_points:])
-        L_d09s.append(dictionary['L_d09s'][skip_points:])
-        theory_f.append(dictionary['modern_f'][skip_points:])
-        theory_xi.append(dictionary['modern_xi'][skip_points:])
-        Ls = f['Ls'][()]
-    with h5py.File('{:s}/avg_profs/averaged_avg_profs.h5'.format(d), 'r') as f:
-        z = f['z'][()]
-        grad_ad = -f['T_ad_z'][()][0,:].squeeze()
-        grad_rad = -f['T_rad_z'][()][0,:].squeeze()
-
-        grad.append(-f['T_z'][()])
-        prof_times.append(f['T_z_times'][()])
-
-Lcz_norm = Ls - 0.2 # for erf case, maybe necessary.
-times          = np.array(np.concatenate(times))
-L_d01s         = np.array(np.concatenate(L_d01s))
-L_d05s         = np.array(np.concatenate(L_d05s))
-L_d09s         = np.array(np.concatenate(L_d09s))
-theory_f       = np.array(np.concatenate(theory_f))
-theory_xi      = np.array(np.concatenate(theory_xi))
-
-grad           = np.array(np.concatenate(grad, axis=0))
-prof_times     = np.array(np.concatenate(prof_times))
 
 #Take rolling averages of theory values
 f_data = dict()
 f_data['sim_time'] = times
-f_data['f'] = theory_f
-f_data['xi'] = theory_xi
+f_data['f'] = f
+f_data['xi'] = xi
 f_df = pd.DataFrame(data=f_data)
 rolledf = f_df.rolling(window=200, min_periods=25).mean()
 roll_times = rolledf['sim_time']
 
 #Find convergence times
-final_f  = np.mean(theory_f[-1000:])
+final_f  = np.mean(f[-1000:])
 error_f = np.abs(1 - rolledf['f']/final_f)
 time_cross_f = times[error_f < 0.01][0]
 
-final_xi = np.mean(theory_xi[-1000:])
+final_xi = np.mean(xi[-1000:])
 error_xi = np.abs(1 - rolledf['xi']/final_xi)
 time_cross_xi = times[error_xi < 0.01][0]
 
-delta_d05 = (L_d05s - Ls)
-final_d05 = np.mean(delta_d05[-1000:])
-error_d05 = np.abs(1 - (delta_d05/final_d05))
+final_d05 = np.mean(d05s[-1000:])
+error_d05 = np.abs(1 - d05s/final_d05)
 time_cross_d05 = times[error_d05 < 0.01][0]
 
 cmap = mpl.cm.viridis
@@ -120,13 +73,14 @@ colors = [sm.to_rgba(t) for t in times]
 ax1.axhline(final_d05, c='xkcd:dark grey', lw=0.5)
 ax2.axhline(final_f,   c='xkcd:dark grey', lw=0.5)
 ax3.axhline(final_xi,  c='xkcd:dark grey', lw=0.5)
-#ax1.plot(times/t_diff, L_d05s-Ls,     c='k')
-#ax2.plot(roll_times,   rolledf['f'] , c='k')
-#ax3.plot(roll_times,   rolledf['xi'], c='k')
-for i in range(int(len(times)/10)-1):
-    ax1.plot(times[i*10:(i+1)*10]/t_diff, L_d05s[i*10:(i+1)*10]-Ls,     c=sm.to_rgba(times[int((i+0.5)*10)]))
-    ax2.plot(roll_times[i*10:(i+1)*10],   rolledf['f'][i*10:(i+1)*10],  c=sm.to_rgba(times[int((i+0.5)*10)]))
-    ax3.plot(roll_times[i*10:(i+1)*10],   rolledf['xi'][i*10:(i+1)*10], c=sm.to_rgba(times[int((i+0.5)*10)]))
+N_points = len(times)
+N_color  = 50
+for i in range(N_color):
+    lower = int(N_points*i/N_color)
+    upper = int(N_points*(i+1)/N_color)-1
+    ax1.plot(times[lower:upper]/t_diff, d05s[lower:upper],          c=sm.to_rgba(times[upper]))#, rasterized=True)
+    ax2.plot(roll_times[lower:upper],   rolledf['f'][lower:upper],  c=sm.to_rgba(times[upper]))#, rasterized=True)
+    ax3.plot(roll_times[lower:upper],   rolledf['xi'][lower:upper], c=sm.to_rgba(times[upper]))#, rasterized=True)
 ax1.axvline(time_cross_d05/t_diff, color='xkcd:dark grey')
 ax2.axvline(time_cross_f, color='xkcd:dark grey')
 ax3.axvline(time_cross_xi, color='xkcd:dark grey')
@@ -154,18 +108,16 @@ y_max = (grad_ad[-1] + delta_grad[-1]*0.25)/grad_ad[-1]
 ax4.plot(z, grad_ad/grad_ad, c='grey', ls='--')
 ax4.plot(z, grad_rad/grad_ad, c='grey')
 for i in range(grad.shape[0]):
-    ax4.plot(z, grad[i,:]/grad_ad, c=sm.to_rgba(np.mean(prof_times[i])))
-
-
-for i in range(int(len(times)/10)-1):
-    if times[(i+1)*10] < 160:
+    if i % 2 == 0:
         continue
-    grad_01 = grad_ad[-1] - 0.1*delta_grad_func(L_d01s)
-    grad_05 = grad_ad[-1] - 0.5*delta_grad_func(L_d05s)
-    grad_09 = grad_ad[-1] - 0.9*delta_grad_func(L_d09s)
-    ax4.plot(L_d01s[i*10:(i+1)*10], grad_01[i*10:(i+1)*10]/grad_ad[-1], c='r')
-    ax4.plot(L_d05s[i*10:(i+1)*10], grad_05[i*10:(i+1)*10]/grad_ad[-1], c='k')
-    ax4.plot(L_d09s[i*10:(i+1)*10], grad_09[i*10:(i+1)*10]/grad_ad[-1], c='r')
+    ax4.plot(z, grad[i,:]/grad_ad, c=sm.to_rgba(np.mean(prof_times[i])))#, rasterized=True)
+
+grad_01 = grad_ad[-1] - 0.1*delta_grad_func(Ls + d01s)
+grad_05 = grad_ad[-1] - 0.5*delta_grad_func(Ls + d05s)
+grad_09 = grad_ad[-1] - 0.9*delta_grad_func(Ls + d09s)
+ax4.plot(Ls + d01s, grad_01/grad_ad[-1], c='r')
+ax4.plot(Ls + d05s, grad_05/grad_ad[-1], c='k')
+ax4.plot(Ls + d09s, grad_09/grad_ad[-1], c='r')
 ax4.set_ylim(y_min, y_max)
 ax4.set_xlim(0.9, 1.65)
 ax4.set_xlabel('z')

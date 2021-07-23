@@ -672,7 +672,7 @@ We note that the Schwarzschild boundary does not move over the course of our sim
 The traces of $\delta_{0.1}$ and $\delta_{0.9}$ are overplotted as red lines while that of $\delta_{0.5}$ is plotted as a black line.
 We see that the fast initial evolution establishes a sizeable PZ (denoted by purple $\justgrad$ profiles), but its final equilibration takes much longer (indicated by the separation between the purple, green, and yellow profiles decreasing over time).
 
-This long evolution is computationally expensive; for this modest simulation (256x64$^2$ coefficients), this evolution takes roughly 20 days on 1024 cores for a total of $\sim$500,000 cpu-hours.
+This long evolution is computationally expensive; for this modest simulation (256x64$^2$ coefficients), this evolution takes roughly 24 days on 1024 cores for a total of $\sim$600,000 cpu-hours.
 It is not feasible to perform simulations of this length for a full parameter space study, and so we accelerate the evolution of most of the simulations in this work.
 To do so, we take advantage of the nearly monotonic nature of the evolution of $\delp$ vs.~time displayed in Fig.~\ref{fig:time_evolution}.
 We measure the instantaneous values of $(\delta_{0.1}, \delta_{0.5}, \delta_{0.9})$, as well as their instantaneous time derivatives.
@@ -986,7 +986,7 @@ This process effectively removes the long diffusive thermal evolution on display
 In Fig.~\ref{fig:AE_time_figure}, we plot in black the time evolution of $\delp$ and $f$ in Case I simulations with $\mS = 10^3$, $\mR = 400$, and $\mP_D = [1,2,4]$.
 We overplot the evolution of simulations which use this accelerated evolution (AE) procedure using orange and green lines.
 Time units on the x-axis are normalized in terms of the total simulation run time in order to more thoroughly demonstrate the evolutionary differences between standard timestepping and AE.
-However, the AE simulations are much shorter: the vertical green-and-yellow lines demonstrate how long the AE simulation ran compared to the standard timestepping simulation (so for $\mP_D = 1$, the AE simulations only took $\sim 1/4$ as long; for $\mP_D = 2$, they took $\sim 1/8$ as long; for $\mP_D = 4$, they took $\sim 1/20$ as long).
+However, the AE simulations are much shorter: the vertical green-and-yellow lines demonstrate how long the AE simulation ran compared to the standard timestepping simulation (so for $\mP_D = 1$, the AE simulations only took $\sim 1/4$ as long; for $\mP_D = 2$, they took $\sim 1/10$ as long; for $\mP_D = 4$, they took $\sim 1/20$ as long).
 AE simulations with orange lines start with PZ heights which are much larger than the final height, while green line solution start with initial PZ heights which are smaller than the expected height.
 Regardless of our choice of initial condition, we find that this AE procedure quickly evolves our simulations to within a few percent of the final value.
 After converging to within a few percent of the proper penetration zone height, this AE procedure continues to iteratively ``jitter'' around the right answer until the convergence criterion we described above are met.
@@ -1085,9 +1085,9 @@ Input parameters and summary statistics of the simulations presented in this wor
 }
 \startdata
 \multicolumn{3}{l}{\textbf{``Standard timestepping'' simulations}}\\
-D & $1.0$ & $ 10^{3}$ & $ 4.0 \cdot 10^{2}$ &  64x64x256   & $ 12347$ & (0.078, 0.112, 0.136) &  0.810 &  0.682 &  0.618 \\ 
+D & $1.0$ & $ 10^{3}$ & $ 4.0 \cdot 10^{2}$ &  64x64x256   & $ 12347$ & (0.078, 0.112, 0.136) &  0.810 &  0.682 &  0.618 \\
 D & $ 2.0$ & $ 10^{3}$ & $ 4.0 \cdot 10^{2}$ &  64x64x256   & $ 32057$ & (0.200, 0.230, 0.254) &  0.749 &  0.601 &  0.639 \\
-D & $ 4.0$ & $ 10^{3}$ & $ 4.0 \cdot 10^{2}$ &  64x64x256   & $ 57170$ & (0.434, 0.461, 0.483) &  0.673 &  0.555 &  0.618 \\
+D & $ 4.0$ & $ 10^{3}$ & $ 4.0 \cdot 10^{2}$ &  64x64x256   & $ 66557$ & (0.445, 0.472, 0.496) &  0.668 &  0.562 &  0.619 \\
 \hline
 \multicolumn{3}{l}{\textbf{``Accelerated Evolution'' simulations}}\\
 D & $ 4.0$ & $ 10^{2}$ & $ 4.0 \cdot 10^{2}$ &  64x64x256   & $ 5000 $ & (0.377, 0.505, 0.581) &  0.654 &  0.526 &  0.617 \\

@@ -14,13 +14,18 @@ dirs = glob.glob('new_erf*/erf*')
 
 data = []
 for d in dirs:
+    S = float(d.split('_S')[-1].split('_')[0])
+    P = float(d.split('_Pr')[0].split('_P')[-1].split('_')[0])
+    Re = float(d.split('_Re')[-1].split('_')[0])
+    Lz = float(d.split('_Lz')[-1].split('_')[0])
     with h5py.File('{:s}/data_top_cz.h5'.format(d), 'r') as f:
         times = f['times'][()]
         L_d01s = f['L_d01s'][()]
         L_d05s = f['L_d05s'][()]
         L_d09s = f['L_d09s'][()]
         theory_f = f['f_theory_cz'][()]
-        Ls = f['Ls'][()]
+        z2 = f['z2'][()]
+        Ls = np.mean(f['Ls'][()])
         tot_time = times[-1] - times[0]
         time_window = np.min((500, tot_time/2))
         good_times = times > (times[-1] - time_window)
@@ -28,10 +33,9 @@ for d in dirs:
         mean_L_d05 = np.mean(L_d05s[good_times])
         mean_L_d09 = np.mean(L_d09s[good_times])
         mean_f = np.mean(theory_f[good_times])
-    S = float(d.split('_S')[-1].split('_')[0])
-    P = float(d.split('_Pr')[0].split('_P')[-1].split('_')[0])
-    Re = float(d.split('_Re')[-1].split('_')[0])
-    Lz = float(d.split('_Lz')[-1].split('_')[0])
+        mean_z2 = np.mean(z2[good_times])
+        if Re == 6.4e3:
+            print(mean_L_d01 - Ls, mean_L_d05 - Ls, mean_L_d09 - Ls)
     if '3D' in d:
         threeD = True
     else:
@@ -45,7 +49,7 @@ for d in dirs:
     else:
         ae = False
 
-    data.append((S, P, Re, threeD, mean_L_d01, mean_L_d05, mean_L_d09, mean_f, Ls, Lz, erf, ae))
+    data.append((S, P, Re, threeD, mean_L_d01, mean_L_d05, mean_L_d09, mean_f, Ls, Lz, erf, ae, mean_z2))
 #    print(d)
 #    print("                 ",S, P, Re, mean_L_d01, mean_L_d05, mean_L_d09, mean_f)
 data = np.array(data)
@@ -62,8 +66,10 @@ Ls = data[:,8]
 Lz = data[:,9]
 erf = data[:,10]
 ae = data[:,11]
+z2 = data[:,12]
 
-Lcz_norm = Ls - 0.45 #account for flux change at base of CZ.
+Lcz_norm = Ls - z2
+print(z2)
 
 fig = plt.figure(figsize=(page_width, 1.5*page_width/(3*golden_ratio)))
 
@@ -73,20 +79,21 @@ ax3 = fig.add_axes([0.69, 0.3, 0.29, 0.7])
 ax1_1 = fig.add_axes([0.04, 0, 0.29, 0.3])
 ax2_1 = fig.add_axes([0.40, 0, 0.29, 0.3])
 ax3_1 = fig.add_axes([0.69, 0, 0.29, 0.3])
-second_plot_lower = 0.25
-second_plot_upper = 0.6
+second_plot_lower = 0.45
+second_plot_upper = 0.9
 
 
 good = (erf == 1) * (Re == 4e2) * (S == 1e3) * (ae == 0)
-ax1.scatter(P[good], (L_d09[good] - Ls[good]), c='k', label=r"$\delta_{0.9}$", zorder=1, marker='v')
-ax1.scatter(P[good], (L_d05[good] - Ls[good]), c='k', label=r"$\delta_{0.5}$", zorder=1, marker='o')
-ax1.scatter(P[good], (L_d01[good] - Ls[good]), c='k', label=r"$\delta_{0.1}$", zorder=1, marker='^')
+ax1.scatter(P[good], (L_d09[good] - Ls[good])/Lcz_norm[good], c='k', label=r"$\delta_{0.9}$", zorder=1, marker='v')
+ax1.scatter(P[good], (L_d05[good] - Ls[good])/Lcz_norm[good], c='k', label=r"$\delta_{0.5}$", zorder=1, marker='o')
+ax1.scatter(P[good], (L_d01[good] - Ls[good])/Lcz_norm[good], c='k', label=r"$\delta_{0.1}$", zorder=1, marker='^')
 
 ax1_1.scatter(P[good], theory_f[good], c='k')
 line_P = np.linspace(0, 21, 100)
-for i, approx_f, approx_Lcz in zip([0, 1], [0.65, 0.5], [0.5, 0.6]):
+for i, approx_f, approx_Lcz in zip([0,], [0.55], [0.6]):
     print(approx_f, approx_Lcz)
-    line_theory =  approx_Lcz * line_P * (1 - approx_f) / (1 + line_P*approx_f/2)
+    line_theory =   line_P * (1 - approx_f) / (1 + line_P*approx_f/2)
+#    line_theory =  approx_Lcz * line_P * (1 - approx_f) / (1 + line_P*approx_f/2)
     if i == 0:
         ax1.plot(line_P, line_theory, c='orange', label=r'theory'.format(approx_f), zorder=0)
     else:
@@ -99,18 +106,18 @@ print(Ls[good])
 ax1.legend(frameon=True, fontsize=8, framealpha=0.6)
 ax1_1.set_xlabel('$\mathcal{P}_D$')
 ax1.set_title('$\mathcal{P}_D|_{\mathcal{R} = 400, \mathcal{S} = 10^3}$')
-ax1.set_ylabel(r'$\delta_{\rm{p}}$')
+ax1.set_ylabel(r'$\delta_{\rm{p}}/L_{\rm{CZ}}$')
 ax1_1.set_ylabel(r'$f$')
 for ax in [ax1, ax1_1]:
     ax.set_xlim(0, 11)
-ax1.set_ylim(0, 1)
+ax1.set_ylim(0, 1.5)
 ax1.set_yticks((0.25, 0.5, 0.75, 1))
 
 good = (erf == 1) * (P == 4) * (S == 1e3) * (ae == 0)
 #ax2.axhline(4*(1 - 0.875), c='orange', zorder=0)
-ax2.scatter(Re[good], (L_d01[good] - Ls[good]), c='k', label=r"Simulations ($\delta_p$)", zorder=1, marker='^')
-ax2.scatter(Re[good], (L_d09[good] - Ls[good]), c='k', label=r"Simulations ($\delta_{\rm{ov}}$)", zorder=1, marker='v')
-ax2.scatter(Re[good], (L_d05[good] - Ls[good]), c='k', zorder=1, marker='o')
+ax2.scatter(Re[good], (L_d01[good] - Ls[good])/Lcz_norm[good], c='k', label=r"Simulations ($\delta_p$)", zorder=1, marker='^')
+ax2.scatter(Re[good], (L_d09[good] - Ls[good])/Lcz_norm[good], c='k', label=r"Simulations ($\delta_{\rm{ov}}$)", zorder=1, marker='v')
+ax2.scatter(Re[good], (L_d05[good] - Ls[good])/Lcz_norm[good], c='k', zorder=1, marker='o')
 ax2_1.scatter(Re[good], theory_f[good], c='k')
 #ax2.scatter(Re[good], theory[good], c='orange', label=r'$\mathcal{P}(1 - \langle f \rangle)$', marker='x')
 ax2.set_xscale('log')
@@ -133,9 +140,9 @@ for ax in [ax2, ax2_1]:
 
 good = (erf == 1) * (P == 4) * (Re == 4e2) * (ae == 0)
 #ax3.axhline(4*(1 - 0.875), c='orange', zorder=0)
-ax3.scatter(S[good], (L_d01[good] - Ls[good]), c='k', label=r"Simulations ($\delta_p$)", zorder=1, marker='^')
-ax3.scatter(S[good], (L_d09[good] - Ls[good]), c='k', label=r"Simulations ($\delta_{\rm{ov}}$)", zorder=1, marker='v')
-ax3.scatter(S[good], (L_d05[good] - Ls[good]), c='k', zorder=1, marker='o')
+ax3.scatter(S[good], (L_d01[good] - Ls[good])/Lcz_norm[good], c='k', label=r"Simulations ($\delta_p$)", zorder=1, marker='^')
+ax3.scatter(S[good], (L_d09[good] - Ls[good])/Lcz_norm[good], c='k', label=r"Simulations ($\delta_{\rm{ov}}$)", zorder=1, marker='v')
+ax3.scatter(S[good], (L_d05[good] - Ls[good])/Lcz_norm[good], c='k', zorder=1, marker='o')
 ax3_1.scatter(S[good], theory_f[good], c='k')
 #ax3.scatter(S[good], theory[good], c='orange', label=r'$\mathcal{P}(1 - \langle f \rangle)$', marker='x')
 #ax3.scatter(S[good], L_d01[good] - Ls[good], c='k', label="Simulations", zorder=1)

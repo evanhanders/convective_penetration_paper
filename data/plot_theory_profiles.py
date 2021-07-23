@@ -17,24 +17,11 @@ brewer_green  = np.array(( 27,158,119, 255))/255
 brewer_orange = np.array((217, 95,  2, 255))/255
 brewer_purple = np.array((117,112,179, 255))/255
 
-#d = directory = 'erf_AE_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer0_64x64x256_schwarzschild_restart4/'
-#d = directory = 'new_erf_P_cut/erf_step_3D_Re4e2_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer100_64x64x256_predictive0.4/'
-d = directory = 'noslip_erf_Re_cut/erf_step_3D_Re6.4e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer100_384x384x384/'
-filename = directory + '/avg_profs/averaged_avg_profs.h5'
-
-S = float(d.split('_S')[-1].split('_')[0])
-P = float(d.split('_Pr')[0].split('_P')[-1].split('_')[0])
-Re = float(d.split('_Re')[-1].split('_')[0])
-Lz = float(d.split('_Lz')[-1].split('_')[0])
-
-fig_grad = plt.figure(figsize=(col_width, col_width/golden_ratio))
-fig_theory = plt.figure(figsize=(col_width, 1.5*col_width/golden_ratio))
-
-ax_grad = fig_grad.add_subplot(1,1,1)
-
-ax_flux   = fig_theory.add_axes([0.00, 0.50, 1, 0.5])
-ax_source = fig_theory.add_axes([0.00, 0.00, 1, 0.5])
-
+Re = 6.4e3
+P = 4
+S = 1e3
+Lz = 2
+filename = 'turbulent_profiles/re6.4e3_p4e0_s1e3_avg_profiles.h5'
 with h5py.File(filename, 'r') as f:
     enstrophy_profiles = f['enstrophy'][()]
     fconv_profiles = f['F_conv'][()]
@@ -52,6 +39,16 @@ ke_eqn_rhs  = fconv - dissipation
 grad     = grad_profiles[N,:]
 grad_ad  = grad_ad_profiles[N,:]
 grad_rad = grad_rad_profiles[N,:]
+
+
+fig_grad = plt.figure(figsize=(col_width, col_width/golden_ratio))
+fig_theory = plt.figure(figsize=(col_width, 1.5*col_width/golden_ratio))
+
+ax_grad = fig_grad.add_subplot(1,1,1)
+
+ax_flux   = fig_theory.add_axes([0.00, 0.50, 1, 0.5])
+ax_source = fig_theory.add_axes([0.00, 0.00, 1, 0.5])
+
 
 ax_grad.axvline(1.044, c='k', lw=0.5, ls='--')
 ax_grad.axvline(1.39, c='k', lw=0.5)
@@ -73,14 +70,18 @@ ax_source.plot(z, fconv/0.2, c=brewer_orange, label=r'$\overline{\mathcal{B}}$',
 ax_source.legend(loc='best', fontsize=10)
 ax_source.set_ylim(-0.5, 1.25)
 ax_source.set_ylabel('KE sources', labelpad=0)
+ax_source.axvline(1.044, c='k', lw=0.5, ls='--')
+ax_source.axvline(1.39, c='k', lw=0.5)
 
 f_ke_p = f_ke_profiles[N,:]
 
 ax_flux.axhline(0, c='k', lw=0.5)
 ax_flux.plot(z, f_ke_p/0.2, c=brewer_green, lw=2)
-ax_flux.axvline(brentq(interp1d(z, f_ke_p), 0.05, 0.9), c='k', ls='--')
-ax_flux.axvline(1.42, c='k')
+#ax_flux.axvline(brentq(interp1d(z, f_ke_p), 0.05, 0.9), c='k', ls='--')
+#ax_flux.axvline(1.42, c='k')
 ax_flux.set_ylabel(r'$\overline{\mathcal{F}}$')
+ax_flux.axvline(1.044, c='k', lw=0.5, ls='--')
+ax_flux.axvline(1.39, c='k', lw=0.5)
 
 
 grad = grad_profiles[N,:]
