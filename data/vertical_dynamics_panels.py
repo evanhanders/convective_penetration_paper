@@ -7,28 +7,48 @@ import h5py
 import dedalus.public as de
 plt.style.use('apj')
 
+read_raw_files = False
+plot_ind = -3
 
-# Get data from files
-dynamics_file = 'turbulence_slices/erf_step_3D_Re6.4e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer100_384x384x384/slices_s9.h5'
-profile_file  = 'turbulence_slices/erf_step_3D_Re6.4e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer100_384x384x384/profiles_s9.h5'
-#dynamics_file = 'turbulence_slices/erf_step_3D_Re3.2e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer200_256x256x256_predictive0.46/slices/slices_s5.h5'
-#profile_file = 'turbulence_slices/erf_step_3D_Re3.2e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer200_256x256x256_predictive0.46/profiles/profiles_s5.h5'
+if read_raw_files:
+    # Get data from files
+    dynamics_file = 'turbulence_slices/erf_step_3D_Re6.4e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer100_384x384x384/slices_s9.h5'
+    profile_file  = 'turbulence_slices/erf_step_3D_Re6.4e3_P4e0_zeta1e-3_S1e3_Lz2_Lcz1_Pr0.5_a2_Titer100_384x384x384/profiles_s9.h5'
 
-with h5py.File(profile_file, 'r') as f:
-    z = f['scales/z/1.0'][()].squeeze()
-    mean_T1 = np.mean(f['tasks/T1'][()][:,:].squeeze(), axis=0)
-    T1_fluc = np.mean(f['tasks/T1_fluc'][()][:,:].squeeze(), axis=0)
-    grad = -np.mean(f['tasks/T_z'][()][:,:].squeeze(), axis=0)
-    grad_ad = -np.mean(f['tasks/T_ad_z'][()][:,:].squeeze(), axis=0)
-    grad_rad = -np.mean(f['tasks/T_rad_z'][()][:,:].squeeze(), axis=0)
+    with h5py.File(profile_file, 'r') as f:
+        z = f['scales/z/1.0'][()].squeeze()
+        mean_T1 = np.mean(f['tasks/T1'][()][:,:].squeeze(), axis=0)
+        T1_fluc = np.mean(f['tasks/T1_fluc'][()][:,:].squeeze(), axis=0)
+        grad = -np.mean(f['tasks/T_z'][()][:,:].squeeze(), axis=0)
+        grad_ad = -np.mean(f['tasks/T_ad_z'][()][:,:].squeeze(), axis=0)
+        grad_rad = -np.mean(f['tasks/T_rad_z'][()][:,:].squeeze(), axis=0)
 
-    departure_frac = 0.5
-    departed_points = (z > 1)*(grad > grad_ad - departure_frac * (grad_ad - grad_rad))
-    departure_point = z[departed_points][-1]
-#    plt.plot(z, grad_ad)
-#    plt.plot(z, grad_rad)
-#    plt.plot(z, grad)
-#    plt.show()
+        departure_frac = 0.5
+        departed_points = (z > 1)*(grad > grad_ad - departure_frac * (grad_ad - grad_rad))
+        departure_point = z[departed_points][-1]
+
+    with h5py.File('turbulence_slices/vertical_slice_plot_data.h5', 'w') as f:
+        f['z'] = z
+        f['mean_T1'] = mean_T1
+        f['T1_fluc'] = T1_fluc
+        f['grad']    = grad
+        f['grad_ad'] = grad_ad
+        f['grad_rad'] = grad_rad
+        f['departure_point'] = departure_point
+        with h5py.File(dynamics_file, 'r') as df:
+            f['T1_field'] = df['tasks']['T1_y_mid'][plot_ind,:].squeeze()
+            f['w_field']  = df['tasks']['w_y_mid'][plot_ind,:].squeeze()
+
+with h5py.File('turbulence_slices/vertical_slice_plot_data.h5', 'r') as f:
+    z = f['z'][()]
+    mean_T1 = f['mean_T1'][()]
+    T1_fluc = f['T1_fluc'][()]
+    grad = f['grad'][()]
+    grad_ad = f['grad_ad'][()]
+    grad_rad = f['grad_rad'][()]
+    departure_point = f['departure_point'][()]
+    T1_field = f['T1_field'][()]
+    w_field  = f['w_field'][()]
 
 
 # Set up figure subplots
@@ -66,24 +86,21 @@ x = vert_domain.grid(0, scales=hires_scales)
 zz_tb, xx_tb = np.meshgrid(vert_domain.grid(-1, scales=hires_scales), x)
 
 
+#Temp plots
+vert_field['g'] = T1_field
+vert_field['g'] -= mean_T1
+vert_field['g'] /= T1_fluc 
+vert_field.set_scales(hires_scales, keep_data=True)
+T_cbar_scale = 2.5#np.max(np.abs(vert_field['g']))/3
+pT = axs[1].pcolormesh(xx_tb,  zz_tb,  np.copy(vert_field['g']),  cmap='RdBu_r', rasterized=True, shading="nearest", vmin=-T_cbar_scale, vmax=T_cbar_scale)
+vert_field.set_scales(1)
 
-plot_ind = -2
-with h5py.File(dynamics_file, 'r') as f:
-    #Temp plots
-    vert_field['g'] = f['tasks']['T1_y_mid'][plot_ind,:].squeeze()
-    vert_field['g'] -= mean_T1
-    vert_field['g'] /= T1_fluc 
-    vert_field.set_scales(hires_scales, keep_data=True)
-    T_cbar_scale = np.max(np.abs(vert_field['g']))/3
-    pT = axs[1].pcolormesh(xx_tb,  zz_tb,  np.copy(vert_field['g']),  cmap='RdBu_r', rasterized=True, shading="nearest", vmin=-T_cbar_scale, vmax=T_cbar_scale)
-    vert_field.set_scales(1)
-
-    #Vel plots
-    vert_field['g'] = f['tasks']['w_y_mid'][plot_ind,:].squeeze()
-    vert_field.set_scales(hires_scales, keep_data=True)
-    w_cbar_scale = np.max(np.abs(vert_field['g']))/1.5
-    pW = axs[0].pcolormesh(xx_tb,  zz_tb,  np.copy(vert_field['g']),  cmap='PuOr_r', rasterized=True, shading="nearest", vmin=-w_cbar_scale, vmax=w_cbar_scale)
-    vert_field.set_scales(1)
+#Vel plots
+vert_field['g'] = w_field
+vert_field.set_scales(hires_scales, keep_data=True)
+w_cbar_scale = 1#np.max(np.abs(vert_field['g']))/1.5
+pW = axs[0].pcolormesh(xx_tb,  zz_tb,  np.copy(vert_field['g']),  cmap='PuOr_r', rasterized=True, shading="nearest", vmin=-w_cbar_scale, vmax=w_cbar_scale)
+vert_field.set_scales(1)
 
 cbar_w = plt.colorbar(pW, cax=caxs[0], orientation='horizontal')
 cbar_T = plt.colorbar(pT, cax=caxs[1], orientation='horizontal')
