@@ -103,6 +103,12 @@
   {matplotlib/matplotlib: REL: v3.3.4}, v3.3.4,  Zenodo,
   \dodoi{10.5281/zenodo.4475376}
 
+\bibitem[{{Charbonneau} {et~al.}(1999){Charbonneau}, {Christensen-Dalsgaard},
+  {Henning}, {Larsen}, {Schou}, {Thompson}, \&
+  {Tomczyk}}]{charbonneau_etal_1999}
+{Charbonneau}, P., {Christensen-Dalsgaard}, J., {Henning}, R., {et~al.} 1999,
+  \apj, 527, 445, \dodoi{10.1086/308050}
+
 \bibitem[{{Christensen-Dalsgaard}(2021)}]{christensen-dalsgaard_2021}
 {Christensen-Dalsgaard}, J. 2021, Living Reviews in Solar Physics, 18, 2,
   \dodoi{10.1007/s41116-020-00028-3}

@@ -5,45 +5,45 @@ The style file: aasjournal.bst
 Database file #1: biblio.bib
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Warning--empty publisher in bergemann_serenelli_2014
-You've used 101 entries,
+You've used 102 entries,
             3168 wiz_defined-function locations,
-            1348 strings with 25753 characters,
-and the built_in function-call counts, 45133 in all, are:
-= -- 3881
-> -- 3067
+            1355 strings with 26012 characters,
+and the built_in function-call counts, 45713 in all, are:
+= -- 3929
+> -- 3120
 < -- 48
-+ -- 1022
-- -- 1092
-* -- 3901
-:= -- 8143
-add.period$ -- 108
-call.type$ -- 101
-change.case$ -- 562
-chr.to.int$ -- 101
-cite$ -- 102
-duplicate$ -- 1718
-empty$ -- 2892
-format.name$ -- 1242
-if$ -- 9262
++ -- 1041
+- -- 1113
+* -- 3957
+:= -- 8252
+add.period$ -- 109
+call.type$ -- 102
+change.case$ -- 572
+chr.to.int$ -- 102
+cite$ -- 103
+duplicate$ -- 1735
+empty$ -- 2919
+format.name$ -- 1263
+if$ -- 9374
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 96
-newline$ -- 318
-num.names$ -- 405
-pop$ -- 609
+missing$ -- 97
+newline$ -- 321
+num.names$ -- 409
+pop$ -- 620
 preamble$ -- 1
-purify$ -- 562
+purify$ -- 572
 quote$ -- 0
-skip$ -- 1538
+skip$ -- 1551
 stack$ -- 0
-substring$ -- 1910
+substring$ -- 1927
 swap$ -- 49
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 897
+type$ -- 906
 warning$ -- 1
-while$ -- 390
+while$ -- 394
 width$ -- 0
-write$ -- 1113
+write$ -- 1124
 (There was 1 warning)
