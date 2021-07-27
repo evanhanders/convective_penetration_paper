@@ -9,6 +9,11 @@ page_width = 6.5
 golden_ratio = 1.61803398875
 
 
+brewer_green  = np.array(( 27,158,119, 255))/255
+brewer_orange = np.array((217, 95,  2, 255))/255
+brewer_purple = np.array((117,112,179, 255))/255
+
+
 data = np.genfromtxt('scalar_table_data.csv', skip_header=1, delimiter=',', dtype=np.unicode_)
 S  = np.array(data[:,0], dtype=np.float64)
 P  = np.array(data[:,1], dtype=np.float64)
@@ -65,6 +70,10 @@ ax1.scatter(P[good], d05[good], c='k', label=r"$\delta_{0.5}$", zorder=1, marker
 ax1.scatter(P[good], d01[good], c='k', label=r"$\delta_{0.1}$", zorder=1, marker='^')
 ax1_1.scatter(P[good], f[good], c='k')
 ax1_2.scatter(P[good], xi[good], c='k')
+
+ax1.scatter(P[good*(P==4)], d05[good*(P==4)], marker='s',  s=150, edgecolor=brewer_purple, facecolor=(1,1,1,0))
+ax1_1.scatter(P[good*(P==4)], f[good*(P==4)], marker='s',  s=100, edgecolor=brewer_purple, facecolor=(1,1,1,0))
+ax1_2.scatter(P[good*(P==4)], xi[good*(P==4)], marker='s', s=100, edgecolor=brewer_purple, facecolor=(1,1,1,0))
 leg1 = ax1.legend(frameon=True, fontsize=10, framealpha=0.6, loc='lower right')
 
 line_P = np.linspace(0, 21, 100)
@@ -92,6 +101,10 @@ ax2.scatter(P[good], d05[good], c='k', zorder=1, marker='o')
 ax2.scatter(P[good], d01[good], c='k', zorder=1, marker='^')
 ax2_1.scatter(P[good], f[good], c='k')
 ax2_2.scatter(P[good], xi[good], c='k')
+
+ax2.scatter(P[good*(P==4)], d05[good*(P==4)], marker='s',  s=150, edgecolor=brewer_orange, facecolor=(1,1,1,0))
+ax2_1.scatter(P[good*(P==4)], f[good*(P==4)], marker='s',  s=100, edgecolor=brewer_orange, facecolor=(1,1,1,0))
+ax2_2.scatter(P[good*(P==4)], xi[good*(P==4)], marker='s', s=100, edgecolor=brewer_orange, facecolor=(1,1,1,0))
 
 
 line_P = np.logspace(-3, 2, 100)
@@ -129,6 +142,10 @@ for ax in [ax1, ax1_1, ax2, ax2_1]:
 
 ax1_2.set_xlabel(r'$\mathcal{P}_D$')
 ax2_2.set_xlabel(r'$\mathcal{P}_L$')
+
+#ax.scatter(4, 800, marker='s', s=80, edgecolor=brewer_orange, facecolor=(1,1,1,0))
+
+
 
 plt.savefig('parameters_vs_p.png', dpi=300, bbox_inches='tight')
 plt.savefig('../manuscript/parameters_vs_p.pdf', dpi=300, bbox_inches='tight')

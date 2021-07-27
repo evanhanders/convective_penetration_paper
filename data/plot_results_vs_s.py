@@ -8,6 +8,10 @@ col_width = 3.25
 page_width = 6.5
 golden_ratio = 1.61803398875
 
+brewer_green  = np.array(( 27,158,119, 255))/255
+brewer_orange = np.array((217, 95,  2, 255))/255
+brewer_purple = np.array((117,112,179, 255))/255
+
 
 data = np.genfromtxt('scalar_table_data.csv', skip_header=1, delimiter=',', dtype=np.unicode_)
 S  = np.array(data[:,0], dtype=np.float64)
@@ -59,6 +63,10 @@ ax1.scatter(S[good], d05[good], c='k', label=r"$\delta_{0.5}$", zorder=1, marker
 ax1.scatter(S[good], d01[good], c='k', label=r"$\delta_{0.1}$", zorder=1, marker='^')
 leg1 = ax1.legend(frameon=True, fontsize=8, framealpha=0.6, loc='upper right')
 ax1.set_xscale('log')
+
+
+ax1.scatter(S[good*(S==1e3)], d05[good*(S==1e3)], marker='s',  s=1200, edgecolor=brewer_purple, facecolor=(1,1,1,0))
+ax2.scatter(S[good*(S==1e3)], (d09-d01)[good*(S==1e3)], marker='s',  s=150, edgecolor=brewer_purple, facecolor=(1,1,1,0))
 
 ax1.set_xlabel(r'$\mathcal{S}$')
 ax1.set_ylabel(r'$\delta_{\rm{p}}$')

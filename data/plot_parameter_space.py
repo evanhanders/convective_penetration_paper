@@ -62,9 +62,15 @@ case1 = ax.scatter(P[cut1], Re[cut1], marker='o', c=brewer_purple, s=10, label='
 hh=[case1, case1sf, case2]
 ax.legend(hh,[H.get_label() for H in hh], fontsize=9)
 
-ax.scatter(4, 400, marker='x', c=brewer_green)
+
+ax.scatter(4, 400, marker='s', s=80, edgecolor=brewer_purple, facecolor=(1,1,1,0))
+ax.scatter(4, 800, marker='s', s=80, edgecolor=brewer_orange, facecolor=(1,1,1,0))
+
+ax.scatter(4, 400, marker='x', s=60, c=brewer_green)
 ax.set_xlabel(r'$\mathcal{P}$')
 ax.set_ylabel(r'$\mathcal{R}$')
+
+
 
 
 ax.set_xscale('log')

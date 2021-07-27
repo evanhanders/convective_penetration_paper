@@ -514,6 +514,13 @@ Aside from $\mS$ and $\mP$, the two remaining control parameters $\mR$ and $\Pra
 The value of $\mR$ corresponds to the value of the Reynolds number $\rm{Re} = \mR |\vec{u}|$, and we will vary $\mR$.
 Astrophysical convection exists in the limit of $\Pran \ll 1$ \citep{garaud2021}; in this work we choose a modest value of $\Pran = 0.5$ which slightly separates the thermal and viscous scales while still allowing us to achieve convection with large Reynolds and P\'{e}clet numbers.
 
+We will now describe the setup of the two types of simulations conducted in this work (Case I and Case II).
+As a visual aid, we provide Fig.~\ref{fig:parameter_space} to guide the eye to the portion of parameter space that we have studied in each of these cases.
+We denote two ``landmark cases'' using a purple box (Case I landmark) and an orange box (Case II landmark), and throughout this work we will call out data from these cases with a similar box to guide the eye.
+
+
+
+
 \subsection{Case I: Discontinuous flux}
 \label{sec:numerics_case1}
 Most of the simulations in this paper have a discontinuous convective flux at the Schwarzschild convective boundary.
@@ -551,12 +558,13 @@ According to Eqn.~\ref{eqn:discontinuous_prediction}, we expect $\delp \propto \
 Each point corresponds to a simulations conducted in this work in the $\mR-\mP$ parameter space at $\mS = 10^3$. 
 Purple circles represent Case I (Sec.~\ref{sec:numerics_case1}) simulations and orange diamonds represent Case II (Sec.~\ref{sec:numerics_case2}) simulations; empty markers are simulations with stress-free boundary conditions while filled-in markers are simulations with no-slip boundary conditions. 
 We additionally conduct simulations at fixed $\mR$ and $\mP$ while varying $\mS$; these simulations occur at P = 4 and R = 400 and are denoted by a green ``x.''
+The two ``landmark'' simulations are denoted by boxes.
+The landmark Case I simulation has $\mR = 400$ and $\mP_D = 4$.
+The landmark Case II simulation has $\mR = 800$ and $\mP_L = 4$.
+Both landmark simulations have $\mS = 10^3$ and no-slip boundary conditions.
 \label{fig:parameter_space}
 }
 \end{figure}
-
-
-
 
 
 \subsection{Case II: Piecewise linear flux}
@@ -610,25 +618,6 @@ A table describing all of the simulations presented in this work can be found in
 We produce the figures in this paper using matplotlib \citep{hunter2007, mpl3.3.4}.
 All of the Python scripts used to run the simulations in this paper and to create the figures in this paper are publicly available in a git repository\footnote{\url{https://github.com/evanhanders/convective_penetration_paper}}, and in a Zenodo repository \citep{supp}.
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{time_evolution.pdf}
-\caption{
-Time evolution of the $\mR = 400$, $\mP = 4$, $\mS = 10^3$ Case I simulation.
-(left top panel) The PZ height $\delta_{0.5}$ vs.~time.
-We also show the time evolution of $f$ (left middle panel, defined in Eqn.~\ref{eqn:f_defn}) and $\xi$ (left bottom panel, defined in Eqn.~\ref{eqn:xi_defn}).
-The vertical lines denote the times at which the traces first converge to within 1\% of their final values, which are denoted by solid horizontal lines.
-(right panel) The vertical profile of $\justgrad/\gradad$ is plotted against height at regular time intervals.
-The line color denotes the time, following the time traces in the left panels.
-The constant value of $\gradad$ is denoted by the horizontal dashed grey line, and the value of $\gradrad$ is denoted by the solid grey line.
-The location of the Schwarzschild convective boundary is displayed as a vertical dashed black line.
-The top-of-PZ departure points (Eqn.~\ref{eqn:delta_p_measures}) are plotted over the profile evolution ($\delta_{0.1}$ and $\delta_{0.9}$ as red lines, $\delta_{0.5}$ as black lines).
-\label{fig:time_evolution}
-}
-\end{figure*}
-
-
-
 \subsection{Penetration height measurements}
 In our evolved simulations, the penetrative region has a nearly adiabatic stratification $\justgrad \approx \gradad$.
 To characterize the height of the penetrative region, we measure how drastically $\justgrad$ has departed from $\gradad$.
@@ -646,11 +635,71 @@ In this work, we measure the 10\% ($\delta_{0.1}$, $h=0.1$), 50\% ($\delta_{0.5}
 Using \citet{zahn1991}'s terminology, $\delta_{0.5}$ is the mean value of the top of the PZ while $\delta_{0.9} - \delta_{0.1}$ represents the width of the ``thermal adjustment layer.''
 We find that these measurements based on the (slowly-evolving) thermodynamic profile provide a robust and straightforward measurement of penetration height \citep[for a discussion of alternate measurement choices, see][]{pratt_etal_2017}.
 
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{lessturb_dynamics_panels.pdf}
+\caption{
+Shown are temperature anomalies in the landmark simulations.
+(top) Case I landmark ($\mR = 400$, $\mP_D = 4$, $\mS = 10^3$) and (bottom) Case II landmark ($\mR = 800$, $\mP_L = 4$, $\mS = 10^3$).
+The temporally- and volume- averaged Reynolds number in the convection zone is $\sim 250$ in the top panel and $\sim 350$ in the bottom panel.
+As in Fig.~\ref{fig:vertical_dynamics_panels}, the boundary between the penetrative and radiative zones is shown as a solid horizontal line.
+The boundary between the penetrative zone and bulk convection zone is shown as a dashed horizontal line.
+In the bottom panel, there is an additional dashed horizontal line near the bottom of the domain; the linearly increasing conductivity creates a second PZ there where $\justgrad \approx \gradad > \gradrad$ below internal heating layer.
+We see that temperature anomalies have different signs in the bulk CZ and PZ, as in Fig.~\ref{fig:vertical_dynamics_panels}.
+\label{fig:lessturb_dynamics_panels}
+}
+\end{figure}
+
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{time_evolution.pdf}
+\caption{
+Time evolution of the landmark Case I simulation ($\mR = 400$, $\mP_D = 4$, $\mS = 10^3$).
+(left top panel) The PZ height $\delta_{0.5}$ vs.~time.
+We also show the time evolution of $f$ (left middle panel, defined in Eqn.~\ref{eqn:f_defn}) and $\xi$ (left bottom panel, defined in Eqn.~\ref{eqn:xi_defn}).
+The vertical lines denote the times at which the traces first converge to within 1\% of their final values, which are denoted by solid horizontal lines.
+(right panel) The vertical profile of $\justgrad/\gradad$ is plotted against height at regular time intervals.
+The line color denotes the time, following the time traces in the left panels.
+The constant value of $\gradad$ is denoted by the horizontal dashed grey line, and the value of $\gradrad$ is denoted by the solid grey line.
+The location of the Schwarzschild convective boundary is displayed as a vertical dashed black line.
+The top-of-PZ departure points (Eqn.~\ref{eqn:delta_p_measures}) are plotted over the profile evolution ($\delta_{0.1}$ and $\delta_{0.9}$ as red lines, $\delta_{0.5}$ as black lines).
+\label{fig:time_evolution}
+}
+\end{figure*}
+
+
+\section{Results}
+\label{sec:results}
+
+We now describe the results of the 3D dynamical simulations described in the previous section.
+Fig.~\ref{fig:vertical_dynamics_panels} displays the dynamics in one of these simulations.
+While we will briefly examine dynamics here, our primary goal in this section is to quantitatively compare our simulations to the theory of Sec.~\ref{sec:theory} using temporally averaged measures.
+
+\subsection{Dynamics}
+In Fig.~\ref{fig:lessturb_dynamics_panels} we display snapshots of the temperature anomalies in the two ``landmark'' simulations denoted by boxes in Fig.~\ref{fig:parameter_space}.
+We display the temperature anomaly in the top panel of the Case I simulation with $\mR = 400$, $\mP_D = 4$, and $\mS = 10^3$; this simulation is included in all three of our parameter space sweeps and represents the point where our ($\mR, \mP, \mS$) cuts converge  in Fig.~\ref{fig:parameter_space}.
+We display the temperature anomaly in the bottom panel of the Case II simulation with $\mR = 800$, $\mP_L = 4$, and $\mS = 10^3$.
+The bulk reynolds number in the convection zones of these simulations are (top) $\sim 250$ and (bottom) $\sim 350$.
+Thus, these simulations are less turbulent than the simulation in Fig.~\ref{fig:vertical_dynamics_panels} (bulk Re $\sim$ 5000).
+Aside from the degree of turbulence, the dynamics are very similar in Figs.~\ref{fig:vertical_dynamics_panels} \& \ref{fig:lessturb_dynamics_panels}.
+In particular, we observe that hot plumes in the CZ turn into cold plumes in the PZ (as they cross the dashed horizontal lines), and hot downflows in the PZ turn into cold downflows in the CZ.
+Convective plumes extend through the penetrative region and impact the stable radiative zone (above the solid horizontal line).
+The interface with the radiative zone is stiff, and so convective motions excite waves at a shallow angle above the radiative-convective boundary.
+We note that the Case II simulation has an additional temperature inversion at the base of the simulation.
+Case II simulations have a linearly increasing conductivity $k$ in the convection zone, so there is formally a small penetrative region where $\justgrad \approx \gradad > \gradrad$ at the base of the domain below the internal heating layer.
+
+While the landmark simulations in Fig.~\ref{fig:lessturb_dynamics_panels} are not as turbulent as the dynamics in Fig.~\ref{fig:vertical_dynamics_panels}, they are sufficiently nonlinear to be interesting.
+Importantly, these simulations develop large penetration zones, and can be evolved for tens of thousands of convective overturn times.
+As we will demonstrate in the next section, the formation timescale of penetrative zones can take tens of thousands of convective overturn times.
+
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{parameters_vs_p.pdf}
 \caption{
 Results from the cuts through $\mP$ parameter space for the Case I (left panels; see solid purple circles in Fig.~\ref{fig:parameter_space}) and Case II (right panels; solid orange diamonds in Fig.~\ref{fig:parameter_space}) simulations.
+Boxed data points show the location of landmark simulations from Fig.~\ref{fig:parameter_space}.
 The top panels show the penetration height according to Eqn.~\ref{eqn:delta_p_measures}.
 The Case I penetration heights (upper left) vary linearly with $\mP$, in line with the prediction of Eqn.~\ref{eqn:discontinuous_prediction}.
 The Case II penetration heights (upper right) vary like $\sqrt{\mP}$, in line with the prediction of Eqn.~\ref{eqn:linear_prediction}.
@@ -663,19 +712,9 @@ We find characteristic values of $\xi \in [0.5, 0.75]$, suggesting that the fall
 \end{figure*}
 
 
-
-
-
-\section{Results}
-\label{sec:results}
-
-We now describe the results of the 3D dynamical simulations described in the previous section.
-Fig.~\ref{fig:vertical_dynamics_panels} displays the dynamics in one of these simulations.
-In this section, we quantitatively compare our simulations to the theory of Sec.~\ref{sec:theory} using temporally averaged measures.
-
 \subsection{Qualitative description of simulation evolution}
 
-In Fig.~\ref{fig:time_evolution}, we show the time evolution of a Case I (discontinuous conductivity) simulation with $\mR = 400$, $\mS = 10^3$, and $\mP_D = 4$ whose initial temperature profile sets $\justgrad = \gradad$ in the convection zone ($z \lesssim 1$) and $\justgrad = \gradrad$ in the radiative zone ($z \gtrsim 1$).
+In Fig.~\ref{fig:time_evolution}, we show the time evolution of the landmark Case I simulation ($\mR = 400$, $\mS = 10^3$, and $\mP_D = 4$) whose initial temperature profile sets $\justgrad = \gradad$ in the convection zone ($z \lesssim 1$) and $\justgrad = \gradrad$ in the radiative zone ($z \gtrsim 1$).
 In the top left panel, we display the height of the penetrative region $\delta_{\rm{0.5}}$ vs.~time.
 This region initially grows quickly over hundreds of freefall times, but this evolution slows down; reaching the final equilibrium takes tens of thousands of freefall times.
 The evolution of the other parameters in our theory ($f$, $\xi$) are shown in the middle and bottom left panels of Fig.~\ref{fig:time_evolution}.
@@ -707,6 +746,7 @@ For details on how this procedure is carried out, see Appendix \ref{app:accelera
 \includegraphics{parameters_vs_s.pdf}
 \caption{
 Results for Case I simulations at $\mR = 400$, $\mP = 4$, at varying $\mS$.
+Boxed data points show the location of landmark simulation from Fig.~\ref{fig:parameter_space}.
 (Left panel) Penetration heights are shown vs.~$\mS$.
 While the width of the transition layer from the adiabatic PZ to the stable RZ shrinks as a function of $\mS$, the mean penetration height ($\delta_{0.5}$) is roughly constant.
 (Right panel) The width of the thermal transition layer ($\delta_{0.9} - \delta_{0.1}$) is shown as a function of stiffness.
@@ -774,6 +814,7 @@ In both cases, we see a roughly logarithmic decrease of $\delp$ with $\mR$.
 (Lower left panel) There is a strong correlation between $\delta_{0.5}$ and $f$, agreeing with our theoretical model of Eqn.~\ref{eqn:discontinuous_prediction}.
 (Lower middle panel) Changes in $f$ are roughly linearly proportional to the depth of the viscous boundary layer, $\ell_\nu$, at the bottom of the domain, at least for the open-circle SF cases.
 (Lower right panel) The viscous boundary layer follows a classical scaling law seen in Rayleigh-B\'{e}nard convection, so we anticipate that $\delta_{0.5}$ and $f$ should saturate as $\mR \rightarrow \infty$ and $\ell_{\nu} \rightarrow 0$.
+Boxed data points show the location of landmark simulation from Fig.~\ref{fig:parameter_space}.
 \label{fig:parameters_vs_re}
 }
 \end{figure*}
@@ -923,15 +964,15 @@ To understand these simulations, we used an integral constraint \citep[reminisce
 In doing so, we have laid down the first steps (Eqns.~\ref{eqn:theory_fraction} \& \ref{eqn:mesa_eqn}) towards incorporating convective penetration into stellar structure codes.
 We parameterized the viscous dissipation into a bulk-CZ portion ($f$) and a portion in the extended penetrative region ($\xi$), and derived predictions for how the height of a penetrative region, $\delp$, should scale with these measurable parameters and a new flux-based ``penetration parameter'' $\mP$.
 We designed and analyzed two sets of simulations which showed good agreement with these theoretical predictions.
-We briefly examined what the impliciations of this theory could be for a simple solar model.
+We briefly examined what the impliciations of this theory could be for a simple stellatellarr model.
 
-Our simulation results suggest that stellar convection zones should be bounded by sizeable penetration zones.
+Our simulation results suggest that stellar convection zones could be bounded by sizeable penetration zones.
 In extreme simulations, we observe penetration zones which are as large as the convection zones they accompany; however, for realistic stellar values ($\mP \approx 1$), we find that they may be as large as 20-30\% of the convective zone length scale ($\sim$the mixing length).
 
 The simulations we presented in this work use a simplified setup to test the basic tenets of our theory.
 In particular, they demonstrate that the shape of the flux near the convective boundary and the viscous dissipation together determine the height of the penetration zone.
-The precise values of the parameters $f$ and $\xi$ achieved in natural, turbulent, fully compressible, spherical stellar convection may be different from those presented in e.g., Fig.~\ref{fig:parameters_vs_p} here.
-Future work should aim to understand how these parameters and the theory presented in e.g., Eqn.~\ref{eqn:mesa_eqn} change when these realistic effects are taken into account.
+The precise values of the parameters $f$ and $\xi$ achieved in natural, turbulent, fully compressible, spherical stellar convection may be different from those presented in e.g., Fig.~\ref{fig:parameters_vs_p} and Eqn.~\ref{eqn:f_xi_estimates} here.
+Future work should aim to understand how these parameters and the theory presented in e.g., Eqn.~\ref{eqn:mesa_eqn} change when more realistic effects are taken into account.
 
 Furthermore, it is important to note that stellar opacities, and thus stellar conductivities, are functions of thermodynamic variables rather than radial location.
 As a result, the formation of a penetration zone will in turn affect the conductivity profile and $\gradrad$, which will in turn affect the location of the Schwarzschild boundary and the estimate of how deep the penetration zone should be.

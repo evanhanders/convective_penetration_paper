@@ -13,15 +13,16 @@
 \BOOKMARK [2][-]{subsection.4.3}{Numerics}{section.4}% 13
 \BOOKMARK [2][-]{subsection.4.4}{Penetration height measurements}{section.4}% 14
 \BOOKMARK [1][-]{section.5}{Results}{}% 15
-\BOOKMARK [2][-]{subsection.5.1}{Qualitative description of simulation evolution}{section.5}% 16
-\BOOKMARK [2][-]{subsection.5.2}{Dependence on P}{section.5}% 17
-\BOOKMARK [2][-]{subsection.5.3}{Dependence on S}{section.5}% 18
-\BOOKMARK [2][-]{subsection.5.4}{Dependence on R}{section.5}% 19
-\BOOKMARK [1][-]{section.6}{Testing our parameterization in a simple stellar model of the Sun}{}% 20
-\BOOKMARK [1][-]{section.7}{Discussion}{}% 21
-\BOOKMARK [1][-]{appendix.A}{Accelerated Evolution}{}% 22
-\BOOKMARK [1][-]{appendix.B}{MESA implementation}{}% 23
-\BOOKMARK [2][-]{subsection.B.1}{Input Physics}{appendix.B}% 24
-\BOOKMARK [2][-]{subsection.B.2}{Penetration Implementation}{appendix.B}% 25
-\BOOKMARK [2][-]{subsection.B.3}{Models}{appendix.B}% 26
-\BOOKMARK [1][-]{appendix.C}{Table of simulation parameters}{}% 27
+\BOOKMARK [2][-]{subsection.5.1}{Dynamics}{section.5}% 16
+\BOOKMARK [2][-]{subsection.5.2}{Qualitative description of simulation evolution}{section.5}% 17
+\BOOKMARK [2][-]{subsection.5.3}{Dependence on P}{section.5}% 18
+\BOOKMARK [2][-]{subsection.5.4}{Dependence on S}{section.5}% 19
+\BOOKMARK [2][-]{subsection.5.5}{Dependence on R}{section.5}% 20
+\BOOKMARK [1][-]{section.6}{Testing our parameterization in a simple stellar model of the Sun}{}% 21
+\BOOKMARK [1][-]{section.7}{Discussion}{}% 22
+\BOOKMARK [1][-]{appendix.A}{Accelerated Evolution}{}% 23
+\BOOKMARK [1][-]{appendix.B}{MESA implementation}{}% 24
+\BOOKMARK [2][-]{subsection.B.1}{Input Physics}{appendix.B}% 25
+\BOOKMARK [2][-]{subsection.B.2}{Penetration Implementation}{appendix.B}% 26
+\BOOKMARK [2][-]{subsection.B.3}{Models}{appendix.B}% 27
+\BOOKMARK [1][-]{appendix.C}{Table of simulation parameters}{}% 28

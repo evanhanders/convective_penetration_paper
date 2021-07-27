@@ -9,6 +9,10 @@ col_width = 3.25
 page_width = 6.5
 golden_ratio = 1.61803398875
 
+brewer_green  = np.array(( 27,158,119, 255))/255
+brewer_orange = np.array((217, 95,  2, 255))/255
+brewer_purple = np.array((117,112,179, 255))/255
+
 calculate_BLs = False
 
 if calculate_BLs:
@@ -125,6 +129,7 @@ ax1.legend(frameon=True, fontsize=8, framealpha=0.6)
 ax1.set_xlabel(r'$\mathcal{R}$')
 ax1.set_ylabel(r'$\delta_{0.5}$')
 ax1.set_xlim(2e1, 7e3)
+ax1.scatter(Re[good_ns*(Re==400)], d05[good_ns*(Re==400)], marker='s',  s=350, edgecolor=brewer_purple, facecolor=(1,1,1,0))
 
 
 ax2.scatter(Re[good_sf], f[good_sf], facecolor=(1,1,1,0.5), color='k', marker='o')
@@ -133,6 +138,7 @@ ax2.set_xscale('log')
 ax2.set_xlabel(r'$\mathcal{R}$')
 ax2.set_ylabel(r'$f$')
 ax2.set_xlim(2e1, 7e3)
+ax2.scatter(Re[good_ns*(Re==400)], f[good_ns*(Re==400)], marker='s',  s=150, edgecolor=brewer_purple, facecolor=(1,1,1,0))
 
 ax3.scatter(Re[good_sf], xi[good_sf], facecolor=(1,1,1,0.5), color='k', marker='o')
 ax3.scatter(Re[good_ns], xi[good_ns], color='k', marker='o', alpha=0.8, s=15)
@@ -140,6 +146,7 @@ ax3.set_xscale('log')
 ax3.set_ylabel(r'$\xi$')
 ax3.set_xlabel(r'$\mathcal{R}$')
 ax3.set_xlim(2e1, 7e3)
+ax3.scatter(Re[good_ns*(Re==400)], xi[good_ns*(Re==400)], marker='s',  s=150, edgecolor=brewer_purple, facecolor=(1,1,1,0))
 
 good_sf *= (Re >= 200)
 good_ns *= (Re >= 200)
@@ -150,6 +157,7 @@ ax4.set_xlabel(r'$f$')
 ax4.set_ylabel(r'$\delta_{0.5}$')
 ax4.set_xlim(0.63, 0.75)
 ax4.set_ylim(0.3, 0.55)
+ax4.scatter(f[good_ns*(Re==400)], d05[good_ns*(Re==400)], marker='s',  s=150, edgecolor=brewer_purple, facecolor=(1,1,1,0))
 
 
 
@@ -159,6 +167,7 @@ ax5.scatter(bot_bl[good_ns], f[good_ns], color='k', marker='o', alpha=0.8, s=15)
 ax5.set_xlim(0, 0.24)
 ax5.set_xlabel(r'$\ell_\nu$')
 ax5.set_ylabel(r'$f$')
+ax5.scatter(bot_bl[good_ns*(Re==400)], f[good_ns*(Re==400)], marker='s',  s=150, edgecolor=brewer_purple, facecolor=(1,1,1,0))
 
 bl = np.linspace(-0.05, 0.4, 100)
 f_bl = 0.755*(1 - bl/Ls[good_sf][0])
@@ -185,6 +194,7 @@ ax6.set_ylabel(r'$\ell_\nu$')
 ax6.legend(frameon=True, fontsize=8, framealpha=0.6)
 ax6.set_xlim(1.5e2, 7e3)
 ax6.set_ylim(1.4e-2, 6e-1)
+ax6.scatter(Re[good_ns*(Re==400)], bot_bl[good_ns*(Re==400)], marker='s',  s=150, edgecolor=brewer_purple, facecolor=(1,1,1,0))
 
 plt.savefig('parameters_vs_re.png', dpi=300, bbox_inches='tight')
 plt.savefig('../manuscript/parameters_vs_re.pdf', dpi=300, bbox_inches='tight')
