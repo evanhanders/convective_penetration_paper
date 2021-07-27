@@ -130,9 +130,9 @@ The top of the penetrative zone ($\delta_{0.1}$, see Sec.~\ref{sec:simulation_de
 
 
 Convective overshoot, penetration, and entrainment have been studied in the laboratory and through numerical simulations for decades, and the state of the field has been regularly reviewed \citep[e.g.,][]{marcus_etal_1983, zahn1991, browning_etal_2004, rogers_etal_2006, viallet_etal_2015, korre_etal_2019}.
+Experiments exhibiting extensive expansion of convection zones via entrainment have a long history \citep[e.g.,][and this process is often confusingly called ``penetration'']{musman1968, deardorff_etal_1969, moore_weiss_1973}.
 Modern numerical experiments often examine the importance of the ``stiffness'' $\mS$ of a radiative-convective interface.
 $\mS$ compares the relative stability of a radiative zone and an adjacent convection zone according to some measure like a dynamical frequency or characteristic entropy gradient.
-Experiments exhibiting extensive expansion of convection zones via entrainment have a long history \citep[dating back to e.g.,][and this process is often confusingly called ``penetration'']{musman1968, deardorff_etal_1969, moore_weiss_1973}.
 Some recent studies in simplified Boussinesq setups exhibit stiffness-dependent convection zone expansion via entrainment \citep{couston_etal_2017, toppaladoddi_wettlaufer_2018}; others find stiffness-dependent pure overshoot \citep{korre_etal_2019}.
 A link between $\mS$ and the processes of entrainment and overshoot has seemingly emerged, but a mechanism for penetration remains elusive.
 
@@ -146,7 +146,7 @@ Subsequent simulations by \citet{brummell_etal_2002} exhibit a weak scaling of p
 Still later simulations by \citet{rogers_glatzmaier_2005} demonstrate a negligible scaling of the penetration depth against $\mS$ at moderate values of $\mS$.
 Prior simulations thus consistently show hints of penetration at low $\mS$ \citep[where results may not be relevant for stars,][]{couston_etal_2017}, but present confusing and contradictory results at moderate-to-high $\mS$.
 
-There are hints in the literature that convective penetration may be dependent upon energy fluxes.
+There are hints in the literature that convective penetration may depend on energy fluxes.
 \citet{roxburgh1978, roxburgh1989, roxburgh1992, roxburgh1998} derived an ``integral constraint'' from the energy equation and found that a spatial integral of the flux puts an upper limit on the size of a theoretical penetrative region.
 \citet{zahn1991} theorized that convective penetration should depend only on how steeply the radiative temperature gradient varies at the convective boundary.
 Following \citet{zahn1991}'s work, \citet{rempel2004} derived a semianalytic model and suggested that inconsistencies seen in simulations of penetrative dynamics can be explained by the magnitude of the fluxes or luminosities driving the simulations.
@@ -155,7 +155,7 @@ Furthermore, in the limit of low stiffness, the simulations of \citet{hurlburt_e
 In light of these results, and the possible importance of energy fluxes, Roxburgh's integral constraint and Zahn's theory deserve to be revisited.
 
 
-
+$\,$
 \subsection{Convective penetration \& this study's findings}
 
 Convective penetration is the process by which convective motions extend beyond the Schwarzschild-stable boundary and mix the entropy gradient to be nearly adiabatic.
@@ -180,8 +180,8 @@ In Sec.~\ref{sec:central_results}, we present the central finding of this work: 
 In Sec.~\ref{sec:theory}, we describe the equations used and derive a parameterized theory of convective penetration.
 In Sec.~\ref{sec:simulation_details}, we describe our simulation setup and parameters.
 In Sec.~\ref{sec:results}, we present the results of these simulations, with a particular focus on the height of the penetrative regions.
-In Sec.~\ref{sec:solar_model}, we create and discuss a solar MESA model which uses this theory to determine the bottom of the solar convection zone.
-Finally, we discuss how future simulations can better constrain this theory in Sec.~\ref{sec:discussion}.
+In Sec.~\ref{sec:solar_model}, we create and discuss a stellar model in MESA which has convective penetration.
+Finally, we discuss pathways for future work in Sec.~\ref{sec:discussion}.
 
 \section{Central Result: Convective Penetration}
 \label{sec:central_results}
@@ -519,8 +519,6 @@ As a visual aid, we provide Fig.~\ref{fig:parameter_space} to guide the eye to t
 We denote two ``landmark cases'' using a purple box (Case I landmark) and an orange box (Case II landmark), and throughout this work we will call out data from these cases with a similar box to guide the eye.
 
 
-
-
 \subsection{Case I: Discontinuous flux}
 \label{sec:numerics_case1}
 Most of the simulations in this paper have a discontinuous convective flux at the Schwarzschild convective boundary.
@@ -547,17 +545,14 @@ We solve the system of equations $\mS = (\gradad - \gradrad)/f_{\rm{conv}}^2$, $
 \end{split}
 \end{equation}
 
-We study a sweep through each of the ($\mP_D$, $\mS$, $\mR$) parameter spaces while holding all other parameters constant (see Fig.~\ref{fig:parameter_space}).
-We study an additional sweep through $\mR$ parameter space using stress-free boundaries to compare to our no-slip cases.
-According to Eqn.~\ref{eqn:discontinuous_prediction}, we expect $\delp \propto \mP_D$.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{parameter_space.pdf}
 \caption{
-Each point corresponds to a simulations conducted in this work in the $\mR-\mP$ parameter space at $\mS = 10^3$. 
+Each marker corresponds to a simulation conducted in this work in the $\mR-\mP$ parameter space at $\mS = 10^3$. 
 Purple circles represent Case I (Sec.~\ref{sec:numerics_case1}) simulations and orange diamonds represent Case II (Sec.~\ref{sec:numerics_case2}) simulations; empty markers are simulations with stress-free boundary conditions while filled-in markers are simulations with no-slip boundary conditions. 
-We additionally conduct simulations at fixed $\mR$ and $\mP$ while varying $\mS$; these simulations occur at P = 4 and R = 400 and are denoted by a green ``x.''
+We additionally conduct Case I simulations at fixed $\mR$ and $\mP$ while varying $\mS$; these simulations occur at P = 4 and R = 400 and are denoted by a green ``x.''
 The two ``landmark'' simulations are denoted by boxes.
 The landmark Case I simulation has $\mR = 400$ and $\mP_D = 4$.
 The landmark Case II simulation has $\mR = 800$ and $\mP_L = 4$.
@@ -565,6 +560,14 @@ Both landmark simulations have $\mS = 10^3$ and no-slip boundary conditions.
 \label{fig:parameter_space}
 }
 \end{figure}
+
+
+
+
+
+We study a sweep through each of the ($\mP_D$, $\mS$, $\mR$) parameter spaces while holding all other parameters constant (see Fig.~\ref{fig:parameter_space}).
+We study an additional sweep through $\mR$ parameter space using stress-free boundaries to compare to our no-slip cases.
+According to Eqn.~\ref{eqn:discontinuous_prediction}, we expect $\delp \propto \mP_D$.
 
 
 \subsection{Case II: Piecewise linear flux}
@@ -686,7 +689,7 @@ Thus, these simulations are less turbulent than the simulation in Fig.~\ref{fig:
 Aside from the degree of turbulence, the dynamics are very similar in Figs.~\ref{fig:vertical_dynamics_panels} \& \ref{fig:lessturb_dynamics_panels}.
 In particular, we observe that hot plumes in the CZ turn into cold plumes in the PZ (as they cross the dashed horizontal lines), and hot downflows in the PZ turn into cold downflows in the CZ.
 Convective plumes extend through the penetrative region and impact the stable radiative zone (above the solid horizontal line).
-The interface with the radiative zone is stiff, and so convective motions excite waves at a shallow angle above the radiative-convective boundary.
+The convective motions excite waves at a shallow angle above the stiff radiative-convective boundary.
 We note that the Case II simulation has an additional temperature inversion at the base of the simulation.
 Case II simulations have a linearly increasing conductivity $k$ in the convection zone, so there is formally a small penetrative region where $\justgrad \approx \gradad > \gradrad$ at the base of the domain below the internal heating layer.
 
@@ -746,7 +749,7 @@ For details on how this procedure is carried out, see Appendix \ref{app:accelera
 \includegraphics{parameters_vs_s.pdf}
 \caption{
 Results for Case I simulations at $\mR = 400$, $\mP = 4$, at varying $\mS$.
-Boxed data points show the location of landmark simulation from Fig.~\ref{fig:parameter_space}.
+Boxed data points show the location of the landmark simulation from Fig.~\ref{fig:parameter_space}.
 (Left panel) Penetration heights are shown vs.~$\mS$.
 While the width of the transition layer from the adiabatic PZ to the stable RZ shrinks as a function of $\mS$, the mean penetration height ($\delta_{0.5}$) is roughly constant.
 (Right panel) The width of the thermal transition layer ($\delta_{0.9} - \delta_{0.1}$) is shown as a function of stiffness.
@@ -814,7 +817,7 @@ In both cases, we see a roughly logarithmic decrease of $\delp$ with $\mR$.
 (Lower left panel) There is a strong correlation between $\delta_{0.5}$ and $f$, agreeing with our theoretical model of Eqn.~\ref{eqn:discontinuous_prediction}.
 (Lower middle panel) Changes in $f$ are roughly linearly proportional to the depth of the viscous boundary layer, $\ell_\nu$, at the bottom of the domain, at least for the open-circle SF cases.
 (Lower right panel) The viscous boundary layer follows a classical scaling law seen in Rayleigh-B\'{e}nard convection, so we anticipate that $\delta_{0.5}$ and $f$ should saturate as $\mR \rightarrow \infty$ and $\ell_{\nu} \rightarrow 0$.
-Boxed data points show the location of landmark simulation from Fig.~\ref{fig:parameter_space}.
+Boxed data points show the location of the landmark simulation from Fig.~\ref{fig:parameter_space}.
 \label{fig:parameters_vs_re}
 }
 \end{figure*}
@@ -903,7 +906,7 @@ are good first estimates for $f$ and $\xi$ when applying our theory of penetrati
 \centering
 \includegraphics[width=\columnwidth]{mesa_profiles.pdf}
 \caption{
-(top) Profiles of $\justgrad$ (green), $\gradad$ (purple), and $\gradrad$ (orange) in a MESA solar model with a penetration zone.
+(top) Profiles of $\justgrad$ (green), $\gradad$ (purple), and $\gradrad$ (orange) in a 1 $M_\odot$ MESA stellar model with a penetration zone.
 (bottom) Sound speed differences between the model shown in the top panel and a standard (std) model run at identical parameters but without a PZ.
 The addition of a PZ creates an acoustic glitch, raising the sound speed by $\mathcal{O}$(2\%) below the convection zone.
 \label{fig:mesa_profiles}
@@ -927,7 +930,7 @@ We next define $f$ in the same way as in Eqn.~\ref{eqn:f_defn} and define $\xi$ 
 \int_{\rm{PZ}} \rho_0 \Phi \,dV = \xi \frac{V_{\rm{PZ}}}{V_{\rm{CZ}}}\int_{\rm{CZ}}\rho_0 \Phi \, dV,
 \label{eqn:sphere_xi_defn}
 \end{equation}
-where $V_{\rm{PZ}}$ and $V_{\rm{CZ}}$ are the volumes of the CZ and PZ respectively.
+where $V_{\rm{PZ}}$ and $V_{\rm{CZ}}$ are the volumes of the PZ and CZ respectively.
 Eqn.~\ref{eqn:sphere_xi_defn} generalizes Eqn.~\ref{eqn:xi_defn} outside of the assumption of a plane-parallel atmosphere.
 Thus Eqn.~\ref{eqn:theory_fraction} in spherical geometry is
 \begin{equation}
@@ -940,7 +943,7 @@ In the top panel of Fig.~\ref{fig:mesa_profiles} we display $\justgrad \equiv d\
 Note that $\justgrad$ (green) remains close to $\gradad$ (purple) below the Schwarzschild convective boundary ($\gradad = \gradrad$) in a penetration zone.
 After some depth $\justgrad \rightarrow \gradrad$ (orange) in the star's interior.
 We additionally evolved a standard 1 $M_\odot$ MESA model to a 4.56 Gyr age without the inclusion of a PZ.
-We compare the sound speed $c$ profiles of the PZ and standard (std) model in the bottom panel of Fig.~\ref{fig:mesa_profiles}.
+We compare the sound speed ($c$) profiles of the PZ and standard (std) model in the bottom panel of Fig.~\ref{fig:mesa_profiles}.
 When a PZ is present beneath a CZ, $\justgrad$ experiences a sharp jump from $\gradad$ to $\gradrad$ (Fig.~\ref{fig:mesa_profiles}, top panel), resulting in an acoustic ``glitch'' in the sound speed profile (Fig.~\ref{fig:mesa_profiles}, bottom panel).
 
 Helioseismic studies have argued that that the solar PZ depth cannot be larger than $\mathcal{O}$(0.05 $H_p$), because larger PZs would result in larger glitches than are detected  \citep[see Sct.~7.2.1 of][for a nice review]{basu2016}.
@@ -959,12 +962,12 @@ In a future paper, we will produce more realistic models by building upon our pa
 
 \section{Discussion}
 \label{sec:discussion}
-In this work, we presented dynamical simulations of convective penetration, in which convection flattens $\justgrad \rightarrow \gradad$ beyond the Schwarzschild boundary.
+In this work, we presented dynamical simulations of convective penetration, in which convection mixes ${\justgrad \rightarrow \gradad}$ beyond the Schwarzschild boundary.
 To understand these simulations, we used an integral constraint \citep[reminiscent of][]{roxburgh1989} and flux-based arguments \citep[similar to][]{zahn1991} to derive a parameterization of convective penetration according to the convective flux and viscous dissipation.
 In doing so, we have laid down the first steps (Eqns.~\ref{eqn:theory_fraction} \& \ref{eqn:mesa_eqn}) towards incorporating convective penetration into stellar structure codes.
 We parameterized the viscous dissipation into a bulk-CZ portion ($f$) and a portion in the extended penetrative region ($\xi$), and derived predictions for how the height of a penetrative region, $\delp$, should scale with these measurable parameters and a new flux-based ``penetration parameter'' $\mP$.
 We designed and analyzed two sets of simulations which showed good agreement with these theoretical predictions.
-We briefly examined what the impliciations of this theory could be for a simple stellatellarr model.
+We briefly examined what the impliciations of this theory could be for a simple stellar model.
 
 Our simulation results suggest that stellar convection zones could be bounded by sizeable penetration zones.
 In extreme simulations, we observe penetration zones which are as large as the convection zones they accompany; however, for realistic stellar values ($\mP \approx 1$), we find that they may be as large as 20-30\% of the convective zone length scale ($\sim$the mixing length).
@@ -974,12 +977,16 @@ In particular, they demonstrate that the shape of the flux near the convective b
 The precise values of the parameters $f$ and $\xi$ achieved in natural, turbulent, fully compressible, spherical stellar convection may be different from those presented in e.g., Fig.~\ref{fig:parameters_vs_p} and Eqn.~\ref{eqn:f_xi_estimates} here.
 Future work should aim to understand how these parameters and the theory presented in e.g., Eqn.~\ref{eqn:mesa_eqn} change when more realistic effects are taken into account.
 
-Furthermore, it is important to note that stellar opacities, and thus stellar conductivities, are functions of thermodynamic variables rather than radial location.
-As a result, the formation of a penetration zone will in turn affect the conductivity profile and $\gradrad$, which will in turn affect the location of the Schwarzschild boundary and the estimate of how deep the penetration zone should be.
-In other words, the combined effects of penetration and entrainment should be considered.
-Future studies should follow e.g., \citet{kapyla_etal_2017} and implement realistic opacity profiles which evolve self-consistently with the thermodynamic state in order to understand how these effects feedback into one another.
+Stellar opacities, and thus stellar radiative conductivities, are functions of thermodynamic variables rather than radial location.
+The formation of a penetration zone will therefore affect the conductivity profile and $\gradrad$, which will in turn affect the location of the Schwarzschild boundary and the estimate of how deep the penetration zone should be.
+In other words, convective penetration and entrainment \emph{both} occur in realistic settings, and their combined effects should be studied.
+Future work should follow e.g., \citet{kapyla_etal_2017} and implement realistic opacity profiles which evolve self-consistently with the thermodynamic state in order to understand how these effects feedback into one another.
 
-An additional complication is that stellar fluid dynamics exist in the regime of Pr$\,\ll1$ \citep{garaud2021}.
+Our work here assumes a uniform composition through the convective and radiative region.
+Convective boundaries often coincide with discontinuities in composition profiles \citep{salaris_cassisi_2017}.
+Future work should determine if stabilizing composition gradients can prevent the formation of the penetration zones seen here.
+
+Furthermore, stellar fluid dynamics exist in the regime of Pr$\,\ll1$ \citep{garaud2021}.
 Dynamics in this regime may be different from those in the regime of Pr $\lesssim 1$ that we studied here, which in theory could affect $f$ and $\xi$.
 Recently, \citet{kapyla2021} found that convective flows exhibited more penetration at low Pr than high Pr.
 Future work should aim to understand whether $f$ and/or $\xi$ depend strongly on $\Pran$ in the turbulent regime.
@@ -988,13 +995,9 @@ Two other interesting complications in stellar contexts are rotation and magneti
 In the rapidly rotating limit, rotation creates quasi-two-dimensional flows, which could affect the length scales on which dissipation acts and thus modify $f$.
 Furthermore, magnetism adds an additional ohmic dissipation term, which could in theory drastically change our hydrodynamical measurement of $f$.
 
-Our work here assumes a uniform composition through the convective and radiative region.
-Convective boundaries often coincide with discontinuities in composition profiles \citep{salaris_cassisi_2017}.
-Future work should determine if stabilizing composition gradients can prevent the formation of the penetration zones seen here (as in Fig.~\ref{fig:time_evolution}).
-
 In summary, we have unified \citet{roxburgh1989}'s integral constraint with \citet{zahn1991}'s theory of flux-dependent penetration into a parameterized theory of convective penetration.
 We tested this theory with simulations and found good agreement between the theory and our simulations.
-In future work, we will aim to more robustly implement this theory into MESA and use simulations to test some of the complicating factors we discussed here.
+In future work, we will use simulations to test some of the complicating factors we discussed here and aim to more robustly implement convective penetration into MESA.
 
 
 
