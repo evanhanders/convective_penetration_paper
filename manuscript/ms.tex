@@ -110,15 +110,15 @@ To resolve discrepancies between stellar evolution models and observations, a mo
 The broad category of ``convective overshoot'' in the stellar literature is an umbrella term for a few hydrodynamical processes \citep{zahn1991, brummell_etal_2002, korre_etal_2019}.
 Motions which extend beyond the convective boundary but do not adjust the thermodynamic profiles belong to a process called ``\emph{convective overshoot}'' in the fluid dynamics literature.
 A second process called ``\emph{entrainment}'' includes motions which expand convection zones by eroding composition gradients or modifying the radiative gradient \citep[][]{meakin_arnett_2007, viallet_etal_2013, cristini_etal_2017, fuentes_cumming_2020, horst_etal_2021}.
-Convective motions which extend the adiabatically-mixed convective region beyond the convective boundary belong to a third process called ``\emph{convective penetration}.''
-The primary focus of this work is convective penetration.
+The primary focus of this work is a third process called ``\emph{convective penetration}''.
+Convective penetration occurs when motions extend the adiabatically-mixed convective region beyond the Schwarzschild-stable convective boundary.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{vertical_dynamics_panels.pdf}
 \caption{
 Vertical slice through a simulation with $\mR = 6.4 \times 10^3$, $\mP_D = 4$ and $\mS = 10^3$ (see Sec.~\ref{sec:simulation_details}).
-The Schwarzschild boundary of the convection zone where $\gradad = \gradrad$ is displayed as a dashed horizontal line.
+The dashed horizontal line denotes the Schwarzschild convective boundary where $\gradad = \gradrad$.
 The top of the penetrative zone ($\delta_{0.1}$, see Sec.~\ref{sec:simulation_details}) is shown by a solid horizontal line.
 (Left) Vertical velocity is shown; orange convective upflows extend far past the Schwarzschild boundary of the convection zone but stop abruptly at the top of the penetration zone where $\justgrad$ departs from $\gradad$.
 (Right) Temperature fluctuations, normalized by their average magnitude at each height to clearly display all dynamical features.
@@ -127,9 +127,7 @@ The top of the penetrative zone ($\delta_{0.1}$, see Sec.~\ref{sec:simulation_de
 }
 \end{figure*}
 
-
-
-Convective overshoot, penetration, and entrainment have been studied in the laboratory and through numerical simulations for decades, and the state of the field has been regularly reviewed \citep[e.g.,][]{marcus_etal_1983, zahn1991, browning_etal_2004, rogers_etal_2006, viallet_etal_2015, korre_etal_2019}.
+Convective overshoot, entrainment, and penetration have been studied in the laboratory and through numerical simulations for decades, and the state of the field has been regularly reviewed \citep[e.g.,][]{marcus_etal_1983, zahn1991, browning_etal_2004, rogers_etal_2006, viallet_etal_2015, korre_etal_2019}.
 Experiments exhibiting extensive expansion of convection zones via entrainment have a long history \citep[e.g.,][and this process is often confusingly called ``penetration'']{musman1968, deardorff_etal_1969, moore_weiss_1973}.
 Modern numerical experiments often examine the importance of the ``stiffness'' $\mS$ of a radiative-convective interface.
 $\mS$ compares the relative stability of a radiative zone and an adjacent convection zone according to some measure like a dynamical frequency or characteristic entropy gradient.
@@ -274,8 +272,8 @@ Here, we will assume a model in which an unstable convection zone ($\gradrad > \
 \centering
 \includegraphics[width=\columnwidth]{theory_profiles.pdf}
 \caption{
-Temporally- and horizontally-averaged profiles from Eqn.~\ref{eqn:kinetic_energy_1D} in an evolved simulation.
-The vertical dashed line corresponds to the Schwarzschild CZ boundary, the vertical solid line corresponds to the top of the PZ.
+Temporally- and horizontally-averaged profiles from Eqn.~\ref{eqn:kinetic_energy_1D} in the simulation in Fig.~\ref{fig:vertical_dynamics_panels}.
+The vertical dashed line denotes the Schwarzschild CZ boundary, and the vertical solid line corresponds to the top of the PZ.
 (upper) Kinetic energy fluxes $\bar{\mathcal{F}}$, which go to zero at the bottom boundary and the top of the PZ.
 (bottom) Source terms from Eqn.~\ref{eqn:kinetic_energy_1D} normalized by the maximum of $\overline{\mathcal{B}}$ ($\bar{\mathcal{F}}$ in the upper panel is similarly normalized).
 The buoyancy source $\bar{\mathcal{B}}$ changes sign at the Schwarzschild boundary, and $\bar{\Phi}$ is positive-definite.
@@ -514,9 +512,10 @@ Aside from $\mS$ and $\mP$, the two remaining control parameters $\mR$ and $\Pra
 The value of $\mR$ corresponds to the value of the Reynolds number $\rm{Re} = \mR |\vec{u}|$, and we will vary $\mR$.
 Astrophysical convection exists in the limit of $\Pran \ll 1$ \citep{garaud2021}; in this work we choose a modest value of $\Pran = 0.5$ which slightly separates the thermal and viscous scales while still allowing us to achieve convection with large Reynolds and P\'{e}clet numbers.
 
-We will now describe the setup of the two types of simulations conducted in this work (Case I and Case II).
-As a visual aid, we provide Fig.~\ref{fig:parameter_space} to guide the eye to the portion of parameter space that we have studied in each of these cases.
-We denote two ``landmark cases'' using a purple box (Case I landmark) and an orange box (Case II landmark), and throughout this work we will call out data from these cases with a similar box to guide the eye.
+We now describe the two types of simulations conducted in this work (Case I and Case II).
+We provide Fig.~\ref{fig:parameter_space} to visualize the portion of the parameter space that we have studied.
+We denote two ``landmark cases'' using a purple box (Case I landmark) and an orange box (Case II landmark).
+These landmark cases will be mentioned throughout this work.
 
 
 \subsection{Case I: Discontinuous flux}
@@ -550,10 +549,10 @@ We solve the system of equations $\mS = (\gradad - \gradrad)/f_{\rm{conv}}^2$, $
 \centering
 \includegraphics[width=\columnwidth]{parameter_space.pdf}
 \caption{
-Each marker corresponds to a simulation conducted in this work in the $\mR-\mP$ parameter space at $\mS = 10^3$. 
-Purple circles represent Case I (Sec.~\ref{sec:numerics_case1}) simulations and orange diamonds represent Case II (Sec.~\ref{sec:numerics_case2}) simulations; empty markers are simulations with stress-free boundary conditions while filled-in markers are simulations with no-slip boundary conditions. 
-We additionally conduct Case I simulations at fixed $\mR$ and $\mP$ while varying $\mS$; these simulations occur at P = 4 and R = 400 and are denoted by a green ``x.''
-The two ``landmark'' simulations are denoted by boxes.
+Each marker denotes a simulation conducted in this work in the $\mR-\mP$ parameter space at $\mS = 10^3$. 
+Purple circles represent Case I (Sec.~\ref{sec:numerics_case1}) simulations and orange diamonds represent Case II (Sec.~\ref{sec:numerics_case2}) simulations; empty circular markers have stress-free (SF) boundary conditions and all other simulations have no-slip boundaries.
+The green ``x'' at $\mP = 4$ and $\mR = 400$ denotes the location in $\mR-\mP$ parameter space where we vary $\mS$ in select Case I simulations.
+Boxes denote the two ``landmark'' simulations.
 The landmark Case I simulation has $\mR = 400$ and $\mP_D = 4$.
 The landmark Case II simulation has $\mR = 800$ and $\mP_L = 4$.
 Both landmark simulations have $\mS = 10^3$ and no-slip boundary conditions.
@@ -643,13 +642,13 @@ We find that these measurements based on the (slowly-evolving) thermodynamic pro
 \centering
 \includegraphics[width=\columnwidth]{lessturb_dynamics_panels.pdf}
 \caption{
-Shown are temperature anomalies in the landmark simulations.
+Temperature anomalies in vertical slices through the landmark simulations.
 (top) Case I landmark ($\mR = 400$, $\mP_D = 4$, $\mS = 10^3$) and (bottom) Case II landmark ($\mR = 800$, $\mP_L = 4$, $\mS = 10^3$).
-The temporally- and volume- averaged Reynolds number in the convection zone is $\sim 250$ in the top panel and $\sim 350$ in the bottom panel.
-As in Fig.~\ref{fig:vertical_dynamics_panels}, the boundary between the penetrative and radiative zones is shown as a solid horizontal line.
-The boundary between the penetrative zone and bulk convection zone is shown as a dashed horizontal line.
-In the bottom panel, there is an additional dashed horizontal line near the bottom of the domain; the linearly increasing conductivity creates a second PZ there where $\justgrad \approx \gradad > \gradrad$ below internal heating layer.
-We see that temperature anomalies have different signs in the bulk CZ and PZ, as in Fig.~\ref{fig:vertical_dynamics_panels}.
+The temporally- and volume- averaged Reynolds number in the CZ is $\sim 250$ in the top panel and $\sim 350$ in the bottom panel.
+A dashed horizontal line denotes the Schwarzschild convective boundary.
+A solid line denotes the boundary between the penetrative and radiative zones.
+The Case II simulation has an additional Schwarzschild boundary near the bottom of the domain due to the conductivity linearly increasing below the internal heating layer.
+As in Fig.~\ref{fig:vertical_dynamics_panels}, temperature anomalies have different signs in the bulk CZ and PZ.
 \label{fig:lessturb_dynamics_panels}
 }
 \end{figure}
@@ -660,14 +659,16 @@ We see that temperature anomalies have different signs in the bulk CZ and PZ, as
 \includegraphics[width=\textwidth]{time_evolution.pdf}
 \caption{
 Time evolution of the landmark Case I simulation ($\mR = 400$, $\mP_D = 4$, $\mS = 10^3$).
-(left top panel) The PZ height $\delta_{0.5}$ vs.~time.
-We also show the time evolution of $f$ (left middle panel, defined in Eqn.~\ref{eqn:f_defn}) and $\xi$ (left bottom panel, defined in Eqn.~\ref{eqn:xi_defn}).
-The vertical lines denote the times at which the traces first converge to within 1\% of their final values, which are denoted by solid horizontal lines.
+In the top left panel, we plot the PZ height $\delta_{0.5}$ vs.~time.
+Also shown are the time evolution of $f$ (middle left panel, defined in Eqn.~\ref{eqn:f_defn}) and $\xi$ (bototm left panel, defined in Eqn.~\ref{eqn:xi_defn}).
+Thin horizontal lines denote the equilibrium values of each trace.
+Vertical lines denote when each trace first converges to within 1\% of its equilibrium value.
 (right panel) The vertical profile of $\justgrad/\gradad$ is plotted against height at regular time intervals.
 The line color denotes the time, following the time traces in the left panels.
-The constant value of $\gradad$ is denoted by the horizontal dashed grey line, and the value of $\gradrad$ is denoted by the solid grey line.
+A horizontal dashed grey line denotes the constant value of $\gradad$.
+The solid grey curve denotes the profile of $\gradrad$.
 The location of the Schwarzschild convective boundary is displayed as a vertical dashed black line.
-The top-of-PZ departure points (Eqn.~\ref{eqn:delta_p_measures}) are plotted over the profile evolution ($\delta_{0.1}$ and $\delta_{0.9}$ as red lines, $\delta_{0.5}$ as black lines).
+The top-of-PZ departure points (Eqn.~\ref{eqn:delta_p_measures}) are plotted over the profile evolution ($\delta_{0.1}$ and $\delta_{0.9}$ as red lines, $\delta_{0.5}$ as a black line).
 \label{fig:time_evolution}
 }
 \end{figure*}
@@ -701,15 +702,15 @@ As we will demonstrate in the next section, the formation timescale of penetrati
 \centering
 \includegraphics[width=\textwidth]{parameters_vs_p.pdf}
 \caption{
-Results from the cuts through $\mP$ parameter space for the Case I (left panels; see solid purple circles in Fig.~\ref{fig:parameter_space}) and Case II (right panels; solid orange diamonds in Fig.~\ref{fig:parameter_space}) simulations.
-Boxed data points show the location of landmark simulations from Fig.~\ref{fig:parameter_space}.
+Simulation results vs.~$\mP$ for both Case I (left panels; solid purple circles in Fig.~\ref{fig:parameter_space}) and Case II (right panels; solid orange diamonds in Fig.~\ref{fig:parameter_space}).
+Boxed data points denote landmark simulations from Fig.~\ref{fig:parameter_space}.
 The top panels show the penetration height according to Eqn.~\ref{eqn:delta_p_measures}.
 The Case I penetration heights (upper left) vary linearly with $\mP$, in line with the prediction of Eqn.~\ref{eqn:discontinuous_prediction}.
 The Case II penetration heights (upper right) vary like $\sqrt{\mP}$, in line with the prediction of Eqn.~\ref{eqn:linear_prediction}.
 In the middle panels, we measure $f$ according to Eqn.~\ref{eqn:f_defn}.
 We find values of $f \in [0.6, 0.9]$, and changes in $f$ are secondary to changes in $\mP$ for determining penetration heights.
 In the bottom panels, we measure $\xi$ according to Eqn.~\ref{eqn:xi_defn}.
-We find characteristic values of $\xi \in [0.5, 0.75]$, suggesting that the falloff of the $\bar{\Phi}$ in the PZ is well described by a linear function (at high $\mP$ when $\xi = 1/2$), or by a cubic function (at low $\mP$ when $\xi \approx 3/4$).
+We find characteristic values of $\xi \in [0.5, 0.75]$, suggesting that the falloff of the $\bar{\Phi}$ in the PZ is well described by a linear function (at high $\mP$ when $\xi \approx 1/2$), or by a cubic function (at low $\mP$ when $\xi \approx 3/4$).
 \label{fig:parameters_vs_p}
 }
 \end{figure*}
@@ -748,12 +749,12 @@ For details on how this procedure is carried out, see Appendix \ref{app:accelera
 \centering
 \includegraphics{parameters_vs_s.pdf}
 \caption{
-Results for Case I simulations at $\mR = 400$, $\mP = 4$, at varying $\mS$.
-Boxed data points show the location of the landmark simulation from Fig.~\ref{fig:parameter_space}.
-(Left panel) Penetration heights are shown vs.~$\mS$.
-While the width of the transition layer from the adiabatic PZ to the stable RZ shrinks as a function of $\mS$, the mean penetration height ($\delta_{0.5}$) is roughly constant.
-(Right panel) The width of the thermal transition layer ($\delta_{0.9} - \delta_{0.1}$) is shown as a function of stiffness.
-We roughly observe a $\mS^{-1/2}$ scaling, similar to that expected by e.g., \citet{korre_etal_2019}.
+Case I simulations results vs.~$\mS$ at $\mR = 400$, $\mP = 4$.
+Boxed data points denote the landmark simulation from Fig.~\ref{fig:parameter_space}.
+(Left panel) Penetration heights vs.~$\mS$.
+While $\delta_{0.1}$ and $\delta_{0.9}$ show some variation, the mean penetration height ($\delta_{0.5}$) is roughly constant.
+(Right panel) The width of the thermal transition layer ($\delta_{0.9} - \delta_{0.1}$) vs.~$\mS$.
+We roughly observe a $\mS^{-1/2}$ scaling.
 \label{fig:parameters_vs_s}
 }
 \end{figure*}
@@ -809,15 +810,15 @@ We find that this is true both for simulations with stress-free dynamical bounda
 \centering
 \includegraphics[width=\textwidth]{parameters_vs_re.pdf}
 \caption{
-(Upper left panel) Penetration heights are shown as a function of increasing Reynolds number ($\mR$) for Case I simulations (see vertical cut in Fig.~\ref{fig:parameter_space}).
-We plot results both for cases with stress-free boundary conditions (SF) and no-slip boundary conditions (NS).
-In both cases, we see a roughly logarithmic decrease of $\delp$ with $\mR$.
-(Upper middle panel) $f$ also increases with $\mR$.
+(Upper left panel) Penetration heights vs.~$\mR$ for Case I simulations (vertical cuts in Fig.~\ref{fig:parameter_space}).
+Empty markers denote stress-free boundaries (SF) and filled markers denote no-slip boundaries (NS).
+In both cases, we see a roughly logarithmic decrease of $\delp$ vs.~$\mR$.
+(Upper middle panel) $f$ increases with $\mR$.
 (Upper right panel) $\xi$ does not change appreciably with $\mR$ for turbulent simulations with $\mR \geq 200$.
 (Lower left panel) There is a strong correlation between $\delta_{0.5}$ and $f$, agreeing with our theoretical model of Eqn.~\ref{eqn:discontinuous_prediction}.
-(Lower middle panel) Changes in $f$ are roughly linearly proportional to the depth of the viscous boundary layer, $\ell_\nu$, at the bottom of the domain, at least for the open-circle SF cases.
-(Lower right panel) The viscous boundary layer follows a classical scaling law seen in Rayleigh-B\'{e}nard convection, so we anticipate that $\delta_{0.5}$ and $f$ should saturate as $\mR \rightarrow \infty$ and $\ell_{\nu} \rightarrow 0$.
-Boxed data points show the location of the landmark simulation from Fig.~\ref{fig:parameter_space}.
+(Lower middle panel) Changes in $f$ are roughly linearly proportional to the depth of the viscous boundary layer, $\ell_\nu$, at the bottom of the domain.
+(Lower right panel) $\ell_\nu$ follows a well-known convective scaling law, so $\delta_{0.5}$ and $f$ should saturate as $\mR \rightarrow \infty$ and $\ell_{\nu} \rightarrow 0$.
+Boxed data points denote the landmark simulation from Fig.~\ref{fig:parameter_space}.
 \label{fig:parameters_vs_re}
 }
 \end{figure*}
@@ -1067,14 +1068,14 @@ If the PZ height continues to noticeably vary on timescales of a few hundred fre
 \includegraphics[width=\textwidth]{AE_time_figure.pdf}
 \caption{
 \label{fig:AE_time_figure}
-(top row) Time traces of $\delta_{0.5}$ for simulations using standard timestepping (black lines), accelerated evolution with large initial values of $\delp$ (orange lines), and accelerated evolution with small initial values of $\delp$ (green lines).
-The thin horizontal lines represent the final converged values from the standard timestepping simulations.
+(top row) Time traces of $\delta_{0.5}$ for simulations using standard timestepping (black lines), accelerated simulations with large initial values of $\delp$ (orange lines), and accelerated simulations with small initial values of $\delp$ (green lines).
+Thin horizontal lines denote the equilibrated value of $\delta_{0.5}$.
 Accelerated evolution timesteps can be seen as jumps in the $\delp$ trace.
-Once the procedure gets to within a few percent of the appropriate value, any large steps away from the ``correct'' solution are quickly reversed.
+After converging to within a few percent, the accelerated evolution procedure ``jitters'' around the equilibrated value.
 Time units are normalized by the total run time of the simulation.
-All accelerated evolution simulations were run for $t_{\rm{sim}} = 3000$ freefall times.
-The standard timestepping (black line) simulations were run for $t_{\rm{sim}} = 1.2 \times 10^4$ ($\mP_D = 1$), $t_{\rm{sim}} = 2.2 \times 10^4$ ($\mP_D = 2$), and $t_{\rm{sim}} = 5.7 \times 10^4$ ($\mP_D = 4$) freefall times.
-The vertical green-and-yellow bars show the total simulation time of the accelerated simulation in terms of the direct simulation time; i.e., the accelerated simulation converged in only $\sim$ 5\% of the simulation time of the direct simulation for $\mP = 4$.
+Accelerated simulations were run for $t_{\rm{sim}} = 3000$ freefall times.
+The standard timestepping (black line) simulations were run for $t_{\rm{sim}} = 1.2 \times 10^4$ ($\mP_D = 1$), $t_{\rm{sim}} = 3.2 \times 10^4$ ($\mP_D = 2$), and $t_{\rm{sim}} = 6.7 \times 10^4$ ($\mP_D = 4$) freefall times.
+The vertical green-and-yellow lines show the total simulation time of the accelerated simulation in terms of the direct simulation time; i.e., the accelerated simulation converged in only $\sim$ 5\% of the simulation time of the direct simulation for $\mP = 4$.
 (Bottom row) Rolling average of $f$ over 200 freefall times, plotted in the same way as $\delta_{0.5}$.
 }
 \end{figure*}
