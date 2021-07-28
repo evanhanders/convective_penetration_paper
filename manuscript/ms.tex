@@ -109,9 +109,9 @@ To resolve discrepancies between stellar evolution models and observations, a mo
 
 The broad category of ``convective overshoot'' in the stellar literature is an umbrella term for a few hydrodynamical processes \citep{zahn1991, brummell_etal_2002, korre_etal_2019}.
 Motions which extend beyond the convective boundary but do not adjust the thermodynamic profiles belong to a process called ``\emph{convective overshoot}'' in the fluid dynamics literature.
-A second process called ``\emph{entrainment}'' includes motions which expand convection zones by eroding composition gradients or modifying the radiative gradient \citep[][]{meakin_arnett_2007, viallet_etal_2013, cristini_etal_2017, fuentes_cumming_2020, horst_etal_2021}.
+Convection zones can expand through a second process called ``\emph{entrainment},'' through which motions erode composition gradients or modify the radiative gradient \citep[][]{meakin_arnett_2007, viallet_etal_2013, cristini_etal_2017, fuentes_cumming_2020, horst_etal_2021}.
 The primary focus of this work is a third process called ``\emph{convective penetration}''.
-Convective penetration occurs when motions extend the adiabatically-mixed convective region beyond the Schwarzschild-stable convective boundary.
+Convective penetration occurs when motions mix the entropy gradient towards the adiabatic in a region that is stable by the Schwarzschild criterion.
 
 \begin{figure*}[t]
 \centering
@@ -644,7 +644,7 @@ We find that these measurements based on the (slowly-evolving) thermodynamic pro
 \caption{
 Temperature anomalies in vertical slices through the landmark simulations.
 (top) Case I landmark ($\mR = 400$, $\mP_D = 4$, $\mS = 10^3$) and (bottom) Case II landmark ($\mR = 800$, $\mP_L = 4$, $\mS = 10^3$).
-The temporally- and volume- averaged Reynolds number in the CZ is $\sim 250$ in the top panel and $\sim 350$ in the bottom panel.
+The temporally- and volume- averaged Reynolds number in the CZ is $\rm{Re} \sim 250$ in the top panel and $\rm{Re} \sim 350$ in the bottom panel.
 A dashed horizontal line denotes the Schwarzschild convective boundary.
 A solid line denotes the boundary between the penetrative and radiative zones.
 The Case II simulation has an additional Schwarzschild boundary near the bottom of the domain due to the conductivity linearly increasing below the internal heating layer.
@@ -685,14 +685,14 @@ While we will briefly examine dynamics here, our primary goal in this section is
 In Fig.~\ref{fig:lessturb_dynamics_panels} we display snapshots of the temperature anomalies in the two ``landmark'' simulations denoted by boxes in Fig.~\ref{fig:parameter_space}.
 We display the temperature anomaly in the top panel of the Case I simulation with $\mR = 400$, $\mP_D = 4$, and $\mS = 10^3$; this simulation is included in all three of our parameter space sweeps and represents the point where our ($\mR, \mP, \mS$) cuts converge  in Fig.~\ref{fig:parameter_space}.
 We display the temperature anomaly in the bottom panel of the Case II simulation with $\mR = 800$, $\mP_L = 4$, and $\mS = 10^3$.
-The bulk reynolds number in the convection zones of these simulations are (top) $\sim 250$ and (bottom) $\sim 350$.
+The bulk Reynolds number in the convection zones of these simulations are (top) $\rm{Re} \sim 250$ and (bottom) $\rm{Re} \sim 350$.
 Thus, these simulations are less turbulent than the simulation in Fig.~\ref{fig:vertical_dynamics_panels} (bulk Re $\sim$ 5000).
 Aside from the degree of turbulence, the dynamics are very similar in Figs.~\ref{fig:vertical_dynamics_panels} \& \ref{fig:lessturb_dynamics_panels}.
 In particular, we observe that hot plumes in the CZ turn into cold plumes in the PZ (as they cross the dashed horizontal lines), and hot downflows in the PZ turn into cold downflows in the CZ.
 Convective plumes extend through the penetrative region and impact the stable radiative zone (above the solid horizontal line).
 The convective motions excite waves at a shallow angle above the stiff radiative-convective boundary.
 We note that the Case II simulation has an additional temperature inversion at the base of the simulation.
-Case II simulations have a linearly increasing conductivity $k$ in the convection zone, so there is formally a small penetrative region where $\justgrad \approx \gradad > \gradrad$ at the base of the domain below the internal heating layer.
+Case II simulations have a linearly increasing conductivity $k$ in the convection zone, so there is formally a small penetrative region where $\justgrad \approx \gradad > \gradrad$ at the base of the domain below the internal heating layer (lower dotted line in bottom panel of Fig.~\ref{fig:lessturb_dynamics_panels}).
 
 While the landmark simulations in Fig.~\ref{fig:lessturb_dynamics_panels} are not as turbulent as the dynamics in Fig.~\ref{fig:vertical_dynamics_panels}, they are sufficiently nonlinear to be interesting.
 Importantly, these simulations develop large penetration zones, and can be evolved for tens of thousands of convective overturn times.
@@ -944,19 +944,20 @@ In the top panel of Fig.~\ref{fig:mesa_profiles} we display $\justgrad \equiv d\
 Note that $\justgrad$ (green) remains close to $\gradad$ (purple) below the Schwarzschild convective boundary ($\gradad = \gradrad$) in a penetration zone.
 After some depth $\justgrad \rightarrow \gradrad$ (orange) in the star's interior.
 We additionally evolved a standard 1 $M_\odot$ MESA model to a 4.56 Gyr age without the inclusion of a PZ.
-We compare the sound speed ($c$) profiles of the PZ and standard (std) model in the bottom panel of Fig.~\ref{fig:mesa_profiles}.
-When a PZ is present beneath a CZ, $\justgrad$ experiences a sharp jump from $\gradad$ to $\gradrad$ (Fig.~\ref{fig:mesa_profiles}, top panel), resulting in an acoustic ``glitch'' in the sound speed profile (Fig.~\ref{fig:mesa_profiles}, bottom panel).
+We compare the sound speed $c$ profiles of the PZ and standard (std) model in the bottom panel of Fig.~\ref{fig:mesa_profiles}.
+When a PZ is present beneath a CZ, $\justgrad$ experiences a sharp jump from $\gradad$ to $\gradrad$ (Fig.~\ref{fig:mesa_profiles}, top panel), resulting in an acoustic ``glitch'' in the sound speed profile.
 
-Helioseismic studies have argued that that the solar PZ depth cannot be larger than $\mathcal{O}$(0.05 $H_p$), because larger PZs would result in larger glitches than are detected  \citep[see Sct.~7.2.1 of][for a nice review]{basu2016}.
 In the model shown in Fig.~\ref{fig:mesa_profiles}, we find $H_p \approx 0.082R_\odot$ at the Schwarzschild CZ boundary, and the depth of the penetration zone in Fig.~\ref{fig:mesa_profiles} is $0.042R_\odot \sim 0.5 H_p$.
 The inclusion of this PZ leads to an $\mathcal{O}$(2\%) increase in $c$ near the base of the solar convection zone.
-This change in $c$ has the same sign as is necessary to create better agreement between stellar models and helioseismic obserations, but is too large.
-Observations suggest that the change in $c$ should be $\mathcal{O}(1\%)$ \citep{bergemann_serenelli_2014} or that the change in $c^2$ should be $\mathcal{O}(0.4\%)$ \citep{christensen-dalsgaard_etal_2011}.
-While the PZ in Fig.~\ref{fig:mesa_profiles} is larger than helioseismic measures of $c$ suggest is possible, we note that the width of the PZ in this model aligns with the inferred width of the tachocline of $(0.039 \pm 0.013)R_\odot$ \citep{charbonneau_etal_1999}.
+Helioseismic observations suggest a similar increase below the base of the solar convection zone \citep[e.g.,][their Fig. 17]{christensen-dalsgaard_etal_2011}.
+The difference $\Delta c = c_{\rm{PZ}} - c_{\rm{std}}$ that we see in this stellar model of the Sun (Fig.~\ref{fig:mesa_profiles}) has the same sign and roughly the same shape.
+However, the magnitude of the change in $c$ is larger than is observed; literature values include $\Delta c / c \approx \mathcal{O}(1\%)$ \citep{bergemann_serenelli_2014} and $\Delta c^2 / c^2 \approx \mathcal{O}(0.4\%)$ \citep{christensen-dalsgaard_etal_2011}, and our sound speed bump is located at a different radius than the observed bump.
+Other helioseismic studies have argued that that the solar PZ depth cannot be larger than $\mathcal{O}$(0.05 $H_p$), because larger PZs would result in larger glitches than are detected  \citep[see Sct.~7.2.1 of][for a nice review]{basu2016}.
+It is interesting, however, that the width of the PZ in Fig.~\ref{fig:mesa_profiles} is strikingly similar to the inferred width of the tachocline $(0.039 \pm 0.013)R_\odot$ that is reported by \citet{charbonneau_etal_1999}.
 
 It is unsurprising that our Boussinesq-based model only qualitatively matches observational constraints for the solar CZ.
 The solar convection zone is highly stratified ($\sim$14 density scale heights), and we neglected density stratification in this work.
-Furthermore, the solar model used here is essentially a ``stock'' MESA model and has some obvious disagreement with the solar model S (e.g., the Schwarzschild base of the CZ should be closer to $r/R_\odot = 0.7$ than it is).
+Furthermore, the solar model used here is essentially a ``stock'' MESA model and has obvious disagreements with the solar model~S \citep[see Fig.~1 in][where the Schwarzschild base of the CZ is $r/R_\odot \approx 0.712$, whereas the one in Fig.~\ref{fig:mesa_profiles} is at $r/R_{\odot} \approx 0.75$]{christensen-dalsgaard_etal_2011}.
 Despite the limitations of this minimal proof of concept, Fig.~\ref{fig:mesa_profiles} shows that our parameterization can produce penetration zones in 1D models with measurable acoustic glitches.
 In a future paper, we will produce more realistic models by building upon our parameterization to include the crucial effects of density stratification.
 
@@ -966,7 +967,7 @@ In a future paper, we will produce more realistic models by building upon our pa
 In this work, we presented dynamical simulations of convective penetration, in which convection mixes ${\justgrad \rightarrow \gradad}$ beyond the Schwarzschild boundary.
 To understand these simulations, we used an integral constraint \citep[reminiscent of][]{roxburgh1989} and flux-based arguments \citep[similar to][]{zahn1991} to derive a parameterization of convective penetration according to the convective flux and viscous dissipation.
 In doing so, we have laid down the first steps (Eqns.~\ref{eqn:theory_fraction} \& \ref{eqn:mesa_eqn}) towards incorporating convective penetration into stellar structure codes.
-We parameterized the viscous dissipation into a bulk-CZ portion ($f$) and a portion in the extended penetrative region ($\xi$), and derived predictions for how the height of a penetrative region, $\delp$, should scale with these measurable parameters and a new flux-based ``penetration parameter'' $\mP$.
+We parameterized the viscous dissipation into a bulk-CZ portion ($f$) and a portion in the extended penetrative region ($\xi$), and derived predictions for how the height of a penetrative region $\delp$ should scale with these measurable parameters and a new flux-based ``penetration parameter'' $\mP$.
 We designed and analyzed two sets of simulations which showed good agreement with these theoretical predictions.
 We briefly examined what the impliciations of this theory could be for a simple stellar model.
 
@@ -978,7 +979,7 @@ In particular, they demonstrate that the shape of the flux near the convective b
 The precise values of the parameters $f$ and $\xi$ achieved in natural, turbulent, fully compressible, spherical stellar convection may be different from those presented in e.g., Fig.~\ref{fig:parameters_vs_p} and Eqn.~\ref{eqn:f_xi_estimates} here.
 Future work should aim to understand how these parameters and the theory presented in e.g., Eqn.~\ref{eqn:mesa_eqn} change when more realistic effects are taken into account.
 
-Stellar opacities, and thus stellar radiative conductivities, are functions of thermodynamic variables rather than radial location.
+Stellar opacities and thus stellar radiative conductivities are functions of thermodynamic variables rather than radial location.
 The formation of a penetration zone will therefore affect the conductivity profile and $\gradrad$, which will in turn affect the location of the Schwarzschild boundary and the estimate of how deep the penetration zone should be.
 In other words, convective penetration and entrainment \emph{both} occur in realistic settings, and their combined effects should be studied.
 Future work should follow e.g., \citet{kapyla_etal_2017} and implement realistic opacity profiles which evolve self-consistently with the thermodynamic state in order to understand how these effects feedback into one another.
@@ -1203,8 +1204,7 @@ Input control parameters are listed for each simulation: the penetration paramet
 We also note the coefficient resolution (Chebyshev coefficients $nz$ and Fourier coeficients $nx$, $ny$).
 We report the number of freefall time units each simulation was run for $t_{\rm{sim}}$.
 Time-averaged values of the departure heights ($\delta_{0.1}$, $\delta_{0.5}$, $\delta_{0.9}$), the dissipation fraction $f$, and the dissipation fall-off $\xi$, as well as the average convection zone velocity $\angles{u}$ are reported.
-We take these time averages over the final 1000 freefall times of the simulation.
-For short simulations $(t_{\rm{sim}} < 1000)$, we average over most of the simulation run time, but not early dynamical transients.
+We take these time averages over the final 1000 freefall times or half of the simulation, whichever is shorter.
 }                                                          	
 \end{deluxetable*}                                        	
                                                           	
