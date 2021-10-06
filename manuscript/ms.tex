@@ -8,6 +8,7 @@
 \usepackage{amsmath}
 \usepackage{epstopdf}
 \usepackage{hyperref}
+\usepackage{xcolor}
 
 %%%% Custom commands
 \newcommand{\gradrad}{\ensuremath{\nabla_{\rm{rad}}}}
@@ -38,6 +39,8 @@
 \newcommand{\cross}{\vec{\times}}
 \newcommand{\laplacian}{\nabla^2}
 
+\newcommand{\editone}[1]{\textcolor{orange}{#1}}
+
 %%%% Journal preamble
 \received{}
 \revised{}
@@ -52,7 +55,7 @@
 \begin{document}
 
 %%%% Title and Abstract
-\title{Convective penetration: It exists and we found it}
+\title{\editone{Stellar convective penetration: parameterized theory and dynamical simulations}}
 \author[0000-0002-3433-4733]{Evan H. Anders}
 \affiliation{CIERA, Northwestern University, Evanston IL 60201, USA}
 \author[0000-0001-5048-9973]{Adam S. Jermyn}
@@ -159,10 +162,13 @@ $\,$
 Convective penetration is the process by which convective motions extend beyond the Schwarzschild-stable boundary and mix the entropy gradient to be nearly adiabatic.
 \begin{quote}
 \emph{
-In this paper, we present simulations which exhibit convective penetration.
+    In this paper, we present simulations which exhibit convective penetration.
 }
 \end{quote}
 This process is phenomenologically described in Sec.~\ref{sec:central_results}.
+\editone{
+    In this work, the convection zone lies beneath an adjacent stable layer and convection penetrates upwards; our results equally apply to the reversed problem.
+}
 
 In order to understand this phenomenon, we derive theoretical predictions for the size of the penetrative zone based on the ideas of \citet{roxburgh1989} and \citet{zahn1991}.
 %We design and carry out numerical experiments to test the idea that the penetration depth depends on the shape of the radiative gradient at the convective boundary.
@@ -197,8 +203,11 @@ The adiabatic gradient $\gradad$ (purple) has a constant value in the simulation
 Also shown is the radiative gradient $\gradrad$ (orange).
 The domain exhibits a classical Schwarzshild-unstable convection zone (CZ) for $z \lesssim 1.04$ where $\gradrad > \gradad$; the upper boundary of this region is denoted by a dashed vertical line.
 Above this point, $\gradrad < \gradad$ and the domain would be considered stable by the Schwarzschild criterion.
-However, the evolved convective dynamics in Fig.~\ref{fig:vertical_dynamics_panels} have raised $\justgrad \rightarrow \gradad$ in an extended penetration zone (PZ) which extends from $1.04 \lesssim z \lesssim 1.4$.
-Above the PZ, $\justgrad$ departs from $\gradad$, returning to $\gradrad$ in a classical stable radiative zone (RZ).
+However, the evolved convective dynamics in Fig.~\ref{fig:vertical_dynamics_panels} have raised $\justgrad \rightarrow \gradad$ in an extended penetration zone (PZ) which extends from $1.04 \lesssim z \lesssim 1.3$.
+\editone{
+    At the top of the PZ, between $1.3 \lesssim z \lesssim 1.4$, there is a ``thermal adjustment layer'' where convective motions give way to conductive transport and $\justgrad$ adjusts from $\gradad$ to $\gradrad$.
+    Above $z \gtrsim 1.4$, $\justgrad \approx \gradrad$ in a classical stable radiative zone (RZ).
+}
 
 Our goals in this paper are to understand how these PZs form and to parameterize this effect so that it can be included in 1D stellar evolution calculations.
 
@@ -208,6 +217,9 @@ Our goals in this paper are to understand how these PZs form and to parameterize
 \caption{
 Horizontally- and temporally-averaged profiles of the thermodynamic gradients from the simulation in Fig.~\ref{fig:vertical_dynamics_panels}.
 We plot $\justgrad$ (green) compared to $\gradad$ (purple, a constant) and $\gradrad$ (orange); note the extended penetration zone (PZ) where $\justgrad \approx \gradad > \gradrad$.
+    \editone{
+        The dashed vertical line denotes the Schwarzschild boundary of the convection zone (CZ), the greyed region denotes the thermal adjustment layer, and the solid vertical line denotes the bottom of the radiative zone (RZ).
+    }
 \label{fig:grad_profiles}
 }
 \end{figure}
@@ -221,7 +233,7 @@ In Sec.~\ref{sec:theory_equations}, we describe our equations and problem setup 
 In Sec.~\ref{sec:theory_energy}, we build a parameterized theory based on the kinetic energy (KE) equation.
 We find that imbalances in KE source terms within the CZ determine the extent of the PZ.
 %We find that excess KE in the convection zone can cause a penetration zone to form.
-By balancing the excess KE generation in the CZ with buoyancy-braking and dissipation work terms in the PZ, we are able to derive the size of the PZ.
+By balancing the excess KE generation in the CZ with \editone{buoyant deceleration} and dissipation work terms in the PZ, we are able to derive the size of the PZ.
 We find that a description of the size of a theoretical PZ does not depend on the often-considered stiffness, which measures the relative stability between the convection zone and an adjacent radiative zone.
 
 \subsection{Equations \& flux definitions}
@@ -238,7 +250,7 @@ Throughout this work, we will utilize a modified version of the incompressible B
 \label{eqn:boussinesq}
 \end{align}
 Here, the density is decomposed into a uniform, constant background $\rho_0$ with fluctuations $\rho_1$ which appear only in the buoyancy force and depend on the temperature $T$ and the coefficient of thermal expansion $\alpha = \partial\ln\rho / \partial T$.
-We define the velocity vector $\vec{u}$, the viscous diffusivity $\nu$, the thermal diffusivity $\chi$, the bulk internal heating $Q$, the adiabatic gradient $\gradad$, and a height-dependent thermal conductivity $k$.
+We define the velocity vector $\vec{u}$, \editone{the pressure $p$,} the viscous diffusivity $\nu$, the thermal diffusivity $\chi$, the bulk internal heating $Q$, the adiabatic gradient $\gradad$, and a height-dependent thermal conductivity $k$.
 We will consider Cartesian coordinates $(x, y, z)$ with a constant vertical gravity $\vec{g} = -g\hat{z}$.
 Throughout this work, we will represent horizontal averages with bars ($\overline{\,\cdot\,}$) and fluctuations away from those averages with primes ($'$).
 Thus, in Eqn.~\ref{eqn:temperature}, $\bar{T}$ is the horizontally averaged temperature and $T'$ are fluctuations away from that; both of these fields evolve in time according to Eqn.~\ref{eqn:temperature}.
@@ -274,8 +286,8 @@ Here, we will assume a model in which an unstable convection zone ($\gradrad > \
 \caption{
 Temporally- and horizontally-averaged profiles from Eqn.~\ref{eqn:kinetic_energy_1D} in the simulation in Fig.~\ref{fig:vertical_dynamics_panels}.
 The vertical dashed line denotes the Schwarzschild CZ boundary, and the vertical solid line corresponds to the top of the PZ.
-(upper) Kinetic energy fluxes $\bar{\mathcal{F}}$, which go to zero at the bottom boundary and the top of the PZ.
-(bottom) Source terms from Eqn.~\ref{eqn:kinetic_energy_1D} normalized by the maximum of $\overline{\mathcal{B}}$ ($\bar{\mathcal{F}}$ in the upper panel is similarly normalized).
+(upper) Kinetic energy fluxes $\bar{\mathcal{F}_{\editone{z}}}$, which go to zero at the bottom boundary and the top of the PZ.
+    (bottom) Source terms from Eqn.~\ref{eqn:kinetic_energy_1D} normalized by the maximum of $\overline{\mathcal{B}}$ ($\bar{\mathcal{F}_{\editone{z}}}$ in the upper panel is similarly normalized).
 The buoyancy source $\bar{\mathcal{B}}$ changes sign at the Schwarzschild boundary, and $\bar{\Phi}$ is positive-definite.
 \label{fig:theory_profiles}
 }
@@ -284,27 +296,28 @@ The buoyancy source $\bar{\mathcal{B}}$ changes sign at the Schwarzschild bounda
 Taking a dot product of the velocity and Eqn.~\ref{eqn:momentum} reveals the kinetic energy equation,
 \begin{equation}
 \frac{\partial \mathcal{K}}{\partial t}
-+ \grad\dot\mathcal{F}
+    + \grad\dot\editone{\vec{\mathcal{F}}}
 = \mathcal{B} - \Phi,
 %\frac{\partial}{\partial t}\left(\frac{|\vec{u}|^2}{2}\right) 
 %+ \grad\dot\left[\vec{u}\left(\frac{|\vec{u}|^2}{2} + \frac{p}{\rho_0}\right) - \nu\vec{u}\cross\vec{\omega}\right]
 %= |\alpha| g w T - \nu|\vec{\omega}|^2,
 \label{eqn:kinetic_energy}
 \end{equation}
-where we define the kinetic energy $\mathcal{K} \equiv |\vec{u}|^2/2$, the fluxes of kinetic energy $\mathcal{F} \equiv \left[\vec{u}(\mathcal{K} + p/\rho_0) - \nu\vec{u}\cross\vec{\omega} \right]$, the buoyant energy generation rate $\mathcal{B} \equiv |\alpha| g w T'$, and the viscous dissipation rate $\Phi \equiv \nu |\vec{\omega}|^2$ where $\vec{\omega} = \grad\cross\vec{u}$ is the vorticity and $|\vec{u}|^2 = \vec{u}\dot\vec{u}$ \& $|\vec{\omega}|^2 = \vec{\omega}\dot\vec{\omega}$.
+where we define the kinetic energy $\mathcal{K} \equiv |\vec{u}|^2/2$, the fluxes of kinetic energy $\editone{\vec{\mathcal{F}}} \equiv \left[\vec{u}(\mathcal{K} + p/\rho_0) - \nu\vec{u}\cross\vec{\omega} \right]$, the buoyant energy generation rate $\mathcal{B} \equiv |\alpha| g w T'$, and the viscous dissipation rate $\Phi \equiv \nu |\vec{\omega}|^2$ where $\vec{\omega} = \grad\cross\vec{u}$ is the vorticity and $|\vec{u}|^2 = \vec{u}\dot\vec{u}$ \& $|\vec{\omega}|^2 = \vec{\omega}\dot\vec{\omega}$.
 We next take a horizontal- and time-average of Eqn.~\ref{eqn:kinetic_energy} (we absorb the time-average into the horizontal-average $\bar{\,\cdot\,}$ notation for simplicity).
 Assuming that $\bar{\mathcal{K}}$ reaches a statistically stationary state, convective motions satisfy
 \begin{equation}
-\frac{d\bar{\mathcal{F}}}{dz} = \bar{\mathcal{B}} - \bar{\Phi}.
+    \frac{d\bar{\mathcal{F}_{\editone{z}}}}{dz} = \bar{\mathcal{B}} - \bar{\Phi},
 \label{eqn:kinetic_energy_1D}
 \end{equation}
+\editone{where $\mathcal{F}_z$ is the z-component of $\vec{\mathcal{F}}$.}
 Each profile in Eqn.~\ref{eqn:kinetic_energy_1D} is shown in Fig.~\ref{fig:theory_profiles} for the simulation whose dynamics are displayed in Fig.~\ref{fig:vertical_dynamics_panels}.
 As in Fig.~\ref{fig:grad_profiles}, the Schwarzschild CZ boundary is plotted as a dashed line, and the top of the PZ is plotted as a solid vertical line.
-In the top panel, we display $\bar{\mathcal{F}}$, neglecting the viscous flux term which is only nonzero in a small region above the bottom boundary.
-We see that $\bar{\mathcal{F}}$ is zero at the bottom boundary (left edge of plot) and at the top of the PZ.
+In the top panel, we display $\bar{\mathcal{F}_{\editone{z}}}$, neglecting the viscous flux term which is only nonzero in a small region above the bottom boundary.
+We see that $\bar{\mathcal{F}_{\editone{z}}}$ is zero at the bottom boundary (left edge of plot) and at the top of the PZ.
 In the bottom panel, we plot $\bar{\mathcal{B}}$ and $\bar{\Phi}$; we see that $\bar{\mathcal{B}}$ changes sign at the Schwarzschild CZ boundary, and that $\bar{\Phi}$ is positive-definite.
 
-At the boundaries of the convecting region, $\bar{\mathcal{F}}$ is zero (Fig.~\ref{fig:theory_profiles}, upper panel).
+At the boundaries of the convecting region, $\bar{\mathcal{F}_{\editone{z}}}$ is zero (Fig.~\ref{fig:theory_profiles}, upper panel).
 We integrate Eqn.~\ref{eqn:kinetic_energy_1D} vertically between these zeros to find
 \begin{equation}
 \int \bar{\mathcal{B}}\,dz = \int \bar{\Phi}\,dz.
@@ -325,7 +338,7 @@ Breaking up Eqn.~\ref{eqn:integral_constraint}, we see that
 Eqn.~\ref{eqn:constraint_cz_pz_split} is arranged so that the (positive) buoyant engine of convection is on the left-hand side, and the (positive) sinks of work are on the RHS.
 If viscous dissipation in the CZ does not balance the buoyant generation of energy in the CZ, the kinetic energy of the convective flows grows, resulting in a penetrative region.
 This region grows with time until Eqn.~\ref{eqn:constraint_cz_pz_split} is satisfied.
-We see that the viscous dissipation and buoyancy breaking felt by flows in the PZ determine its size.
+We see that the viscous dissipation and \editone{buoyant deceleration} felt by flows in the PZ determine its size.
 We now define
 \begin{equation}
 f \equiv \frac{\int_{\rm{CZ}} \bar{\Phi}\,dz}{\int_{\rm{CZ}}\bar{\mathcal{B}}\,dz},
@@ -370,6 +383,9 @@ With this parameterization, and $\bar{\mathcal{B}} \propto \bar{\Fconv}$, we rew
 The fundamental result of this theory is Eqn.~\ref{eqn:theory_fraction}, which is a parameterized and generalized form of \citet{roxburgh1989}'s integral constraint.
 This equation is also reminiscent of \citet{zahn1991}'s theory, and says that the size of a PZ is set by the profile of $\gradrad$ near the convective boundary.
 A parameterization like Eqn.~\ref{eqn:theory_fraction} can be implemented in stellar structure codes and used to find the extent of penetration zones under the specification of $f$ and $\xi$.
+\editone{
+    We note that an implementation of Eqn.~\ref{eqn:theory_fraction} likely requires an \emph{iterative} solve, as the penetration zone depth ($\delp$) and thus the PZ integral of the flux, are not known \emph{a-priori}.
+}
 The parameters $f$ and $\xi$ are measurables which can be constrained by direct numerical simulations, and we will measure their values in this work.
 In general, we expect that $f$ and $\xi$ should not change too drastically with other simulation parameters.
 
@@ -386,6 +402,11 @@ Intuitively, $\mP$ describes which terms are important in Eqn.~\ref{eqn:first_pz
 When $\mP \ll 1$, the buoyancy term dominates in the PZ and dissipation can be neglected there.
 When $\mP \gg 1$, buoyancy is negligible and dissipation constrains the size of the PZ.
 When $\mP \sim 1$, both terms matter.
+\editone{
+    In this work, we have assumed that $\mP$ and $\xi$ are fully independent parameters.
+    We make this choice because $\mP$ can be determined directly from a known conductivity profile or stratification, whereas $\xi$ is a measurable of evolved nonlinear convective dynamics.
+    However, it is possible that there is an implicit relationship between these parameters (as $\mP$ increases, so too does the extent of the PZ, which likely in turn modifies the value of $\xi$).
+}
 
 
 \subsubsection{Case I: Discontinuous flux}
@@ -404,7 +425,7 @@ Plugging this functional form of the flux into Eqn.~\ref{eqn:theory_fraction}, a
 \label{eqn:discontinuous_prediction}
 \end{equation}
 Assuming that $f$ and $\xi$ are weak functions of $\mP_D$, we see that, for small $\mP_D$, the size of the penetration region is linearly proportional to $\mP_D$, but saturates as $\mP_D \rightarrow \infty$ due to dissipation.
-Intuitively, this result makes sense: as $\mP_D$ grows, the magnitude of $\overline{\Fconv}$ and the breaking force of buoyancy in the PZ shrink, resulting in larger penetrative regions (but this growth cannot extend indefinitely).
+Intuitively, this result makes sense: as $\mP_D$ grows, the magnitude of $\overline{\Fconv}$ and the \editone{deceleration caused by} buoyancy in the PZ shrink, resulting in larger penetrative regions (but this growth cannot extend indefinitely).
 
 \subsubsection{Case II: Piecewise linear flux}
 \label{sec:linear_theory}
@@ -428,7 +449,7 @@ On that branch, we find
 \label{eqn:linear_prediction}
 \end{equation}
 where $\zeta \equiv (\xi f/2)\sqrt{\mP_L/(1-f)}$.
-We expect the penetration height to be proportional to $\sqrt{\mP_L}$ for small values of $\mP_L$, and to again saturate at large values of $\mP_L$. 
+We expect the penetration height to be proportional to $\sqrt{\mP_L}$ for small values of $\mP_L$, and to again saturate at large values of $\mP_L$ \editone{(as $\mP_L \rightarrow \infty$, so too $\zeta \rightarrow \infty$, and $(\sqrt{\zeta^2 + 1} - \zeta) \rightarrow 0$).}
 
 In this work, we will test Eqn.~\ref{eqn:theory_fraction} through the predictions of Eqns.~\ref{eqn:discontinuous_prediction} and \ref{eqn:linear_prediction}.
 Our goals are to see if the predicted scalings with the penetration parameter $\mP$ are realized in simulations, and to measure the values of $f$ and $\xi$.
@@ -436,12 +457,17 @@ Our goals are to see if the predicted scalings with the penetration parameter $\
 \section{Simulation Details}
 We will now describe a set of simulations that test the predictions in Sec.~\ref{sec:theory}.
 While many simulations of convection interacting with radiative zones have been performed by previous authors, ours differ in two crucial ways.
-First, we construct our experiments so that $\mP$ and $\mS$ can be varied separately.
+First, we construct our experiments so that $\mP$ and $\mS$ can be varied separately \editone{by driving convection with internal heating, thus avoiding strongly superadiabatic boundary layers where $\justgrad \rightarrow \gradrad$}.
 $\mP$ is the ``Penetration Parameter,'' defined in Eqn.~\ref{eqn:theory_P_defn}, which compares the magnitude of the convective flux in the CZ and PZ; $\mS$ is the ``stiffness,'' defined in Eqn.~\ref{eqn:stiffness}, and compares the buoyancy frequency in the stable radiative zone to the convective frequency. 
-We suspect that some past experiments have implicitly set $\mP \approx \mS^{-1}$, which would result in negligible penetration for high stiffness.
+We suspect that some past experiments have implicitly set $\mP \approx \mS^{-1}$, which would result in negligible penetration for high stiffness \editone{(see discussion following Eqn.~\ref{eqn:stiffness})}.
 Second, as we will show in Sec.~\ref{sec:results}, the development of penetrative zones is a slow process and many prior studies did not evolve simulations for long enough to see these regions grow and saturate.
 
-
+\editone{
+    In Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq}, there are nine fundamental input parameters: $\rho_0$, $\alpha$, $g$, $\nu$, $\chi$, $Q$, $\gradad$, $k_{\rm{CZ}}$, and $k_{\rm{RZ}}$.
+    There are four fundamental dimensions (mass, length, time, and temperature), and so we are left with five independent prognostic parameters in setting up our system.
+    For two of these parameters, we will choose the freefall Reynolds number and the Prandtl number, which are analagous to the Rayleigh and Prandtl numbers in Rayleigh-B\'{e}nard convection.
+    The remaining three parameters are $\mS$, $\mP$, and an additional parameter ``$\eta$,'' which we will hold constant and which sets the value of the flux entering the bottom boundary.
+}
 
 We nondimensionalize Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq} on the length scale of the Schwarzschild-unstable convection zone $L_s$, the timescale of freefall across that convection zone $\tau_{\rm{ff}}$, and the temperature scale of the internal heating over that freefall time $\Delta T$,
 \begin{equation}
@@ -496,6 +522,10 @@ Throughout this work we choose $Q_{\rm{mag}} = 1$ and $\Delta_H = 0.2$ so $F_H =
 We offset this heating from the bottom boundary to $z = 0.1$ to avoid heating within the bottom impenetrable boundary layer where velocities go to zero and $k$ is small; this prevents strong temperature gradients from establishing there.
 Furthermore, since the conductivity is not zero at the bottom boundary, the adiabatic temperature gradient there carries some flux, $\Fbot = \mu F_H$ and we choose $\mu = 10^{-3}$ so that most of the flux in the convection zone is carried by the convection.
 
+\editone{
+    Throughout this paper, we assume that the convection zone is roughly adiabatically stratified.
+    We therefore define a dynamical measure of the stiffness, rather than one based on e.g., the superadiabaticity of $\gradrad$ in the convection zone.
+}
 The average convective velocity depends on the magnitude of the convective flux, $\angles{\vec{|u|}} \approx F_H^{1/3} = (Q_{\rm{mag}}\Delta_H)^{1/3}$.
 The characteristic convective frequency is ${f_{\rm{conv}} = \angles{\vec{|u|}} / L_s}$.
 Empirically we find that for our choice of parameters, $\angles{\vec{|u|}} \approx 1$, so going forward we define $f_{\rm{conv}} = 1$.
@@ -505,8 +535,24 @@ The stiffness is defined,
 \label{eqn:stiffness}
 \end{equation}
 where $N^2$ is the \brunt$\,$frequency in the radiative zone.
-In our nondimensionalization, $N^2 = \gradad - \gradrad$.
+In our nondimensionalization, $N^2 = \gradad - \gradrad$ in the radiative zone.
 We use $\mS$ as a control parameter.
+
+\editone{
+    In many prior studies, the stiffness has been set by the ratio of the subadiabaticity of $\gradrad$ in the RZ to the superadiabaticity of $\gradrad$ in the CZ,
+    \begin{equation}
+        \mS_{\rm{alt}} = \frac{|\gradrad - \gradad|_{\rm{RZ}}}{|\gradrad - \gradad|_{\rm{CZ}}} = \frac{N^2}{|\gradrad - \gradad|_{\rm{CZ}}}.
+    \end{equation}
+    In those studies, $\mS_{\rm{alt}}$ primarily describes the stratification of the initial state, but it also describes the stratification near superadiabatic boundary layers which drive convection.
+    This differs from the case studied here, in that we use an internal heating function which is offset from the boundary to hold the stratification to adiabatic in the CZ once convection develops.
+    Previous work has not defined $\mP$, but its definition in our current study should apply to previous studies,
+    \begin{equation}
+        \mP = -\frac{k_{\rm{CZ}}(\gradrad - \gradad)_{\rm{CZ}}}{k_{\rm{RZ}}(\gradrad - \gradad)_{\rm{RZ}}}.
+        %= \frac{k_{\rm{CZ}}}{k_{\rm{RZ}} \mS_{\rm{alt}}} = \frac{k_{\rm{CZ}}(\gradrad - \gradad)_{\rm{CZ}}}{k_{\rm{RZ}} \mS}.
+    \end{equation}
+    We note that $\mP$ can be related to $\mS$ and $\mS_{\rm{alt}}$, $\mP = (k_{\rm{CZ}}/k_{\rm{RZ}}) \mS_{\rm{alt}}^{-1} = (k_{\rm{CZ}}/k_{\rm{RZ}}) (\gradrad - \gradad)_{\rm{CZ}} \mS^{-1}$.
+    Our use of internal heating to decouple convective perturbations from $\gradrad$ in the CZ allows us to separately specify these nondimensional parameters.
+}
 
 Aside from $\mS$ and $\mP$, the two remaining control parameters $\mR$ and $\Pran$ determine the properties of the turbulence.
 The value of $\mR$ corresponds to the value of the Reynolds number $\rm{Re} = \mR |\vec{u}|$, and we will vary $\mR$.
@@ -531,7 +577,7 @@ k_{\rm{RZ}} &	z \geq 1
 \end{equation}
 where CZ refers to the convection zone and RZ refers to the radiative zone (some of which will be occupied by the penetrative zone PZ).
 Using $\mS$ and $\mP_D$ as inputs and specifying the radiative flux at the bottom boundary and in the RZ defines this system\footnote{
-We solve the system of equations $\mS = (\gradad - \gradrad)/f_{\rm{conv}}^2$, $\mP = F_H/(k_{\rm{RZ}}[\gradad - \gradrad])$, $F_{\rm{bot}} = k_{\rm{CZ}}\gradad$, and ${F_{\rm{bot}} + F_H = k_{\rm{RZ}}\gradrad}$ to arrive at Eqns.~\ref{eqn:discontinuous_constants}.
+We solve the system of equations $\mS = (\gradad - \gradrad)/f_{\rm{conv}}^2$, $\mP_D = F_H/(k_{\rm{RZ}}[\gradad - \gradrad])$, $F_{\rm{bot}} = k_{\rm{CZ}}\gradad$, and ${F_{\rm{bot}} + F_H = k_{\rm{RZ}}\gradrad}$ to arrive at Eqns.~\ref{eqn:discontinuous_constants}.
 %In the dimensional equations, $N^2 = |\alpha| g (\gradad - \gradrad)$, but we have nondimensionalized out the $\alpha$ and $g$.
 },
 \begin{equation}
@@ -660,7 +706,7 @@ As in Fig.~\ref{fig:vertical_dynamics_panels}, temperature anomalies have differ
 \caption{
 Time evolution of the landmark Case I simulation ($\mR = 400$, $\mP_D = 4$, $\mS = 10^3$).
 In the top left panel, we plot the PZ height $\delta_{0.5}$ vs.~time.
-Also shown are the time evolution of $f$ (middle left panel, defined in Eqn.~\ref{eqn:f_defn}) and $\xi$ (bototm left panel, defined in Eqn.~\ref{eqn:xi_defn}).
+Also shown are the time evolution of $f$ (middle left panel, defined in Eqn.~\ref{eqn:f_defn}) and $\xi$ (bottom left panel, defined in Eqn.~\ref{eqn:xi_defn}).
 Thin horizontal lines denote the equilibrium values of each trace.
 Vertical lines denote when each trace first converges to within 1\% of its equilibrium value.
 (right panel) The vertical profile of $\justgrad/\gradad$ is plotted against height at regular time intervals.
@@ -688,7 +734,7 @@ We display the temperature anomaly in the bottom panel of the Case II simulation
 The bulk Reynolds number in the convection zones of these simulations are (top) $\rm{Re} \sim 250$ and (bottom) $\rm{Re} \sim 350$.
 Thus, these simulations are less turbulent than the simulation in Fig.~\ref{fig:vertical_dynamics_panels} (bulk Re $\sim$ 5000).
 Aside from the degree of turbulence, the dynamics are very similar in Figs.~\ref{fig:vertical_dynamics_panels} \& \ref{fig:lessturb_dynamics_panels}.
-In particular, we observe that hot plumes in the CZ turn into cold plumes in the PZ (as they cross the dashed horizontal lines), and hot downflows in the PZ turn into cold downflows in the CZ.
+In particular, we observe that \editone{relatively} hot plumes in the CZ turn into \editone{relatively} cold plumes in the PZ (as they cross the dashed horizontal lines), and \editone{relatively hot regions in the PZ lie above relatively cold regions in the CZ}.
 Convective plumes extend through the penetrative region and impact the stable radiative zone (above the solid horizontal line).
 The convective motions excite waves at a shallow angle above the stiff radiative-convective boundary.
 We note that the Case II simulation has an additional temperature inversion at the base of the simulation.
@@ -729,22 +775,6 @@ The equilibrated value is averaged over the final 1000 freefall times of the sim
 The evolved value of $f$ indicates that roughly 2/3 of the buoyancy driving is dissipated in the bulk CZ, so that 1/3 is available for PZ dissipation and negative buoyancy work.
 The evolved value of $\xi$ indicates that the shape of dissipation in the PZ is slightly steeper than linear.
 
-In the right panel of Fig.~\ref{fig:time_evolution}, we plot the profile of $\justgrad/\gradad$ in our simulation at regular time intervals, where the color of the profile corresponds to time, as in the left panels.
-$\gradad$ is plotted as a dashed horizontal line while $\gradrad$ is plotted as a grey solid line which decreases with height around $z \approx 1$ and satures to a constant above $z \gtrsim 1.1$.
-The location of the Schwarzschild boundary, $L_s$, is overplotted as a black vertical dashed line.
-We note that the Schwarzschild boundary does not move over the course of our simulation, so the extention of the convection zone past this point is true penetration and not the result of entrainment-induced changes in the Schwarzschild (or Ledoux) convective boundaries.
-The traces of $\delta_{0.1}$ and $\delta_{0.9}$ are overplotted as red lines while that of $\delta_{0.5}$ is plotted as a black line.
-We see that the fast initial evolution establishes a sizeable PZ (denoted by purple $\justgrad$ profiles), but its final equilibration takes much longer (indicated by the separation between the purple, green, and yellow profiles decreasing over time).
-
-This long evolution is computationally expensive; for this modest simulation (256x64$^2$ coefficients), this evolution takes roughly 24 days on 1024 cores for a total of $\sim$600,000 cpu-hours.
-It is not feasible to perform simulations of this length for a full parameter space study, and so we accelerate the evolution of most of the simulations in this work.
-To do so, we take advantage of the nearly monotonic nature of the evolution of $\delp$ vs.~time displayed in Fig.~\ref{fig:time_evolution}.
-We measure the instantaneous values of $(\delta_{0.1}, \delta_{0.5}, \delta_{0.9})$, as well as their instantaneous time derivatives.
-Using these values, we take a large ``time step'' forward, advancing the values of $\delp$ according to their current trend.
-While doing so, we preserve the width of the transition from the PZ to the RZ, and we also adjust the solution so that $\justgrad = \gradrad$ in the RZ, effectively equilibrating the RZ instantaneously.
-In other words, we reinitialize the simulation's temperature profile with a better guess at its evolved state based on its current dynamical evolution.
-For details on how this procedure is carried out, see Appendix \ref{app:accelerated_evolution}.
-
 \begin{figure*}[t]
 \centering
 \includegraphics{parameters_vs_s.pdf}
@@ -759,12 +789,28 @@ We roughly observe a $\mS^{-1/2}$ scaling.
 }
 \end{figure*}
 
+In the right panel of Fig.~\ref{fig:time_evolution}, we plot the profile of $\justgrad/\gradad$ in our simulation at regular time intervals, where the color of the profile corresponds to time, as in the left panels.
+$\gradad$ is plotted as a dashed horizontal line while $\gradrad$ is plotted as a grey solid line which decreases with height around $z \approx 1$ and satures to a constant above $z \gtrsim 1.1$.
+The location of the Schwarzschild boundary, $L_s$, is overplotted as a black vertical dashed line.
+We note that the Schwarzschild boundary does not move over the course of our simulation, so the extention of the convection zone past this point is true penetration and not the result of entrainment-induced changes in the Schwarzschild (or Ledoux) convective boundaries.
+The traces of $\delta_{0.1}$ and $\delta_{0.9}$ are overplotted as red lines while that of $\delta_{0.5}$ is plotted as a black line.
+We see that the fast initial evolution establishes a sizeable PZ (denoted by purple $\justgrad$ profiles), but its final equilibration takes much longer (indicated by the separation between the purple, green, and yellow profiles decreasing over time).
+
+This long evolution is computationally expensive; for this modest simulation (256x64$^2$ coefficients), this evolution takes roughly 24 days on 1024 cores for a total of $\sim$600,000 cpu-hours.
+It is not feasible to perform simulations of this length for a full parameter space study, and so we accelerate the evolution of most of the simulations in this work.
+To do so, we take advantage of the nearly monotonic nature of the evolution of $\delp$ vs.~time displayed in Fig.~\ref{fig:time_evolution}.
+We measure the instantaneous values of $(\delta_{0.1}, \delta_{0.5}, \delta_{0.9})$, as well as their instantaneous time derivatives.
+Using these values, we take a large ``time step'' forward \editone{to evolve $\delp$.}
+While doing so, we preserve the width of the transition from the PZ to the RZ, and we also adjust the solution so that $\justgrad = \gradrad$ in the RZ, effectively equilibrating the RZ instantaneously.
+In other words, we reinitialize the simulation's temperature profile with a better guess at its evolved state based on its current dynamical evolution.
+For details on how this procedure is carried out, see Appendix \ref{app:accelerated_evolution}.
+
 
 \subsection{Dependence on $\mP$}
 We find that the height of the penetration zone is strongly dependent on $\mP$.
 In the upper two panels of Fig.~\ref{fig:parameters_vs_p}, we plot the penetration height ($\delta_{0.1}$, $\delta_{0.5}$, $\delta_{0.9}$ from Eq.~\ref{eqn:delta_p_measures}) from Case I simulations (discontinuous $k$, upper left) and Case II simulations (discontinuous $\partial_z k$, upper right).
 The fixed values of $\mR$ and $\mS$ are shown above these panels.
-We find that the leading-order $\mP$ scaling predictions of Eqns.~\ref{eqn:discontinuous_prediction} \& \ref{eqn:linear_prediction} describe the data extremely well (orange lines).
+We find that the leading-order $\mP$ scaling predictions of Eqns.~\ref{eqn:discontinuous_prediction} \& \ref{eqn:linear_prediction} describe the data \editone{well at intermediate values of $\mP$} (orange lines).
 At small values of $\mP$ we see somewhat weaker scalings than these predictions, because the profiles of $k$ and $\partial_z k$ are not truly discontinuous but jump from one value in the CZ to another in the RZ over a finite width (see e.g., the $\gradrad$ profile in Figs.~\ref{fig:grad_profiles} \& \ref{fig:time_evolution} and Sec.~\ref{sct:numerics}).
 At large values of $\mP$, the penetration height falls off of these predicted scaling laws.
 In this regime, dissipation dominates over buoyancy in the PZ, so the PZ height saturates.
@@ -775,7 +821,7 @@ We measure characteristic values of $f \in [0.6, 0.9]$, signifying that 60-90\% 
 We note a weak trend where $f$ decreases as $\mP$ increases.
 As $\mP$ increases, we find that CZ velocities decrease, leading to a decrease in the dissipation rate.
 When $\mP$ is small, the PZ-RZ boundary (which acts like a wall, left panel of Fig.~\ref{fig:vertical_dynamics_panels}) efficiently deflects convective velocities sideways resulting in increased bulk-CZ velocities.
-As $\mP$ grows, the velocities have access to an extended PZ in which to buoyantly break before deflection, resulting in slightly lower bulk velocities.
+As $\mP$ grows, the velocities have access to an extended PZ in which to buoyantly \editone{decelerate} before deflection, resulting in slightly lower bulk velocities.
 A similar trend of $\xi$ decreasing as $\mP$ increases can be seen.
 Recall that smaller values of $\xi$ indicate the dissipative dynamics are rather different in the PZ and CZ.
 As the size of the PZ grows, the dynamical structures of the PZ shift from what is found in the CZ, and so $\xi$ shrinks.
@@ -960,6 +1006,10 @@ The solar convection zone is highly stratified ($\sim$14 density scale heights),
 Furthermore, the solar model used here is essentially a ``stock'' MESA model and has obvious disagreements with the solar model~S \citep[see Fig.~1 in][where the Schwarzschild base of the CZ is $r/R_\odot \approx 0.712$, whereas the one in Fig.~\ref{fig:mesa_profiles} is at $r/R_{\odot} \approx 0.75$]{christensen-dalsgaard_etal_2011}.
 Despite the limitations of this minimal proof of concept, Fig.~\ref{fig:mesa_profiles} shows that our parameterization can produce penetration zones in 1D models with measurable acoustic glitches.
 In a future paper, we will produce more realistic models by building upon our parameterization to include the crucial effects of density stratification.
+\editone{
+    We note briefly that the integral formulation of the equations in e.g., Eqn.~\ref{eqn:mesa_eqn} is not aware of the topology of convective perturbations, which depends upon the density stratification across the convective domain.
+    We suspect that relaxing the Boussinesq approximation and accounting for stratification changes the theory by adding explicit stratification terms into the integral constraint, but this derivation is beyond the scope of this work. 
+}
 
 
 \section{Discussion}
