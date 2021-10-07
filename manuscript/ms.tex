@@ -205,8 +205,8 @@ The domain exhibits a classical Schwarzshild-unstable convection zone (CZ) for $
 Above this point, $\gradrad < \gradad$ and the domain would be considered stable by the Schwarzschild criterion.
 However, the evolved convective dynamics in Fig.~\ref{fig:vertical_dynamics_panels} have raised $\justgrad \rightarrow \gradad$ in an extended penetration zone (PZ) which extends from $1.04 \lesssim z \lesssim 1.3$.
 \editone{
-    At the top of the PZ, between $1.3 \lesssim z \lesssim 1.4$, there is a ``thermal adjustment layer'' where convective motions give way to conductive transport and $\justgrad$ adjusts from $\gradad$ to $\gradrad$.
     Above $z \gtrsim 1.4$, $\justgrad \approx \gradrad$ in a classical stable radiative zone (RZ).
+    Between $1.3 \lesssim z \lesssim 1.4$, there is a PZ-RZ boundary layer (referred to as the ``thermal adjustment layer'' in some prior studies) where convective motions give way to conductive transport and $\justgrad$ adjusts from $\gradad$ to $\gradrad$.
 }
 
 Our goals in this paper are to understand how these PZs form and to parameterize this effect so that it can be included in 1D stellar evolution calculations.
@@ -218,7 +218,7 @@ Our goals in this paper are to understand how these PZs form and to parameterize
 Horizontally- and temporally-averaged profiles of the thermodynamic gradients from the simulation in Fig.~\ref{fig:vertical_dynamics_panels}.
 We plot $\justgrad$ (green) compared to $\gradad$ (purple, a constant) and $\gradrad$ (orange); note the extended penetration zone (PZ) where $\justgrad \approx \gradad > \gradrad$.
     \editone{
-        The dashed vertical line denotes the Schwarzschild boundary of the convection zone (CZ), the greyed region denotes the thermal adjustment layer, and the solid vertical line denotes the bottom of the radiative zone (RZ).
+        The dashed vertical line denotes the Schwarzschild boundary of the convection zone (CZ), the solid vertical line denotes the bottom of the radiative zone (RZ), and the greyed region denotes the PZ-RZ boundary layer.
     }
 \label{fig:grad_profiles}
 }
@@ -463,13 +463,13 @@ We suspect that some past experiments have implicitly set $\mP \approx \mS^{-1}$
 Second, as we will show in Sec.~\ref{sec:results}, the development of penetrative zones is a slow process and many prior studies did not evolve simulations for long enough to see these regions grow and saturate.
 
 \editone{
-    In Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq}, there are nine fundamental input parameters: $\rho_0$, $\alpha$, $g$, $\nu$, $\chi$, $Q$, $\gradad$, $k_{\rm{CZ}}$, and $k_{\rm{RZ}}$.
+    Appealing to the Buckingham $\pi$ theorem \citep{buckingham_1914}, we count nine fundamental input parameters in Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq}: $\rho_0$, $\alpha g$, $L_s$, $\nu$, $\chi$, $Q$, $\gradad$, $k_{\rm{CZ}}$, and $k_{\rm{RZ}}$.
     There are four fundamental dimensions (mass, length, time, and temperature), and so we are left with five independent prognostic parameters in setting up our system.
     For two of these parameters, we will choose the freefall Reynolds number and the Prandtl number, which are analagous to the Rayleigh and Prandtl numbers in Rayleigh-B\'{e}nard convection.
-    The remaining three parameters are $\mS$, $\mP$, and an additional parameter ``$\eta$,'' which we will hold constant and which sets the value of the flux entering the bottom boundary.
+    The remaining three parameters are $\mS$, $\mP$, and an additional parameter $\eta$, which we will hold constant and which sets the ratio between $\gradrad$ and $\gradad$ in the convection zone (see discussion following Eqn.~\ref{eqn:sim_Q}).
 }
 
-We nondimensionalize Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq} on the length scale of the Schwarzschild-unstable convection zone $L_s$, the timescale of freefall across that convection zone $\tau_{\rm{ff}}$, and the temperature scale of the internal heating over that freefall time $\Delta T$,
+We nondimensionalize Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq} on the length scale of the Schwarzschild-unstable convection zone $L_s$, the timescale of freefall across that convection zone $\tau_{\rm{ff}}$, and the temperature scale of the internal heating over that freefall time $\Delta T$; \editone{mass is nondimensionalized so that the freefall ram pressure $\rho_0(L_s/\tau_{ff})^2$ is one,}
 \begin{equation}
 \begin{split}
 &T^* = (\Delta T)T = Q_0 \tau_{\rm{ff}} T,\qquad
@@ -541,20 +541,20 @@ We use $\mS$ as a control parameter.
 \editone{
     In many prior studies, the stiffness has been set by the ratio of the subadiabaticity of $\gradrad$ in the RZ to the superadiabaticity of $\gradrad$ in the CZ,
     \begin{equation}
-        \mS_{\rm{alt}} = \frac{|\gradrad - \gradad|_{\rm{RZ}}}{|\gradrad - \gradad|_{\rm{CZ}}} = \frac{N^2}{|\gradrad - \gradad|_{\rm{CZ}}}.
+        \tilde{\mS} = \frac{|\gradrad - \gradad|_{\rm{RZ}}}{|\gradrad - \gradad|_{\rm{CZ}}} = \frac{N^2}{|\gradrad - \gradad|_{\rm{CZ}}}.
     \end{equation}
-    In those studies, $\mS_{\rm{alt}}$ primarily describes the stratification of the initial state, but it also describes the stratification near superadiabatic boundary layers which drive convection.
+    In those studies, $\tilde{\mS}$ primarily describes the stratification of the initial state, but it also describes the stratification in superadiabatic boundary layers which drive convection.
     This differs from the case studied here, in that we use an internal heating function which is offset from the boundary to hold the stratification to adiabatic in the CZ once convection develops.
     Previous work has not defined $\mP$, but its definition in our current study should apply to previous studies,
     \begin{equation}
         \mP = -\frac{k_{\rm{CZ}}(\gradrad - \gradad)_{\rm{CZ}}}{k_{\rm{RZ}}(\gradrad - \gradad)_{\rm{RZ}}}.
-        %= \frac{k_{\rm{CZ}}}{k_{\rm{RZ}} \mS_{\rm{alt}}} = \frac{k_{\rm{CZ}}(\gradrad - \gradad)_{\rm{CZ}}}{k_{\rm{RZ}} \mS}.
     \end{equation}
-    We note that $\mP$ can be related to $\mS$ and $\mS_{\rm{alt}}$, $\mP = (k_{\rm{CZ}}/k_{\rm{RZ}}) \mS_{\rm{alt}}^{-1} = (k_{\rm{CZ}}/k_{\rm{RZ}}) (\gradrad - \gradad)_{\rm{CZ}} \mS^{-1}$.
+    We note that $\mP$ can be related to $\mS$ and $\tilde{\mS}$, $\mP = (k_{\rm{CZ}}/k_{\rm{RZ}}) \tilde{\mS}^{-1} = (k_{\rm{CZ}}/k_{\rm{RZ}}) (\gradrad - \gradad)_{\rm{CZ}} \mS^{-1}$.
     Our use of internal heating to decouple convective perturbations from $\gradrad$ in the CZ allows us to separately specify these nondimensional parameters.
+    The distinction between $\mS$ and $\mP$ is perhaps clearer in the language of stellar evolution, where $\mS$ is roughly the inverse Mach number of the convection while $\mP$ is set by the ratio of $\gradrad$ and $\gradad$.
 }
 
-Aside from $\mS$ and $\mP$, the two remaining control parameters $\mR$ and $\Pran$ determine the properties of the turbulence.
+Aside from $\mS$, $\mP$, and $\eta$, the two remaining control parameters $\mR$ and $\Pran$ determine the properties of the turbulence.
 The value of $\mR$ corresponds to the value of the Reynolds number $\rm{Re} = \mR |\vec{u}|$, and we will vary $\mR$.
 Astrophysical convection exists in the limit of $\Pran \ll 1$ \citep{garaud2021}; in this work we choose a modest value of $\Pran = 0.5$ which slightly separates the thermal and viscous scales while still allowing us to achieve convection with large Reynolds and P\'{e}clet numbers.
 
@@ -680,7 +680,7 @@ L_s + \delta_{h} = \mathrm{max}(z) \,\,\mid\,\, \justgrad > (\gradad - h\,\Delta
 \label{eqn:delta_p_measures}
 \end{equation}
 In this work, we measure the 10\% ($\delta_{0.1}$, $h=0.1$), 50\% ($\delta_{0.5}$, $h=0.5$), and 90\% ($\delta_{0.9}$, $h=0.9$) departure points.
-Using \citet{zahn1991}'s terminology, $\delta_{0.5}$ is the mean value of the top of the PZ while $\delta_{0.9} - \delta_{0.1}$ represents the width of the ``thermal adjustment layer.''
+Using \citet{zahn1991}'s terminology, $\delta_{0.5}$ is the mean value of the top of the PZ while $\delta_{0.9} - \delta_{0.1}$ represents the width of the \editone{PZ-RZ boundary layer}. 
 We find that these measurements based on the (slowly-evolving) thermodynamic profile provide a robust and straightforward measurement of penetration height \citep[for a discussion of alternate measurement choices, see][]{pratt_etal_2017}.
 
 
@@ -831,13 +831,13 @@ As the size of the PZ grows, the dynamical structures of the PZ shift from what 
 We find that the height of the penetration zone is weakly dependent on $\mS$.
 In the left panel of Fig.~\ref{fig:parameters_vs_s}, we plot the penetration height of a few Case I simulations with $\mP_D = 4$ and $\mR = 400$ but with different values of $\mS$.
 The mean penetration height $\delta_{0.5}$ varies only weakly with changing $\mS$, but that the values of $\delta_{0.1}$ and $\delta_{0.9}$ vary more strongly.
-The thermal adjustment layer in which $\justgrad$ changes from $\gradad$ in the PZ to $\gradrad$ in the RZ therefore becomes narrower as $\mS$ increases.
+The \editone{PZ-RZ boundary layer} in which $\justgrad$ changes from $\gradad$ to $\gradrad$ becomes narrower as $\mS$ increases.
 To quantify this effect, we plot $\delta_{0.9} - \delta_{0.1}$ in the righthand panel of Fig.~\ref{fig:parameters_vs_s}.
 We find that the width of this region varies roughly according to a $\mS^{-1/2}$ scaling law, reminiscent of the pure-overshoot law described by \citet{korre_etal_2019}.
 %This suggests that the evolved profile of a convecting region can be described by a penetration zone (described by e.g., $\mP$, $f$, and $\xi$) with a thin overshooting region (described by $\mS$) within the transition between the PZ and RZ.
 
 Note that if the enstrophy, $\omega^2$ in the convection zone exceeds the value of the square buoyancy frequency $N^2$ in the radiative zone, the gravity waves in the RZ become nonlinear.
-We therefore restrict the simulations in this study to relatively large\footnote{These values are modest compared to astrophysical values, but large for nonlinear simulations.} values of $10^{2} \leq \mS < 10^4$ in order to ensure $N^2 > \omega^2$ even in our highest enstrophy simulations.
+We therefore restrict the simulations in this study to relatively large\footnote{These values are large for nonlinear simulations, but modest compared to astrophysical values. \editone{While there is observational uncertainty about the magnitude of deep convective velocities in the Sun, in the MESA model presented in Sct.~\ref{sec:solar_model}, $f_{\rm{conv}} \approx 10^{-6}$ s$^{-1}$ and $N \approx 10^{-3}$ s$^{-1}$, so $\mS \approx 10^6$.}} values of $10^{2} \leq \mS < 10^4$ in order to ensure $N^2 > \omega^2$ even in our highest enstrophy simulations.
 
 
 
@@ -1007,8 +1007,8 @@ Furthermore, the solar model used here is essentially a ``stock'' MESA model and
 Despite the limitations of this minimal proof of concept, Fig.~\ref{fig:mesa_profiles} shows that our parameterization can produce penetration zones in 1D models with measurable acoustic glitches.
 In a future paper, we will produce more realistic models by building upon our parameterization to include the crucial effects of density stratification.
 \editone{
-    We note briefly that the integral formulation of the equations in e.g., Eqn.~\ref{eqn:mesa_eqn} is not aware of the topology of convective perturbations, which depends upon the density stratification across the convective domain.
-    We suspect that relaxing the Boussinesq approximation and accounting for stratification changes the theory by adding explicit stratification terms into the integral constraint, but this derivation is beyond the scope of this work. 
+    We note briefly that the theory in e.g., Eqn.~\ref{eqn:mesa_eqn} only knows about integral quantities of the convection and does not therefore know about quantities like the filling factor of upflows and downflows which stratification would modify.
+    We suspect that dynamical differences that arise from including stratification would manifest as changes in $f$ and $\xi$, but a detailed exploration is beyond the scope of this work.
 }
 
 
@@ -1019,6 +1019,9 @@ To understand these simulations, we used an integral constraint \citep[reminisce
 In doing so, we have laid down the first steps (Eqns.~\ref{eqn:theory_fraction} \& \ref{eqn:mesa_eqn}) towards incorporating convective penetration into stellar structure codes.
 We parameterized the viscous dissipation into a bulk-CZ portion ($f$) and a portion in the extended penetrative region ($\xi$), and derived predictions for how the height of a penetrative region $\delp$ should scale with these measurable parameters and a new flux-based ``penetration parameter'' $\mP$.
 We designed and analyzed two sets of simulations which showed good agreement with these theoretical predictions.
+\editone{
+    These simulations differ from past studies because we separately specify $\mP$ and the stiffness $\mS$, and we allow the simulations to evolve for a very long time or use numerical techniques for rapid evolution.
+}
 We briefly examined what the impliciations of this theory could be for a simple stellar model.
 
 Our simulation results suggest that stellar convection zones could be bounded by sizeable penetration zones.
@@ -1086,7 +1089,7 @@ We calculate $\Delta \delta_p = \tau_{\rm{AE}} \frac{d \delp}{dt}$.
 \item If $\Delta \delta_p < 0.005$, we erase the first 15 time units worth of departure point measures and return to step 2 for 15 time units.
 \item  If $\Delta \delta_p$ is large, we adjust the top of the PZ by setting $\delta_{0.5,\rm{new}} = \angles{\delta_{0.5}}_t + \Delta \delta_p$ (angles represent a time average).
 If $|\Delta \delta_p| > 0.05$, we limit its value to 0.05.
-We calculate the width of the thermal adjustment layer $d_w$ as the minimum of $\angles{\delta_{0.9} - \delta_{0.5}}_t$ and $\angles{\delta_{0.5} - \delta_{0.1}}_t$.
+We calculate the width of the \editone{PZ-RZ boundary layer} $d_w$ as the minimum of $\angles{\delta_{0.9} - \delta_{0.5}}_t$ and $\angles{\delta_{0.5} - \delta_{0.1}}_t$.
 We adjust the mean temperature gradient to
 \begin{equation}
 \justgrad = \gradad + H(z; \delta_{\rm{0.5,\rm{new}}}, d_w) \Delta\justgrad,
