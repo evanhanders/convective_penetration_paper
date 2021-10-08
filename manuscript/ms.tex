@@ -466,20 +466,27 @@ Second, as we will show in Sec.~\ref{sec:results}, the development of penetrativ
     Appealing to the Buckingham $\pi$ theorem \citep{buckingham_1914}, we count nine fundamental input parameters in Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq}: $\rho_0$, $\alpha g$, $L_s$, $\nu$, $\chi$, $Q$, $\gradad$, $k_{\rm{CZ}}$, and $k_{\rm{RZ}}$.
     There are four fundamental dimensions (mass, length, time, and temperature), and so we are left with five independent prognostic parameters in setting up our system.
     For two of these parameters, we will choose the freefall Reynolds number and the Prandtl number, which are analagous to the Rayleigh and Prandtl numbers in Rayleigh-B\'{e}nard convection.
-    The remaining three parameters are $\mS$, $\mP$, and an additional parameter $\eta$, which we will hold constant and which sets the ratio between $\gradrad$ and $\gradad$ in the convection zone (see discussion following Eqn.~\ref{eqn:sim_Q}).
+    The remaining three parameters are $\mS$, $\mP$, and an additional parameter $\mu$, which we will hold constant and which sets the ratio between $\gradrad$ and $\gradad$ in the convection zone.
 }
 
-We nondimensionalize Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq} on the length scale of the Schwarzschild-unstable convection zone $L_s$, the timescale of freefall across that convection zone $\tau_{\rm{ff}}$, and the temperature scale of the internal heating over that freefall time $\Delta T$; \editone{mass is nondimensionalized so that the freefall ram pressure $\rho_0(L_s/\tau_{ff})^2$ is one,}
+We nondimensionalize Eqns.~\ref{eqn:incompressible}-\ref{eqn:boussinesq} on the length scale of the Schwarzschild-unstable convection zone $L_s$, the timescale of freefall across that convection zone 
+
+\begin{equation}
+    \editone{
+    \tau_{\rm{ff}} = \left(\frac{L_s}{|\alpha| g Q_0}\right)^{1/3},
+}
+\end{equation}
+and the temperature scale of the internal heating over that freefall time $\Delta T$; \editone{mass is nondimensionalized so that the freefall ram pressure $\rho_0(L_s/\tau_{\rm{ff}})^2 = 1$,}
 \begin{equation}
 \begin{split}
 &T^* = (\Delta T)T = Q_0 \tau_{\rm{ff}} T,\qquad
 Q^* = Q_0 Q,
 \\
-&\partial_{t^*} = \tau_{\rm{ff}}^{-1}\partial_t = \left(\frac{|\alpha| g Q_0}{L_s}\right)^{1/3} \partial_t,\,\,\,\,\,
-\grad^* = L_s^{-1} \grad,
-\\
-&\vec{u}^* = u_{\rm{ff}}\vec{u} = \left(|\alpha| g Q_0 L_s^2\right)^{1/3}\vec{u},\qquad
+&\partial_{t^*} = \tau_{\rm{ff}}^{-1}\partial_t,\,\,\,\,\,
+\grad^* = L_s^{-1} \grad,\,\,\,\,\,
 p^* = \rho_0 u_{\rm{ff}}^2\varpi,
+\\
+    &\vec{u}^* = u_{\rm{ff}}\vec{u} = \frac{L_s}{\tau_{\rm{ff}}} \vec{u} = \left(|\alpha| g Q_0 L_s^2\right)^{1/3}\vec{u},\qquad
 \\
 &k^* = (L_s^2 \tau_{\rm{ff}}^{-1})k,\qquad
 \mR = \frac{u_{\rm{ff}} L_s}{\nu},\qquad
@@ -520,7 +527,15 @@ Q_{\rm{mag}}		& 0.1 \leq z \leq 0.1 + \Delta_H
 The integrated flux through the system from heating is $F_H = \int_0^{L_z} Q_{\rm{mag}} dz = Q_{\rm{mag}}\Delta_H$.
 Throughout this work we choose $Q_{\rm{mag}} = 1$ and $\Delta_H = 0.2$ so $F_H = 0.2$.
 We offset this heating from the bottom boundary to $z = 0.1$ to avoid heating within the bottom impenetrable boundary layer where velocities go to zero and $k$ is small; this prevents strong temperature gradients from establishing there.
-Furthermore, since the conductivity is not zero at the bottom boundary, the adiabatic temperature gradient there carries some flux, $\Fbot = \mu F_H$ and we choose $\mu = 10^{-3}$ so that most of the flux in the convection zone is carried by the convection.
+Furthermore, since the conductivity is not zero at the bottom boundary, the adiabatic temperature gradient there carries some flux.
+\editone{
+We specify the flux using
+\begin{equation}
+    \mu \equiv \frac{\Fbot}{F_H}
+    \label{eqn:mu_defn}
+\end{equation}
+}
+and we choose $\mu = 10^{-3}$ so that most of the flux in the convection zone is carried by the convection.
 
 \editone{
     Throughout this paper, we assume that the convection zone is roughly adiabatically stratified.
@@ -554,7 +569,7 @@ We use $\mS$ as a control parameter.
     The distinction between $\mS$ and $\mP$ is perhaps clearer in the language of stellar evolution, where $\mS$ is roughly the inverse Mach number of the convection while $\mP$ is set by the ratio of $\gradrad$ and $\gradad$.
 }
 
-Aside from $\mS$, $\mP$, and $\eta$, the two remaining control parameters $\mR$ and $\Pran$ determine the properties of the turbulence.
+Aside from $\mS$, $\mP$, and $\mu$, the two remaining control parameters $\mR$ and $\Pran$ determine the properties of the turbulence.
 The value of $\mR$ corresponds to the value of the Reynolds number $\rm{Re} = \mR |\vec{u}|$, and we will vary $\mR$.
 Astrophysical convection exists in the limit of $\Pran \ll 1$ \citep{garaud2021}; in this work we choose a modest value of $\Pran = 0.5$ which slightly separates the thermal and viscous scales while still allowing us to achieve convection with large Reynolds and P\'{e}clet numbers.
 
